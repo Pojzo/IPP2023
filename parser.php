@@ -51,7 +51,8 @@ require('input_handler.php');
 // Analyzer class checks for lexical and syntactical errors in instructions
 class Analyzer {
     private $lines;
-    function __construct(array $lines) {
+    private $data_types = array("int", "bool", "string", "nil");
+    public function __construct(array $lines) {
         $this->lines = $lines;
     }
 
@@ -64,18 +65,57 @@ class Analyzer {
     }
 
     private function check_variable_syntax(string $arguments) {
-         
+        $split_arguments = explode("@", $arguments);
+        if (count($split_arguments) == 1) {
+            echo "Missing @ in variable name\n";
+            exit(23);
+        }
+
+        if (count($split_arguments) > 2) {
+            echo "Toto co akoze ako mam toto riesit\n";
+            exit(23);
+        }
+
+        return;
+
+        // string@hello
+        $type = $split_arguments[0]; // type of variable, left side of @
+        $name = $split_arguments[1]; // name of variable, right side of @
+
+        // check if datataype is correct
+        if (!in_array($type, $this->data_types)) {
+            echo "What is this datatype?\n";
+            exit(23);
+        }
+        
+        // TODO
+        if ($type == "string") {
+        }
+
+        elseif ($type == "int") {
+
+        }
+        elseif ($type == "bool") {
+
+        }
+        elseif ($type == "nil") {
+
+        }
     }
 
+    // TODO
     private function check_symbol_syntax(string $arguments) {
-        
+
     }
 
+    // TODO
     private function check_type_syntax(string $arguments) {
-        
+
     }
+
+    // TODO
     private function check_label_syntax(string $arguments) {
-        
+
     }
 
     private function check_syntax(array $instruction_arguments, array $expected_arguments) {
@@ -100,8 +140,18 @@ class Analyzer {
         }
     }
 
+    public function analyze() {
+        echo print_r($this->lines);
+        for ($i = 0; $i < count($this->lines); $i++) {
+            $this->lines[$i] = $this->remove_comment($this->lines[$i]);
+            if (!($this->instruction_ok($this->lines[$i]))) {
+                exit(22);
+            }
+        }
+    }
+
     // return true if 'instruction' has the correct syntax
-    private function instruction_ok(string $instruction): bool {
+    private function instruction_ok(string $instruction) {
         global $instructions_dic;
         // split by space and trim of whitespace
         $split_instruction = explode(" ", $instruction);
@@ -135,19 +185,8 @@ class Analyzer {
          */
 
         $this->check_syntax($instruction_arguments, $expected_arguments);
-        
+
         return true;
-    }
-
-
-    public function analyze() {
-        echo print_r($this->lines);
-        for ($i = 0; $i < count($this->lines); $i++) {
-            $this->lines[$i] = $this->remove_comment($this->lines[$i]);
-            if (!$this->instruction_ok($this->lines[$i])) {
-                exit(22);
-            }
-        }
     }
 }
 
@@ -156,6 +195,6 @@ $input_handler->handle_args();
 
 $lines = $input_handler->load_instructions();
 
-$analyzer = new Analyzer($lines, $instruction_dic);
+$analyzer = new Analyzer($lines);
 $analyzer->analyze();
 ?>
