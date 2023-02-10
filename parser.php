@@ -3,7 +3,7 @@
     define("VARIABLE", 0);
     define("SYMBOL", 1);
     define("TYPE", 2);
-    define("LABEL", 3);
+    define("LBL", 3);
 
     // dictionary mappings where key is the name of instruction and value is an array of arguments to that instruction
     $instructions_dic = ["MOVE"    => [VARIABLE, SYMBOL],
@@ -11,7 +11,7 @@
                      "PUSHFRAME"   => [],
                      "POPFRAME"    => [],
                      "DEFVAR"      => [VARIABLE],
-                     "CALL"        => [LABEL],
+                     "CALL"        => [LBL],
                      "RETURN"      => [],
                      "PUSHS"       => [SYMBOL],
                      "POPS"        => [VARIABLE],
@@ -34,21 +34,16 @@
                      "GETCHAR"     => [VARIABLE, SYMBOL, SYMBOL],
                      "SETCHAR"     => [VARIABLE, SYMBOL, SYMBOL],
                      "TYPE"        => [VARIABLE, SYMBOL],
-                     "LABEL"       => [LABEL],
-                     "JUMP"        => [LABEL],
-                     "JUMPIFEQ"    => [LABEL, SYMBOL, SYMBOL],
-                     "JUMPIFNEQ"   => [LABEL, SYMBOL, SYMBOL],
+                     "LABEL"       => [LBL],
+                     "JUMP"        => [LBL],
+                     "JUMPIFEQ"    => [LBL, SYMBOL, SYMBOL],
+                     "JUMPIFNEQ"   => [LBL, SYMBOL, SYMBOL],
                      "EXIT"        => [SYMBOL],
                      "DPRINT"      => [SYMBOL],
                      "BREAK"       => [],
 ];
 
-    // print help message for parser.php
-    function print_help() {
-        echo "Usage: php your_program.php [--help] [instructions]" .
-        "\n\nOptions:\n  --help    Show this help message\n\n";
-    }
-    
+   
     // return true if 'instruction' has the correct syntax
     function instruction_ok(string $instruction): bool {
         global $instructions_dic;
@@ -72,65 +67,102 @@
         
         // check if they're of the same length
         if (count($valid_arguments) != count($instruction_arguments)) {
+            echo "Incorrect number of arguments\n";
             exit(23);
         }
 
         echo "These are the valid arguments for $opcode:"; 
         print_r($valid_arguments);
         echo " and we got";
-        print_r($arguments);
+        print_r($instruction_arguments);
         
         return true;
     }
 
     // --------------------start of the script -------------------
 
-    $arg_count = $argc - 1; // the first argument is always the file name
+    class InputHandler {
+        private $arg_count;
+        private $argv;
 
-    if ($arg_count > 1) {
-        // only one or no arguments are valid
-        exit(10);
-    }
-
-    if ($arg_count == 1) {
-        // only --help argument is accepted
-        if ($argv[1] != "--help") {
-            exit(10);
+        function __construct(int $argc, array $argv) {
+            $this->arg_count = $argc - 1; // the first argument is always the file name
+            $this->argv = $argv;
         }
-        print_help();
-        exit(0); // terminate the program with exit code 0 after printing help
+
+        // print help message for parser.php
+        private function print_help() {
+            echo "Usage: php your_program.php [--help] [instructions]" .
+                "\n\nOptions:\n  --help    Show this help message\n\n";
+        }
+
+        public function handle_args() {
+            if ($arg_count > 1) {
+                // only one or no arguments are valid
+                exit(10);
+            }
+
+            if ($arg_count == 1) {
+                // only --help argument is accepted
+                if ($argv[1] != "--help") {
+                    exit(10);
+                }
+                $this->print_help();
+                exit(0); // terminate the program with exit code 0 after printing help
+            }
+        }
+
+        private function handle_header(array $lines): array {
+            // check if header is present
+            if ($lines[0] != ".IPPcode23") {
+                exit(21);
+            }
+
+            // remove the header
+            $lines = array_slice($lines, 1);
+            return $lines;
+        }
+
+        public function load_instructions(): array {
+            $instruction = "";
+
+            // read all instructions from stdin
+            while ($line = fgets(STDIN)) {
+                $instructions .= $line;
+            }
+
+            // split the input program into lines and
+            $lines = explode("\n", $instructions);
+
+            // check header
+            $lines = $this->handle_header($lines);
+
+            // clear any whitespace from front and back
+            $clear_lines = array_map('trim', $lines);
+
+            // remove comments
+            $clear_lines = array_filter($clear_lines, function($line) {
+                return substr($line, 0, 1) != '#';
+            });
+
+            return $clear_lines;
+        }
     }
 
-    $instructions = "";
-
-    // read all instructions from stdin
-    while ($line = fgets(STDIN)) {
-        $instructions .= $line;
-    }
+    $input_handler = new InputHandler($argc, $argv);
+    $input_handler->handle_args();
     
-    // split the input program into lines and
-    $lines = explode("\n", $instructions);
+    $lines = $input_handler->load_instructions();
 
-    // check if header is present
-    if ($lines[0] != ".IPPcode23") {
-        exit(21);
-    }
-
-    // remove the header since it won't be needed anymore
-    $lines = array_slice($lines, 1);
-
-    // clear any whitespace from front and back
-    $clear_lines = array_map('trim', $lines);
-
-    // remove comments
-    $clear_lines = array_filter($clear_lines, function($line) {
-        return substr($line, 0, 1) != '#';
-    });
-
-    foreach ($clear_lines as $line) {
+    foreach ($lines as $line) {
         # remove comments from any part of the line
         $comment_split = explode("#", $line);
         $comment_free_line = trim(reset($comment_split));
+
+        // check if its empty line
+        if (empty($comment_free_line)) {
+            continue;
+        }
         if (!instruction_ok($comment_free_line)) {
             exit(22);
         }
