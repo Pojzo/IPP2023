@@ -183,6 +183,28 @@ class Analyzer {
     }
 }
 
+class XMLGenerator {
+    private $header;
+    private $lines;
+    public function __construct(array $lines) {
+        $this->header = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?' .'>'.'<program></program>');
+        $this->header->addAttribute('language', 'IPPcode2023');
+        $this->lines = $lines;
+    }
+
+    public function generate_xml() {
+        for ($i = 0; $i < count($this->lines); $i++) {
+            $arguments = explode(" ", $this->lines[$i]);
+            $opcode = array_shift($arguments); // shift the array so that it doesn't contain opcode
+
+            print_r($opcode);
+            echo "\n";
+            print_r($arguments);
+            echo"\n";
+        }
+    }
+}
+
 $input_handler = new InputHandler($argc, $argv);
 $input_handler->handle_args();
 
@@ -191,7 +213,13 @@ $lines = $input_handler->load_instructions();
 # $analyzer = new Analyzer($lines);
 # $analyzer->analyze();
 #
-$xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?' .'>'.'<program></program>');
+# if we got to this part of the code, we can start generating xml
+
+$generator = new XMLGenerator($lines);
+$generator->generate_xml();
+
+
+exit();
 $xml->addAttribute('language', 'IPPcode2023');
 
 $instruction = $xml->addChild("instruction");
