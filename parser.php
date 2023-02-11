@@ -61,12 +61,12 @@ class Analyzer {
     private function check_variable_syntax(string $arguments) {
         $split_arguments = explode("@", $arguments);
         if (count($split_arguments) == 1) {
-            echo "Missing @ in variable name\n";
+            # echo "Missing @ in variable name\n";
             exit(23);
         }
 
         if (count($split_arguments) > 2) {
-            echo "Toto co akoze ako mam toto riesit\n";
+            # echo "Toto co akoze ako mam toto riesit\n";
             exit(23);
         }
 
@@ -78,7 +78,7 @@ class Analyzer {
 
         // check if datataype is correct
         if (!in_array($type, $this->data_types)) {
-            echo "What is this datatype?\n";
+            # echo "What is this datatype?\n";
             exit(23);
         }
 
@@ -135,9 +135,9 @@ class Analyzer {
     }
 
     public function analyze() {
-        echo print_r($this->lines);
+        # echo print_r($this->lines);
         for ($i = 0; $i < count($this->lines); $i++) {
-            echo $this->lines[$i];
+            # echo $this->lines[$i];
             // $this->lines[$i] = $this->remove_comment($this->lines[$i]);
             if (!($this->instruction_ok($this->lines[$i]))) {
                 exit(22);
@@ -153,14 +153,14 @@ class Analyzer {
         $split_instruction = array_map('trim', $split_instruction);
 
         $opcode = $split_instruction[0];                 // name of the instruction
-        echo $opcode . "\n";
+        # echo $opcode . "\n";
 
         // remove the opcode and reset indeces
         $instruction_arguments = array_values(array_slice($split_instruction, 1)); // arguments of the instruction
 
         // instruction doesn't exist
         if (!array_key_exists($opcode, $instructions_dic)) {
-            echo "This instruction doesn't exist\n"; 
+            # echo "This instruction doesn't exist\n"; 
             exit(22);
         }
 
@@ -168,7 +168,7 @@ class Analyzer {
 
         // check if they're of the same length
         if (count($expected_arguments) != count($instruction_arguments)) {
-            echo "Incorrect number of arguments\n";
+            # echo "Incorrect number of arguments\n";
             exit(23);
         }
 
@@ -195,6 +195,9 @@ class MyXMLWriter {
 
         $formattedXML = $dom->saveXML();
 
+        echo $formattedXML;
+        exit;
+
         // Save the XML to a file
         $file = fopen('generated.xml', 'w');
         if (!$file) {
@@ -218,7 +221,7 @@ class XMLGenerator {
 
     public function __construct(array $lines) {
         $this->header = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?' .'>'.'<program></program>');
-        $this->header->addAttribute('language', 'IPPcode2023');
+        $this->header->addAttribute('language', 'IPPcode23');
         $this->lines = $lines;
         $this->num_instructions = 0;
         $this->arg_functions = [VARIABLE => [$this, 'generate_variable_arg_xml'],
@@ -289,7 +292,7 @@ class XMLGenerator {
             // $this->header->addChild($instruction_xml); // add it to the header as child
 
         }
-        echo $this->header->asXML();
+        // echo $this->header->asXML();
         MyXMLWriter::write($this->header);
     }
 }
@@ -299,8 +302,8 @@ $input_handler->handle_args();
 
 $lines = $input_handler->load_instructions();
 
-# $analyzer = new Analyzer($lines);
-# $analyzer->analyze();
+$analyzer = new Analyzer($lines);
+$analyzer->analyze();
 #
 # if we got to this part of the code, we can start generating xml
 
@@ -313,5 +316,7 @@ $xml->addAttribute('language', 'IPPcode2023');
 
 $instruction = $xml->addChild("instruction");
 $instruction->addAttribute('order', '1');
+
+exit();
 
 ?>
