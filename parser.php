@@ -3,7 +3,9 @@
 define("VARIABLE", 0);
 define("SYMBOL", 1);
 define("TYPE", 2);
-define("LBL", 3);
+define("LABEL", 3);
+
+
 
 // dictionary mappings where key is the name of instruction and value is an array of arguments to that instruction
 $instructions_dic = ["MOVE"    => [VARIABLE, SYMBOL],
@@ -11,7 +13,7 @@ $instructions_dic = ["MOVE"    => [VARIABLE, SYMBOL],
     "PUSHFRAME"   => [],
     "POPFRAME"    => [],
     "DEFVAR"      => [VARIABLE],
-    "CALL"        => [LBL],
+    "CALL"        => [LABEL],
     "RETURN"      => [],
     "PUSHS"       => [SYMBOL],
     "POPS"        => [VARIABLE],
@@ -34,10 +36,10 @@ $instructions_dic = ["MOVE"    => [VARIABLE, SYMBOL],
     "GETCHAR"     => [VARIABLE, SYMBOL, SYMBOL],
     "SETCHAR"     => [VARIABLE, SYMBOL, SYMBOL],
     "TYPE"        => [VARIABLE, SYMBOL],
-    "LABEL"       => [LBL],
-    "JUMP"        => [LBL],
-    "JUMPIFEQ"    => [LBL, SYMBOL, SYMBOL],
-    "JUMPIFNEQ"   => [LBL, SYMBOL, SYMBOL],
+    "LABEL"       => [LABEL],
+    "JUMP"        => [LABEL],
+    "JUMPIFEQ"    => [LABEL, SYMBOL, SYMBOL],
+    "JUMPIFNEQ"   => [LABEL, SYMBOL, SYMBOL],
     "EXIT"        => [SYMBOL],
     "DPRINT"      => [SYMBOL],
     "BREAK"       => [],
@@ -46,7 +48,7 @@ $instructions_dic = ["MOVE"    => [VARIABLE, SYMBOL],
 
 // --------------------start of the script -------------------
 
-require('input_handler.php');
+require_once('input_handler.php');
 
 // Analyzer class checks for lexical and syntactical errors in instructions
 class Analyzer {
@@ -125,7 +127,7 @@ class Analyzer {
                 $this->check_type_syntax($instruction_arguments[$i]);
                 break;
 
-            case LBL:
+            case LABEL:
                 $this->check_label_syntax($instruction_arguments[$i]);
                 break;
             }
@@ -183,25 +185,112 @@ class Analyzer {
     }
 }
 
+class MyXMLWriter {
+    public static function write(SimpleXMLElement $xml) {
+
+        $dom = new DOMDocument("1.0");
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        $dom->loadXML($xml->asXML());
+
+        $formattedXML = $dom->saveXML();
+
+        // Save the XML to a file
+        $file = fopen('generated.xml', 'w');
+        if (!$file) {
+            // error opening output file
+            exit(12);
+        }
+
+        if (!fwrite($file, $formattedXML)) {
+            // I guess the same error as the previous one
+            exit(12);
+        }
+        fclose($file);
+    }
+}
+
 class XMLGenerator {
     private $header;
     private $lines;
+    private $num_instructions;
+    private $arg_functions;
+
     public function __construct(array $lines) {
-        $this->header = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?' .'>'.'<program></program>');
+        $this->header = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?' .'>'.'<program></program>');
         $this->header->addAttribute('language', 'IPPcode2023');
         $this->lines = $lines;
+        $this->num_instructions = 0;
+        $this->arg_functions = [VARIABLE => [$this, 'generate_variable_arg_xml'],
+            SYMBOL   => [$this, 'generate_symbol_arg_xml'  ],
+            TYPE     => [$this, 'generate_type_arg_xml'    ],
+            LABEL    => [$this, 'generate_label_arg_xml'   ]
+        ];
     }
 
+    // generate xml for argument of type variable
+    private function generate_variable_arg_xml(SimpleXMLElement $arg_xml, string $arg_string) {
+        $arg_xml->addAttribute('type', 'var');
+        $arg_xml[0] = $arg_string;
+    }    
+
+    // generate xml for argument of type symbol
+    private function generate_symbol_arg_xml(SimpleXMLElement $arg_xml, string $arg_string) {
+        [$data_type, $name] = explode("@", $arg_string);
+        $arg_xml->addAttribute('type', $data_type);
+        $arg_xml[0] = $name;
+    }
+
+    // generate xml for argument of type 'type'
+    private function generate_type_arg_xml(SimpleXMLElement $arg_xml, string $arg_string) {
+        $arg_xml->addAttribute('type', 'type');
+        $arg_xml[0] = $arg_string;
+    }
+
+    // generate xml for argument of type label
+    private function generate_label_arg_xml(SimpleXMLElement $arg_xml, string $arg_string) {
+        $arg_xml->addAttribute('type', 'label');
+        $arg_xml[0] = $arg_string;
+    }
+
+    // return arg element in xml format
+    private function generate_arg_xml(SimpleXMLElement $parent_instruction, int $arg_count, int $type, string $arg_string) {
+        $arg_xml = $parent_instruction->addChild("arg" . strval($arg_count));
+        // $arg_functions stores functions for corresponding argument types
+        $this->arg_functions[$type]($arg_xml, $arg_string);
+    }
+
+    // return instruction element in xml format
+    private function generate_instruction_xml(string $opcode, array $arguments): SimpleXMLElement {
+        global $instructions_dic;
+        $instruction_xml = $this->header->addChild("instruction");
+
+        $instruction_xml->addAttribute('order', strval($this->num_instructions));
+        $instruction_xml->addAttribute('opcode', strtoupper($opcode));
+
+        $argument_types = $instructions_dic[$opcode];
+
+        // this won't happen if there aren't any arguments
+        for ($arg_count = 0; $arg_count < count($argument_types); $arg_count++) {
+            $this->generate_arg_xml($instruction_xml, $arg_count + 1, $argument_types[$arg_count], $arguments[$arg_count]);
+        }
+
+        return $instruction_xml;
+    }
+
+    // generate the output xml
     public function generate_xml() {
         for ($i = 0; $i < count($this->lines); $i++) {
             $arguments = explode(" ", $this->lines[$i]);
             $opcode = array_shift($arguments); // shift the array so that it doesn't contain opcode
+            $this->num_instructions += 1;      // increase the instruction count
 
-            print_r($opcode);
-            echo "\n";
-            print_r($arguments);
-            echo"\n";
+            $this->generate_instruction_xml($opcode, $arguments); // create new instruction
+            // $this->header->addChild($instruction_xml); // add it to the header as child
+
         }
+        echo $this->header->asXML();
+        MyXMLWriter::write($this->header);
     }
 }
 
@@ -224,25 +313,5 @@ $xml->addAttribute('language', 'IPPcode2023');
 
 $instruction = $xml->addChild("instruction");
 $instruction->addAttribute('order', '1');
-
-$dom = new DOMDocument("1.0");
-$dom->preserveWhiteSpace = false;
-$dom->formatOutput = true;
-$dom->loadXML($xml->asXML());
-
-$formattedXML = $dom->saveXML();
-
-// Save the XML to a file
-$file = fopen('generated.xml', 'w');
-if (!$file) {
-    // error opening output file
-    exit(12);
-}
-
-if (!fwrite($file, $formattedXML)) {
-    // I guess the same error as the previous one
-    exit(12);
-}
-fclose($file);
 
 ?>
