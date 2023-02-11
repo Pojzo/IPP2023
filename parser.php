@@ -56,14 +56,6 @@ class Analyzer {
         $this->lines = $lines;
     }
 
-    # function removes comments from the line
-    private function remove_comment(string $line): string {
-        $comment_split = explode("#", $line);
-        $new_line = trim(reset($comment_split));
-
-        return $new_line;
-    }
-
     private function check_variable_syntax(string $arguments) {
         $split_arguments = explode("@", $arguments);
         if (count($split_arguments) == 1) {
@@ -87,7 +79,7 @@ class Analyzer {
             echo "What is this datatype?\n";
             exit(23);
         }
-        
+
         // TODO
         if ($type == "string") {
         }
@@ -121,21 +113,21 @@ class Analyzer {
     private function check_syntax(array $instruction_arguments, array $expected_arguments) {
         for ($i = 0; $i < count($expected_arguments); $i++) {
             switch ($expected_arguments[$i]) {
-                case VARIABLE:
-                    $this->check_variable_syntax($instruction_arguments[$i]);
-                    break;
+            case VARIABLE:
+                $this->check_variable_syntax($instruction_arguments[$i]);
+                break;
 
-                case SYMBOL:
-                    $this->check_symbol_syntax($instruction_arguments[$i]);
-                    break;
+            case SYMBOL:
+                $this->check_symbol_syntax($instruction_arguments[$i]);
+                break;
 
-                case TYPE:
-                    $this->check_type_syntax($instruction_arguments[$i]);
-                    break;
+            case TYPE:
+                $this->check_type_syntax($instruction_arguments[$i]);
+                break;
 
-                case LBL:
-                    $this->check_label_syntax($instruction_arguments[$i]);
-                    break;
+            case LBL:
+                $this->check_label_syntax($instruction_arguments[$i]);
+                break;
             }
         }
     }
@@ -143,7 +135,8 @@ class Analyzer {
     public function analyze() {
         echo print_r($this->lines);
         for ($i = 0; $i < count($this->lines); $i++) {
-            $this->lines[$i] = $this->remove_comment($this->lines[$i]);
+            echo $this->lines[$i];
+            // $this->lines[$i] = $this->remove_comment($this->lines[$i]);
             if (!($this->instruction_ok($this->lines[$i]))) {
                 exit(22);
             }
@@ -195,6 +188,33 @@ $input_handler->handle_args();
 
 $lines = $input_handler->load_instructions();
 
-$analyzer = new Analyzer($lines);
-$analyzer->analyze();
+# $analyzer = new Analyzer($lines);
+# $analyzer->analyze();
+#
+$xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?' .'>'.'<program></program>');
+$xml->addAttribute('language', 'IPPcode2023');
+
+$instruction = $xml->addChild("instruction");
+$instruction->addAttribute('order', '1');
+
+$dom = new DOMDocument("1.0");
+$dom->preserveWhiteSpace = false;
+$dom->formatOutput = true;
+$dom->loadXML($xml->asXML());
+
+$formattedXML = $dom->saveXML();
+
+// Save the XML to a file
+$file = fopen('generated.xml', 'w');
+if (!$file) {
+    // error opening output file
+    exit(12);
+}
+
+if (!fwrite($file, $formattedXML)) {
+    // I guess the same error as the previous one
+    exit(12);
+}
+fclose($file);
+
 ?>
