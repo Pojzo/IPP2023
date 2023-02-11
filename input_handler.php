@@ -32,6 +32,13 @@ class InputHandler {
         }
     }
 
+    private function remove_comment(string $line): string {
+        $comment_split = explode("#", $line);
+        $new_line = trim(reset($comment_split));
+
+        return $new_line;
+    }
+
     private function handle_header(array $lines): array {
         // check if header is present
         if ($lines[0] != ".IPPcode23") {
@@ -60,10 +67,16 @@ class InputHandler {
         // clear any whitespace from front and back
         $clear_lines = array_map('trim', $lines);
 
+        for ($i = 0; $i < count($clear_lines); $i++) {
+            $clear_lines[$i] = $this->remove_comment($clear_lines[$i]);
+        }
+
+        /*
         // remove lines that start with a comment
         $clear_lines = array_filter($clear_lines, function($line) {
             return substr($line, 0, 1) != '#';
         });
+         */
 
         // return non-empty lines and reset their indeces
         return array_values(array_filter($clear_lines, function($line) {
@@ -72,4 +85,3 @@ class InputHandler {
     }
 }
 ?>
-
