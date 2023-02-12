@@ -3,6 +3,7 @@ import os
 import subprocess
 import difflib
 import argparse
+import sys
 
 BLUE = "\033[34m"
 BLACK = "\033[0m"
@@ -148,14 +149,13 @@ print(f"Total generated tests: {generated_total}, successful: {generated_success
 
 # max_folder_len = max([folder for folder in summary], key=len)
 
+
 def generate_summary(summary):
     for folder, (success, total) in summary.items():
         if (success == total):
             print(f"{folder}: {GREEN} {success}/{total} {BLACK}")
         else:
             print(f"{folder}: {RED} {success}/{total} {BLACK}")
-
-
 
 generate_summary(summary)
 if args.run_generated:

@@ -273,6 +273,13 @@ class XMLGenerator {
 
         $argument_types = $instructions_dic[$opcode];
 
+        // instruction without any arguments
+        if (count($argument_types) == 0) {
+            $instruction_xml[0] = ' ';
+            $instruction_xml[0] = '';
+        }
+
+
         // this won't happen if there aren't any arguments
         for ($arg_count = 0; $arg_count < count($argument_types); $arg_count++) {
             $this->generate_arg_xml($instruction_xml, $arg_count + 1, $argument_types[$arg_count], $arguments[$arg_count]);

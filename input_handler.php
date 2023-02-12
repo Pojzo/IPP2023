@@ -41,8 +41,17 @@ class InputHandler {
 
     private function handle_header(array $lines): array {
         // check if header is present
-        if ($lines[0] != ".IPPcode23") {
-            exit(21);
+        // there could be comment after header
+        if (str_contains($lines[0], '#')) {
+            if (rtrim($split) != ".IPPcode23") {
+                exit(21);
+            }
+        }
+        else {
+            if (rtrim($lines[0]) != ".IPPcode23") {
+                exit(21);
+
+            }
         }
 
         // remove the header
@@ -60,6 +69,11 @@ class InputHandler {
 
         // split the input program into lines
         $lines = explode("\n", $instructions);
+
+        // comments can be before header
+        while (substr(trim($lines[0]), 0, 1) == '#') {
+            $lines = array_slice($lines, 1);
+        }
 
         // check header
         $lines = $this->handle_header($lines);
