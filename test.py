@@ -121,6 +121,7 @@ if args.help:
 TEST_DIR = args.test_dir
 
 generated_success, generated_total = 0, 0
+generated_summary = {}
 
 if args.run_generated:
     for generated_folder in glob.glob(os.path.join(TEST_DIR + "GENERATED/*")):
@@ -128,6 +129,7 @@ if args.run_generated:
         result = dir_tester.test_dir(verbose=False, show_errors=args.show_errors)
         generated_success += result[0]
         generated_total += result[1]
+        generated_summary[generated_folder.split('/')[-1]] = [result[0], result[1]]
 
 success, total = 0, 0
 summary = {}
@@ -146,8 +148,16 @@ print(f"Total generated tests: {generated_total}, successful: {generated_success
 
 # max_folder_len = max([folder for folder in summary], key=len)
 
-for folder, (success, total) in summary.items():
-    if (success == total):
-        print(f"{folder}: {GREEN} {success}/{total} {BLACK}")
-    else:
-        print(f"{folder}: {RED} {success}/{total} {BLACK}")
+def generate_summary(summary):
+    for folder, (success, total) in summary.items():
+        if (success == total):
+            print(f"{folder}: {GREEN} {success}/{total} {BLACK}")
+        else:
+            print(f"{folder}: {RED} {success}/{total} {BLACK}")
+
+
+
+generate_summary(summary)
+if args.run_generated:
+    print("----------------")
+    generate_summary(generated_summary)
