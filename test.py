@@ -26,7 +26,7 @@ class DirTester:
                 with open(src + "." + file_type) as file:
                     files[file_type] = file.read()
 
-            command = "php parser.php"
+            command = "php parse.php"
 
             stderr_output = subprocess.PIPE if not self.show_errors else subprocess.STDOUT
             result = subprocess.run(command,
@@ -73,7 +73,7 @@ return code: expected {files['rc']} got {result.returncode}{BLACK}")
 
     def test_dir(self, verbose=True, show_errors=True):
         success = 0
-        print("{} Running tests for {} {}".format(BLUE, os.path.dirname(self.directory), BLACK))
+        print("{} Running tests for {} {}".format(BLUE, self.directory, BLACK))
         tester = self.Tester(len(self.files), verbose, show_errors)
         for file in self.files:
             success += tester.run_test(file)
