@@ -2,6 +2,7 @@ import glob
 import os
 import subprocess
 import difflib
+import argparse
 
 BLUE = "\033[34m"
 BLACK = "\033[0m"
@@ -12,9 +13,11 @@ YELLOW = "\033[33m"
 
 class DirTester:
     class Tester:
-        def __init__(self, num_tests_):
+        def __init__(self, num_tests_, verbose, show_errors):
             self.num_tests = num_tests_
             self.cur_test = 1
+            self.verbose = verbose
+            self.show_errors = show_errors
 
         def run_test(self, src: str):
             files = {}
@@ -24,14 +27,14 @@ class DirTester:
                     files[file_type] = file.read()
 
             command = "php parser.php"
+
+            stderr_output = subprocess.PIPE if not self.show_errors else subprocess.STDOUT
             result = subprocess.run(command,
                                     input=files["src"],
                                     stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
+                                    stderr=stderr_output,
                                     encoding="utf-8",
                                     shell=True)
-
-
 
             diff = difflib.unified_diff([line.strip() for line in result.stdout.splitlines()], [line.strip() for line in
                                                                                                 files["out"].splitlines()], lineterm='', n=0)
@@ -43,14 +46,14 @@ class DirTester:
                 if files["rc"] != str(result.returncode):
                     print(f"{RED} expected return code {files['rc']} got {result.returncode} {BLACK}")
 
-                print(f"{BLUE} True output {BLACK}:")
-                print(files["out"])
-                print(f"{BLUE} User output {BLACK}:")
-                print(result.stdout)
+                if self.verbose:
+                    print(f"{BLUE} True output {BLACK}:")
+                    print(files["out"])
+                    print(f"{BLUE} User output {BLACK}:")
+                    print(result.stdout)
+                    print("\n".join(diff_result))
 
-
-                # print("------------------------------")
-                print("\n".join(diff_result))
+                print("------------------------------")
                 return False
             else:
                 if files["rc"] != str(result.returncode):
@@ -59,7 +62,7 @@ return code: expected {files['rc']} got {result.returncode}{BLACK}")
                     return False
 
                 print(f"{GREEN} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} successful {BLACK}")
-                # print("------------------------------")
+                print("------------------------------")
                 return True
 
 
@@ -68,10 +71,10 @@ return code: expected {files['rc']} got {result.returncode}{BLACK}")
         self.files = glob.glob(self.directory + "/*.src")
         self.files = list(map(lambda x: x.replace(".src", ""), self.files))
 
-    def test_dir(self):
+    def test_dir(self, verbose=True, show_errors=True):
         success = 0
         print("{} Running tests for {} {}".format(BLUE, os.path.dirname(self.directory), BLACK))
-        tester = self.Tester(len(self.files))
+        tester = self.Tester(len(self.files), verbose, show_errors)
         for file in self.files:
             success += tester.run_test(file)
             tester.cur_test += 1
@@ -81,18 +84,23 @@ return code: expected {files['rc']} got {result.returncode}{BLACK}")
         return success, len(self.files)
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--run_generated', type=int, default=0, help='Set to True to run generated code')
+parser.add_argument('--show_errors', type=int, default=0, help='Set to True to show errors')
+parser.add_argument('--verbose', type=int, default=1, help='Set to True to be verbose')
+
+args = parser.parse_args()
+
 TEST_DIR = "./IPP23_parser_tests/"
 
 test_directories = []
 
 generated_success, generated_total = 0, 0
-run_generated = True
 
-if run_generated:
+if args.run_generated:
     for generated_folder in glob.glob(os.path.join(TEST_DIR + "GENERATED/*")):
-        print(generated_folder)
         dir_tester = DirTester(generated_folder)
-        result = dir_tester.test_dir()
+        result = dir_tester.test_dir(verbose=False, show_errors=args.show_errors)
         generated_success += result[0]
         generated_total += result[1]
 
@@ -102,7 +110,7 @@ for folder in glob.glob(TEST_DIR + "*")[1:]:
         continue
 
     dir_tester = DirTester(folder)
-    result = dir_tester.test_dir()
+    result = dir_tester.test_dir(verbose=args.verbose, show_errors=args.show_errors)
     success += result[0]
     total += result[1]
 
