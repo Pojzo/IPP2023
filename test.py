@@ -39,10 +39,12 @@ class DirTester:
             diff = difflib.unified_diff([line.strip() for line in result.stdout.splitlines()], [line.strip() for line in
                                                                                                 files["out"].splitlines()], lineterm='', n=0)
             diff_result = list(diff)
-
-            print()
+            
             if diff_result:
                 print(f"{RED} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} unsuccessful {BLACK}")
+                if self.verbose:
+                    print(files["src"])
+                    print()
                 if files["rc"] != str(result.returncode):
                     print(f"{RED} expected return code {files['rc']} got {result.returncode} {BLACK}")
 
@@ -57,6 +59,9 @@ class DirTester:
                 return False
             else:
                 if files["rc"] != str(result.returncode):
+                    if self.verbose:
+                        print(files["src"])
+                        print()
                     print(f"{RED} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} unsuccessful - wrong \
 return code: expected {files['rc']} got {result.returncode}{BLACK}")
                     return False
@@ -122,14 +127,24 @@ if args.run_generated:
         generated_total += result[1]
 
 success, total = 0, 0
+summary = {}
 for folder in glob.glob(TEST_DIR + "*")[1:]:
     if "GENERATED" in folder:
         continue
 
     dir_tester = DirTester(folder)
     result = dir_tester.test_dir(verbose=args.verbose, show_errors=args.show_errors)
+    summary[folder.split('/')[-1]] = [result[0], result[1]]
     success += result[0]
     total += result[1]
 
 print(f"Total tests: {total}, successful: {success}")
 print(f"Total generated tests: {generated_total}, successful: {generated_success}")
+
+# max_folder_len = max([folder for folder in summary], key=len)
+
+for folder, (success, total) in summary.items():
+    if (success == total):
+        print(f"{folder}: {GREEN} {success}/{total} {BLACK}")
+    else:
+        print(f"{folder}: {RED} {success}/{total} {BLACK}")
