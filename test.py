@@ -84,12 +84,29 @@ return code: expected {files['rc']} got {result.returncode}{BLACK}")
         return success, len(self.files)
 
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('--run_generated', type=int, default=0, help='Set to True to run generated code')
 parser.add_argument('--show_errors', type=int, default=0, help='Set to True to show errors')
 parser.add_argument('--verbose', type=int, default=1, help='Set to True to be verbose')
+parser.add_argument('--help', '--h', action="store_true")
+
 
 args = parser.parse_args()
+
+if args.help:
+    print("""usage: test.py [-h] [--run_generated RUN_GENERATED] [--show_errors SHOW_ERRORS]\n\
+               [--verbose VERBOSE]\n\
+\n\
+optional arguments:\n\
+  -h, --help            show this help message and exit\n\
+  --run_generated RUN_GENERATED\n\
+                        Set to 1 to run generated code, set to 0 to not run\n\
+  --show_errors SHOW_ERRORS\n\
+                        Set to 1 to show errors, set to 0 to not show\n\
+  --verbose VERBOSE     Set to 1 to be verbose, set to 0 to not be verbose\n\
+  """
+          )
+    exit()
 
 TEST_DIR = "./IPP23_parser_tests/"
 
