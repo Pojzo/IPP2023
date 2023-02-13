@@ -156,6 +156,7 @@ class Analyzer {
                 exit(23);
             }
         }
+
         elseif ($type == "bool") {
             if (!$this->is_bool()) {
                 if ($DEBUG) {echo "Symbol isn't of type bool\n";}
