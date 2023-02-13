@@ -3,9 +3,10 @@ import os
 import subprocess
 import difflib
 import argparse
-import sys
 import multiprocessing
 import pickle
+import xml.etree.ElementTree as ET
+from xml import etree
 
 BLUE = "\033[34m"
 BLACK = "\033[0m"
@@ -13,6 +14,27 @@ GREEN = "\033[32m"
 RED = "\033[31m"
 YELLOW = "\033[33m"
 
+
+def elements_equal(e1, e2):
+    if e1.tag != e2.tag:
+        return False
+    if e1.text != e2.text:
+        if  e1.text!=None and e2.text!=None :
+            return False
+    if e1.tail != e2.tail:
+        if e1.tail!=None and e2.tail!=None:
+            return False
+    if e1.attrib != e2.attrib:
+        return False
+    if len(e1) != len(e2):
+        return False
+    return all(elements_equal(c1, c2) for c1, c2 in zip(e1, e2))
+
+
+def two_xml_equal(xml_str1, xml_str2):
+    root1 = ET.fromstring(xml_str1)
+    root2 = ET.fromstring(xml_str2)
+    return elements_equal(root1, root2)
 
 class DirTester:
     class Tester:
@@ -43,8 +65,19 @@ class DirTester:
 
             diff = difflib.unified_diff([line.strip() for line in result.stdout.splitlines()], [line.strip() for line in
                                                                                                 files["out"].splitlines()], lineterm='', n=0)
-            diff_result = list(diff)
             
+            diff = list(diff)
+            if files["out"] == "" and result.stdout != "":
+                diff_result = True
+
+            elif result.stdout == "" and files["out"] != "":
+                diff_result = True
+            elif result.stdout == "" and files["out"] == "":
+                diff_result = False
+
+            else:
+                diff_result = two_xml_equal(result.stdout, files["out"])
+
             if self.generated_test:
                 if diff_result:
                     if self.turbo_mode:
@@ -74,7 +107,7 @@ class DirTester:
                     print(files["out"])
                     print(f"{BLUE} User output {BLACK}:")
                     print(result.stdout)
-                    print("\n".join(diff_result))
+                    print("\n".join(diff))
 
                 print("------------------------------")
                 return False
