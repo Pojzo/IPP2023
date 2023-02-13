@@ -75,7 +75,7 @@ class Analyzer {
 
     // return true if $const is of type type
     private function is_type(string $const): bool {
-        return in_array($const, $this->data_type);
+        return in_array($const, $this->data_types);
     }
 
     // return true if $identifier is correct
@@ -98,8 +98,8 @@ class Analyzer {
             exit(23);
         }
 
-        $scope = $split_variable[0];
-        $identifier = $split_variable[1];
+        $scope = trim($split_variable[0]);
+        $identifier = trim($split_variable[1]);
 
         
         // incorrect scope
@@ -131,12 +131,11 @@ class Analyzer {
         }
 
         // string@hello
-        $type = $split_symbol[0]; // type of variable, left side of @
-        $name = $split_symbol[1]; // name of variable, right side of @
+        $type = trim($split_symbol[0]); // type of variable, left side of @
+        $name = trim($split_symbol[1]); // name of variable, right side of @
 
         // check if we're dealing with constant
         if (in_array($type, $this->data_types)) {
-
             if ($type == "string") {
                 if (!$this->is_string($name)) {
                     if ($DEBUG) {echo "Symbol isn't of type string\n";}
@@ -188,7 +187,11 @@ class Analyzer {
 
 // TODO
 private function check_label_syntax(string $label) {
-
+    global $DEBUG;
+    if (!$this->is_identifier($label)) {
+        if ($DEBUG) {echo "Failed in check label syntax\n";}
+        exit(23);
+    }
 }
 
 private function check_syntax(array $instruction_arguments, array $expected_arguments) {
@@ -228,8 +231,9 @@ public function analyze() {
 // return true if 'instruction' has the correct syntax
 private function instruction_ok(string $instruction) {
     global $instructions_dic;
-    // split by space and trim of whitespace
-    $split_instruction = explode(" ", $instruction);
+    global $DEBUG;
+    // split by any number of spaces and 
+    $split_instruction = preg_split('/\s+/', $instruction);
     $split_instruction = array_map('trim', $split_instruction);
 
     $opcode = $split_instruction[0];                 // name of the instruction
@@ -239,13 +243,13 @@ private function instruction_ok(string $instruction) {
     $instruction_arguments = array_values(array_slice($split_instruction, 1)); // arguments of the instruction
 
     // instruction doesn't exist
-    if (!array_key_exists($opcode, $instructions_dic)) {
+    if (!array_key_exists(strtoupper($opcode), $instructions_dic)) {
         if ($DEBUG) {echo "Instruction doesn't exist\n";}
         # echo "This instruction doesn't exist\n"; 
         exit(22);
     }
 
-    $expected_arguments = $instructions_dic[$opcode];
+    $expected_arguments = $instructions_dic[strtoupper($opcode)];
 
     // check if they're of the same length
     if (count($expected_arguments) != count($instruction_arguments)) {
@@ -315,6 +319,11 @@ class XMLGenerator {
         ];
     }
 
+    // generate only header and print it
+    public function generate_header_only() {
+        MyXMLWriter::write($this->header);
+    }
+
     // generate xml for argument of type variable
     private function generate_variable_arg_xml(SimpleXMLElement $arg_xml, string $arg_string) {
         $arg_xml->addAttribute('type', 'var');
@@ -324,8 +333,14 @@ class XMLGenerator {
     // generate xml for argument of type symbol
     private function generate_symbol_arg_xml(SimpleXMLElement $arg_xml, string $arg_string) {
         [$data_type, $name] = explode("@", $arg_string);
-        $arg_xml->addAttribute('type', $data_type);
-        $arg_xml[0] = $name;
+        if ($data_type == "GF" or $data_type == "LF" or $data_type == "TF") {
+            $arg_xml->addAttribute('type', 'var');
+            $arg_xml[0] = $arg_string;
+        }
+        else {
+            $arg_xml->addAttribute('type', $data_type);
+            $arg_xml[0] = $name;
+        }
     }
 
     // generate xml for argument of type 'type'
@@ -355,7 +370,7 @@ class XMLGenerator {
         $instruction_xml->addAttribute('order', strval($this->num_instructions));
         $instruction_xml->addAttribute('opcode', strtoupper($opcode));
 
-        $argument_types = $instructions_dic[$opcode];
+        $argument_types = $instructions_dic[strtoupper($opcode)];
 
         // instruction without any arguments
         if (count($argument_types) == 0) {
@@ -393,6 +408,13 @@ $input_handler->handle_args();
 
 $lines = $input_handler->load_instructions();
 
+// if there aren't any lines, terminate the program
+
+if (count($lines) == 0) {
+    $generator = new XMLGenerator($lines);
+    $generator->generate_header_only($lines);
+    exit(0);
+}
 
 $analyzer = new Analyzer($lines);
 $analyzer->analyze();
