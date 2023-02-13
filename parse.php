@@ -5,9 +5,6 @@ define("SYMBOL", 1);
 define("TYPE", 2);
 define("LABEL", 3);
 
-$DEBUG = False;
-
-
 // dictionary mappings where key is the name of instruction and value is an array of arguments to that instruction
 $instructions_dic = ["MOVE"    => [VARIABLE, SYMBOL],
     "CREATEFRAME" => [],
@@ -55,6 +52,7 @@ require_once('input_handler.php');
 class Analyzer {
     private $lines;
     private $data_types = array("int", "bool", "string", "nil");
+    private $scopes = array("GF", "TF", "LF");
     public function __construct(array $lines) {
         $this->lines = $lines;
     }
@@ -67,7 +65,7 @@ class Analyzer {
     
     // return true if $const is of type int 
     private function is_int(string $const): bool {
-        return is_int($string);
+        return is_numeric($const);
     }
 
     // return true if $const is of type bool
@@ -102,9 +100,10 @@ class Analyzer {
 
         $scope = $split_variable[0];
         $identifier = $split_variable[1];
+
         
         // incorrect scope
-        if (!in_array($scope, array("LF", "TF", "GF"))) {
+        if (!in_array($scope, $this->scopes)) {
             if ($DEBUG) {echo "Incorrect scope\n";}
             exit(23);
         }
@@ -135,41 +134,47 @@ class Analyzer {
         $type = $split_symbol[0]; // type of variable, left side of @
         $name = $split_symbol[1]; // name of variable, right side of @
 
-        // check if datataype is correct
-        var_dump($type);
-        if (!in_array($type, $this->data_types)) {
-            if ($DEBUG) {echo "Incorrect datatype\n";}
-            echo "tu som2\n";
+        // check if we're dealing with constant
+        if (in_array($type, $this->data_types)) {
+
+            if ($type == "string") {
+                if (!$this->is_string($name)) {
+                    if ($DEBUG) {echo "Symbol isn't of type string\n";}
+                    exit(23);
+                }
+            }
+
+            elseif ($type == "int") {
+                if (!$this->is_int($name)) {
+                    if ($DEBUG) {echo "Symbol isn't of type int\n";}
+                    exit(23);
+                }
+            }
+
+            elseif ($type == "bool") {
+                if (!$this->is_bool($name)) {
+                    if ($DEBUG) {echo "Symbol isn't of type bool\n";}
+                    exit(23);
+                }
+            }
+            elseif ($type == "nil") {
+                if (!$this->is_type($name)) {
+                    if ($DEBUG) {echo "Symbol isn't of type nil\n";}
+                    exit(23);
+                }
+            }
+        }
+        // check if we're dealing with variable
+        elseif (in_array($type, $this->scopes)) {
+            if (!$this->is_identifier($name)) {
+                if ($DEBUG) {echo "Incorrect identifier in symbol $type/$name\n";}
+                exit(23);
+            }
+        }
+        else {
+            if ($DEBUG) {echo "Incorrect datatype $type/$name\n";}
             exit(23);
         }
-
-        if ($type == "string") {
-            if (!$this->is_string()) {
-                if ($DEBUG) {echo "Symbol isn't of type string\n";}
-                exit(23);
-            }
-        }
-
-        elseif ($type == "int") {
-            if (!$this->is_int()) {
-                if ($DEBUG) {echo "Symbol isn't of type int\n";}
-                exit(23);
-            }
-        }
-
-        elseif ($type == "bool") {
-            if (!$this->is_bool()) {
-                if ($DEBUG) {echo "Symbol isn't of type bool\n";}
-                exit(23);
-            }
-        }
-        elseif ($type == "nil") {
-            if (!$this->is_type()) {
-                if ($DEBUG) {echo "Symbol isn't of type nil\n";}
-                exit(23);
-            }
-        }
-
     }
 
     // check if $type is correct type xd
@@ -181,76 +186,73 @@ class Analyzer {
         }
     }
 
-    // TODO
-    private function check_label_syntax(string $label) {
-        
-    }
+// TODO
+private function check_label_syntax(string $label) {
 
-    private function check_syntax(array $instruction_arguments, array $expected_arguments) {
-        for ($i = 0; $i < count($expected_arguments); $i++) {
-            switch ($expected_arguments[$i]) {
-            case VARIABLE:
-                $this->check_variable_syntax($instruction_arguments[$i]);
-                break;
+}
 
-            case SYMBOL:
-                return;
-                $this->check_symbol_syntax($instruction_arguments[$i]);
-                break;
+private function check_syntax(array $instruction_arguments, array $expected_arguments) {
+    for ($i = 0; $i < count($expected_arguments); $i++) {
+        switch ($expected_arguments[$i]) {
+        case VARIABLE:
+            $this->check_variable_syntax($instruction_arguments[$i]);
+            break;
 
-            case TYPE:
-                return;
-                $this->check_type_syntax($instruction_arguments[$i]);
-                break;
+        case SYMBOL:
+            $this->check_symbol_syntax($instruction_arguments[$i]);
+            break;
 
-            case LABEL:
-                return;
-                $this->check_label_syntax($instruction_arguments[$i]);
-                break;
-            }
+        case TYPE:
+            $this->check_type_syntax($instruction_arguments[$i]);
+            break;
+
+        case LABEL:
+            $this->check_label_syntax($instruction_arguments[$i]);
+            break;
         }
     }
+}
 
-    public function analyze() {
-        # echo print_r($this->lines);
-        for ($i = 0; $i < count($this->lines); $i++) {
-            # echo $this->lines[$i];
-            // $this->lines[$i] = $this->remove_comment($this->lines[$i]);
-            if (!($this->instruction_ok($this->lines[$i]))) {
-                if ($DEBUG) {echo "Instruction is not ok\n";}
-                exit(22);
-            }
-        }
-    }
-
-    // return true if 'instruction' has the correct syntax
-    private function instruction_ok(string $instruction) {
-        global $instructions_dic;
-        // split by space and trim of whitespace
-        $split_instruction = explode(" ", $instruction);
-        $split_instruction = array_map('trim', $split_instruction);
-
-        $opcode = $split_instruction[0];                 // name of the instruction
-        # echo $opcode . "\n";
-
-        // remove the opcode and reset indeces
-        $instruction_arguments = array_values(array_slice($split_instruction, 1)); // arguments of the instruction
-
-        // instruction doesn't exist
-        if (!array_key_exists($opcode, $instructions_dic)) {
-            if ($DEBUG) {echo "Instruction doesn't exist\n";}
-            # echo "This instruction doesn't exist\n"; 
+public function analyze() {
+    # echo print_r($this->lines);
+    for ($i = 0; $i < count($this->lines); $i++) {
+        # echo $this->lines[$i];
+        // $this->lines[$i] = $this->remove_comment($this->lines[$i]);
+        if (!($this->instruction_ok($this->lines[$i]))) {
+            if ($DEBUG) {echo "Instruction is not ok\n";}
             exit(22);
         }
+    }
+}
 
-        $expected_arguments = $instructions_dic[$opcode];
+// return true if 'instruction' has the correct syntax
+private function instruction_ok(string $instruction) {
+    global $instructions_dic;
+    // split by space and trim of whitespace
+    $split_instruction = explode(" ", $instruction);
+    $split_instruction = array_map('trim', $split_instruction);
 
-        // check if they're of the same length
-        if (count($expected_arguments) != count($instruction_arguments)) {
-            if ($DEBUG) {echo "Invalid number of arguments\n";}
-            # echo "Incorrect number of arguments\n";
-            exit(23);
-        }
+    $opcode = $split_instruction[0];                 // name of the instruction
+    # echo $opcode . "\n";
+
+    // remove the opcode and reset indeces
+    $instruction_arguments = array_values(array_slice($split_instruction, 1)); // arguments of the instruction
+
+    // instruction doesn't exist
+    if (!array_key_exists($opcode, $instructions_dic)) {
+        if ($DEBUG) {echo "Instruction doesn't exist\n";}
+        # echo "This instruction doesn't exist\n"; 
+        exit(22);
+    }
+
+    $expected_arguments = $instructions_dic[$opcode];
+
+    // check if they're of the same length
+    if (count($expected_arguments) != count($instruction_arguments)) {
+        if ($DEBUG) {echo "Invalid number of arguments\n";}
+        # echo "Incorrect number of arguments\n";
+        exit(23);
+    }
 
         /*
         echo "These are the valid arguments for $opcode:"; 
@@ -259,10 +261,10 @@ class Analyzer {
         print_r($instruction_arguments);
          */
 
-        $this->check_syntax($instruction_arguments, $expected_arguments);
+    $this->check_syntax($instruction_arguments, $expected_arguments);
 
-        return true;
-    }
+    return true;
+}
 }
 
 class MyXMLWriter {
@@ -277,7 +279,7 @@ class MyXMLWriter {
 
         echo $formattedXML;
         exit;
-        
+
         global $DEBUG;
         // Save the XML to a file
         $file = fopen('generated.xml', 'w');
