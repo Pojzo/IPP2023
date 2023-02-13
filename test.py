@@ -6,7 +6,7 @@ import argparse
 import multiprocessing
 import pickle
 import xml.etree.ElementTree as ET
-from xml import etree
+from xml.etree import ElementTree
 
 BLUE = "\033[34m"
 BLACK = "\033[0m"
@@ -32,9 +32,13 @@ def elements_equal(e1, e2):
 
 
 def two_xml_equal(xml_str1, xml_str2):
-    root1 = ET.fromstring(xml_str1)
-    root2 = ET.fromstring(xml_str2)
+    root1 = ET.fromstring("\n".join([line.strip() for line in xml_str1.split('\n')]))
+    root2 = ET.fromstring("\n".join([line.strip() for line in xml_str2.split('\n')]))
+    # print(ElementTree.tostring(root1, encoding='utf-8', method='xml').decode(),
+    #      "\n\n", ElementTree.tostring(root2, encoding='utf-8', method='xml').decode())
+
     return elements_equal(root1, root2)
+
 
 class DirTester:
     class Tester:
@@ -67,18 +71,17 @@ class DirTester:
                                                                                                 files["out"].splitlines()], lineterm='', n=0)
 
             if files["out"] == "" and result.stdout != "":
-                diff_result = True
+                files_same = False
 
             elif result.stdout == "" and files["out"] != "":
-                diff_result = True
+                files_same = False
             elif result.stdout == "" and files["out"] == "":
-                diff_result = False
-
+                files_same = True
             else:
-                diff_result = two_xml_equal(result.stdout, files["out"])
+                files_same = two_xml_equal(result.stdout, files["out"])
 
             if self.generated_test:
-                if diff_result:
+                if not files_same:
                     if self.turbo_mode:
                         return False
 
@@ -92,7 +95,7 @@ class DirTester:
                 print("------------------------------")
                 return True
 
-            if diff_result:
+            if not files_same:
                 print(f"{RED} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} unsuccessful {BLACK}")
                 if self.verbose:
                     print(files["src"])
