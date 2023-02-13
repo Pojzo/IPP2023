@@ -1,6 +1,2 @@
 .IPPcode23
-POPS string@zdravim
-POPS int@zdravim
-POPS bool@zdravim
-POPS nil@nil
-POPS cigoid@piz
+LABEL ok
