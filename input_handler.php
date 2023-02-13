@@ -1,5 +1,7 @@
 <?php
 
+$DEBUG = False;
+
 // InputHandler class loads instructions and returns them for further processing
 class InputHandler {
     private $arg_count;
@@ -40,15 +42,19 @@ class InputHandler {
     }
 
     private function handle_header(array $lines): array {
+        global $DEBUG;
         // check if header is present
         // there could be comment after header
+
         if (str_contains($lines[0], '#')) {
-            if (rtrim($split) != ".IPPcode23") {
+            if (rtrim(explode("#", $lines[0])[0]) != ".IPPcode23") {
+                if ($DEBUG) {echo "50 riadok input_handler \n";}
                 exit(21);
             }
         }
         else {
             if (rtrim($lines[0]) != ".IPPcode23") {
+                if ($DEBUG) {echo "56 riadok input_handler \n";}
                 exit(21);
 
             }
