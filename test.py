@@ -65,8 +65,7 @@ class DirTester:
 
             diff = difflib.unified_diff([line.strip() for line in result.stdout.splitlines()], [line.strip() for line in
                                                                                                 files["out"].splitlines()], lineterm='', n=0)
-            
-            diff = list(diff)
+
             if files["out"] == "" and result.stdout != "":
                 diff_result = True
 
@@ -236,8 +235,9 @@ for folder in glob.glob(TEST_DIR + "*")[1:]:
     success += result[0]
     total += result[1]
 
-print(f"Total tests: {total}, successful: {success}")
-print(f"Total generated tests: {generated_total}, successful: {generated_success}")
+print(f"Total tests: {success}/{total} successfull === {GREEN} {total - success} to go {BLACK}")
+print("----------------")
+print(f"Total generated tests: {generated_success}/{generated_total}  === {GREEN} {generated_total - generated_success} to go {BLACK}")
 
 # max_folder_len = max([folder for folder in summary], key=len)
 
