@@ -5,6 +5,7 @@ define("SYMBOL", 1);
 define("TYPE", 2);
 define("LABEL", 3);
 
+$DEBUG = False;
 
 
 // dictionary mappings where key is the name of instruction and value is an array of arguments to that instruction
@@ -58,58 +59,130 @@ class Analyzer {
         $this->lines = $lines;
     }
 
-    private function check_variable_syntax(string $arguments) {
-        $split_arguments = explode("@", $arguments);
-        if (count($split_arguments) == 1) {
-            # echo "Missing @ in variable name\n";
+    // return true if $const is of type string based on rules specified in the
+    private function is_string(string $const): bool {
+        return True;
+        // TODO 
+    }
+    
+    // return true if $const is of type int 
+    private function is_int(string $const): bool {
+        return is_int($string);
+    }
+
+    // return true if $const is of type bool
+    private function is_bool(string $const): bool {
+        return $const == "true" or $const == "false";
+    }
+
+    // return true if $const is of type type
+    private function is_type(string $const): bool {
+        return in_array($const, $this->data_type);
+    }
+
+    // return true if $identifier is correct
+    private function is_identifier(string $identifier): bool {
+        return preg_match('/^[a-zA-Z$&%\*!\?_-][\w$&%\*!\?]*$/', $identifier) === 1;
+    }
+    
+    // check if variable has correct syntax based on its datatype
+    private function check_variable_syntax(string $variable) {
+        global $DEBUG;
+        $split_variable = explode("@", $variable);
+        // missing @ in variable
+        if (count($split_variable) == 1) {
+            if ($DEBUG) {echo "$split_variable == 1\n";}
+            exit(23);
+        }
+        
+        if (count($split_variable) > 2) {
+            if ($DEBUG) {echo "$split_variable > 2\n";}
             exit(23);
         }
 
-        if (count($split_arguments) > 2) {
-            # echo "Toto co akoze ako mam toto riesit\n";
+        $scope = $split_variable[0];
+        $identifier = $split_variable[1];
+        
+        // incorrect scope
+        if (!in_array($scope, array("LF", "TF", "GF"))) {
+            if ($DEBUG) {echo "Incorrect scope\n";}
             exit(23);
         }
 
-        return;
+        // incorrect identifier
+        if (!$this->is_identifier($identifier)) {
+            if ($DEBUG) {echo "Incorrect identifier\n";}
+            exit(23);
+        }
+    }
+
+    // check if symbol has correct syntax - <datatype>@const
+    private function check_symbol_syntax(string $symbol) {
+        global $DEBUG;
+        $split_symbol = explode("@", $symbol);
+        // missing @ in $symbol
+        if (count($split_symbol) == 1) {
+            if ($DEBUG) {echo "$split_symbol == 1\n";}
+            exit(23);
+        }
+
+        if (count($split_symbol) > 2) {
+            if ($DEBUG) {echo "$split_symbol > 2\n";}
+            exit(23);
+        }
 
         // string@hello
-        $type = $split_arguments[0]; // type of variable, left side of @
-        $name = $split_arguments[1]; // name of variable, right side of @
+        $type = $split_symbol[0]; // type of variable, left side of @
+        $name = $split_symbol[1]; // name of variable, right side of @
 
         // check if datataype is correct
+        var_dump($type);
         if (!in_array($type, $this->data_types)) {
-            # echo "What is this datatype?\n";
+            if ($DEBUG) {echo "Incorrect datatype\n";}
+            echo "tu som2\n";
             exit(23);
         }
 
-        // TODO
         if ($type == "string") {
+            if (!$this->is_string()) {
+                if ($DEBUG) {echo "Symbol isn't of type string\n";}
+                exit(23);
+            }
         }
 
         elseif ($type == "int") {
-
+            if (!$this->is_int()) {
+                if ($DEBUG) {echo "Symbol isn't of type int\n";}
+                exit(23);
+            }
         }
         elseif ($type == "bool") {
-
+            if (!$this->is_bool()) {
+                if ($DEBUG) {echo "Symbol isn't of type bool\n";}
+                exit(23);
+            }
         }
         elseif ($type == "nil") {
+            if (!$this->is_type()) {
+                if ($DEBUG) {echo "Symbol isn't of type nil\n";}
+                exit(23);
+            }
+        }
 
+    }
+
+    // check if $type is correct type xd
+    private function check_type_syntax(string $type) {
+        global $DEBUG;
+        if (!in_array($type, $this->data_types)) {
+            if ($DEBUG) {echo "Failed in check type syntax\n";}
+            exit(23);
         }
     }
 
     // TODO
-    private function check_symbol_syntax(string $arguments) {
-
-    }
-
-    // TODO
-    private function check_type_syntax(string $arguments) {
-
-    }
-
-    // TODO
-    private function check_label_syntax(string $arguments) {
-
+    private function check_label_syntax(string $label) {
+        
     }
 
     private function check_syntax(array $instruction_arguments, array $expected_arguments) {
@@ -120,14 +193,17 @@ class Analyzer {
                 break;
 
             case SYMBOL:
+                return;
                 $this->check_symbol_syntax($instruction_arguments[$i]);
                 break;
 
             case TYPE:
+                return;
                 $this->check_type_syntax($instruction_arguments[$i]);
                 break;
 
             case LABEL:
+                return;
                 $this->check_label_syntax($instruction_arguments[$i]);
                 break;
             }
@@ -140,6 +216,7 @@ class Analyzer {
             # echo $this->lines[$i];
             // $this->lines[$i] = $this->remove_comment($this->lines[$i]);
             if (!($this->instruction_ok($this->lines[$i]))) {
+                if ($DEBUG) {echo "Instruction is not ok\n";}
                 exit(22);
             }
         }
@@ -160,6 +237,7 @@ class Analyzer {
 
         // instruction doesn't exist
         if (!array_key_exists($opcode, $instructions_dic)) {
+            if ($DEBUG) {echo "Instruction doesn't exist\n";}
             # echo "This instruction doesn't exist\n"; 
             exit(22);
         }
@@ -168,6 +246,7 @@ class Analyzer {
 
         // check if they're of the same length
         if (count($expected_arguments) != count($instruction_arguments)) {
+            if ($DEBUG) {echo "Invalid number of arguments\n";}
             # echo "Incorrect number of arguments\n";
             exit(23);
         }
@@ -197,10 +276,12 @@ class MyXMLWriter {
 
         echo $formattedXML;
         exit;
-
+        
+        global $DEBUG;
         // Save the XML to a file
         $file = fopen('generated.xml', 'w');
         if (!$file) {
+            if ($DEBUG) {echo "Error opening output file\n";}
             // error opening output file
             exit(12);
         }
@@ -309,6 +390,7 @@ $input_handler->handle_args();
 
 $lines = $input_handler->load_instructions();
 
+
 $analyzer = new Analyzer($lines);
 $analyzer->analyze();
 #
@@ -317,12 +399,7 @@ $analyzer->analyze();
 $generator = new XMLGenerator($lines);
 $generator->generate_xml();
 
-
-exit();
-$xml->addAttribute('language', 'IPPcode2023');
-
-$instruction = $xml->addChild("instruction");
-$instruction->addAttribute('order', '1');
+if ($DEBUG) {echo "SUCCESS!!\n";}
 
 exit();
 
