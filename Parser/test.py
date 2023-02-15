@@ -75,28 +75,40 @@ class DirTester:
 
             elif result.stdout == "" and files["out"] != "":
                 files_same = False
+
             elif result.stdout == "" and files["out"] == "":
                 files_same = True
+
             else:
                 files_same = two_xml_equal(result.stdout, files["out"])
 
+            # for generated tests
             if self.generated_test:
                 if not files_same:
                     if self.turbo_mode:
                         return False
 
                     print(f"{RED} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} unsuccessful {BLACK}")
+                    print("------------------------------")
+                    return False
 
-                
                 if self.turbo_mode:
-                    return True
+                    return files["rc"] == str(result.returncode)
+
+                if files["rc"] != str(result.returncode):
+                    print(f"{RED} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} unsuccessful {BLACK}")
+                    print(f"{RED} expected return code {files['rc']} got {result.returncode} {BLACK}")
+                    print("------------------------------")
+                    return False
 
                 print(f"{GREEN} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} successful {BLACK}")
                 print("------------------------------")
                 return True
 
+            # for normal tests
             if not files_same:
                 print(f"{RED} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} unsuccessful {BLACK}")
+                print("------------------------------")
                 if self.verbose:
                     print(files["src"])
                     print()
@@ -226,6 +238,7 @@ if args.run_generated:
             generated_summary[generated_folder.split('/')[-1]] = [result[0], result[1]]
 
 
+print("Ended them")
 success, total = 0, 0
 summary = {}
 for folder in glob.glob(TEST_DIR + "*")[1:]:
