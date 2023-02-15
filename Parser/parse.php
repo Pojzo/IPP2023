@@ -1,5 +1,6 @@
 <?php
 
+exit(0);
 define("VARIABLE", 0);
 define("SYMBOL", 1);
 define("TYPE", 2);
