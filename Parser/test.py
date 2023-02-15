@@ -131,8 +131,8 @@ class DirTester:
                     print(files["src"])
                     print()
 
-                print(f"{RED} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} unsuccessful - wrong \
-                        return code: expected {files['rc']} got {result.returncode}{BLACK}")
+                print(f"{RED} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} unsuccessful - wrong \n\
+return code: expected {files['rc']} got {result.returncode}{BLACK}")
                 return False
 
             print(f"{GREEN} TEST [{self.cur_test}/{self.num_tests}] {os.path.basename(src)} successful {BLACK}")
