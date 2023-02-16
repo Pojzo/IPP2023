@@ -1,8 +1,9 @@
-from input_handler import Input
+from input_handler import InputHandler
 
-inpt = Input(debug=False)
+inpt = InputHandler(debug=False)
 inpt.parse_arguments()
 inpt.parse_input()
+inpt.convert_souce()
 
 if inpt.DEBUG:
     print(f"{inpt.input_file=}")

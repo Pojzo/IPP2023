@@ -1,7 +1,8 @@
 import argparse
+from lxml import etree
 
 
-class Input:
+class InputHandler:
     def __init__(self, debug=False):
         self.args = {}
         self.source_file = None
@@ -75,3 +76,12 @@ class Input:
                     self.args["source_file_parameter"])
         else:
             self.source_file = input()
+
+    # convert source file to xml
+    def convert_source(self):
+        try:
+            self.source_file = etree.fromstring(self.source_file)
+        except Exception as e:
+            if self.Debug:
+                print(f"Exception {e} when reading source file")
+            exit(31)
