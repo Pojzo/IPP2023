@@ -61,7 +61,7 @@ class Test():
 
         if self.passed:
             if not selt.return_code_passed:
-                if args.verbose:
+                if int(args.verbose) == 1:
                     print(self.src)
 
                 print(f"{GREEN} Test[{self.test_num}/{len(test_dic[self.dirname])}] {self.testname} successfull {BLACK}")
@@ -69,14 +69,15 @@ class Test():
                 print()
             else:
                 print(f"{RED} Test [{self.test_num}/{len(test_dic[self.dirname])}] {self.testname} unsuccessfull {BLACK}")
-                print(self.src)
+                if int(args.verbose) == 1:
+                    print(self.src)
                 print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
                 print("---------------------------------")
                 print()
 
         else:
             print(f"{RED} Test [{self.test_num}/{len(test_dic[self.dirname])}] {self.testname} unsuccessfull {BLACK}")
-            if args.verbose:
+            if int(args.verbose) == 1:
                 print(self.src)
                 print("Expected output:")
                 print(self.expected_output)
