@@ -1,0 +1,5 @@
+<program language="IPPcode23">
+    <instruction order="2" opcode="DPRINT">
+        <arg1 type="string">abc</arg1>
+    </instruction>
+</program>

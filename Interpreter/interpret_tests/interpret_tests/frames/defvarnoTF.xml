@@ -1,0 +1,5 @@
+<program language="IPPcode23">
+	<instruction order="1" opcode="DEFVAR">
+		<arg1 type="var">TF@counter</arg1>
+ 	</instruction>
+</program>
