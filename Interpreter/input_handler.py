@@ -80,8 +80,10 @@ class InputHandler:
     # convert source file to xml
     def convert_source(self):
         try:
-            self.source_file = etree.fromstring(self.source_file)
+            self.source_file = etree.fromstring(self.source_file.encode())
         except Exception as e:
-            if self.Debug:
-                print(f"Exception {e} when reading source file")
+            if self.DEBUG:
+                pass
+
+            print(f"Exception {e} when reading source file {self.source_file}")
             exit(31)
