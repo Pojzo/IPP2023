@@ -1,7 +1,6 @@
-import unittest
 import subprocess
 import os
-
+import unittest
 
 # run program and returns its output and return code
 def run_program(arguments: list[str],
@@ -66,6 +65,7 @@ def remove_file(x):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=3)
+    unittest.main(verbosity=3, exit=False)
+
     remove_file("temp1")
     remove_file("temp2")
