@@ -5,6 +5,7 @@ define("SYMBOL", 1);
 define("TYPE", 2);
 define("LABEL", 3);
 
+
 // dictionary mappings where key is the name of instruction and value is an array of arguments to that instruction
 $instructions_dic = ["MOVE"    => [VARIABLE, SYMBOL],
     "CREATEFRAME" => [],
@@ -100,7 +101,6 @@ class Analyzer {
         $scope = trim($split_variable[0]);
         $identifier = trim($split_variable[1]);
 
-        
         // incorrect scope
         if (!in_array($scope, $this->scopes)) {
             if ($DEBUG) {echo "Incorrect scope\n";}

@@ -104,4 +104,5 @@ class InputHandler {
         }));
     }
 }
+
 ?>
