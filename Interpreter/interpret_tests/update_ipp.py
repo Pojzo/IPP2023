@@ -1,7 +1,5 @@
 import glob
 import os
-from lxml import etree
-
 
 TEST_DIR = "./interpret_tests"
 
