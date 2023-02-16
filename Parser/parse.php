@@ -90,18 +90,13 @@ class Analyzer {
     // check if variable has correct syntax based on its datatype
     private function check_variable_syntax(string $variable) {
         global $DEBUG;
-        $split_variable = explode("@", $variable);
-        // missing @ in variable
-        if (count($split_variable) == 1) {
-            if ($DEBUG) {echo "$split_variable == 1\n";}
-            exit(23);
-        }
-        
-        if (count($split_variable) > 2) {
-            if ($DEBUG) {echo "$split_variable > 2\n";}
+        $pattern = '/^(GF|LF|TF)@.+/';
+        if (!preg_match($pattern, $variable)) {
+            if ($DEBUG) {echo "Invalid symbol format";}
             exit(23);
         }
 
+        $split_variable = explode("@", $variable);
         $scope = trim($split_variable[0]);
         $identifier = trim($split_variable[1]);
 
