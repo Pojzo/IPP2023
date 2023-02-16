@@ -1,9 +1,6 @@
 import unittest
-import pytest
 import subprocess
 import os
-import sys
-import tempfile
 
 
 # run program and returns its output and return code
