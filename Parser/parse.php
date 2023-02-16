@@ -1,6 +1,5 @@
 <?php
 
-exit(0);
 define("VARIABLE", 0);
 define("SYMBOL", 1);
 define("TYPE", 2);
@@ -42,6 +41,10 @@ $instructions_dic = ["MOVE"    => [VARIABLE, SYMBOL],
     "EXIT"        => [SYMBOL],
     "DPRINT"      => [SYMBOL],
     "BREAK"       => [],
+
+    # bonus instructionsj
+    "INT2FLOAT"   => [VARIABLE, SYMBOL],
+    "FLOAT2INT"   => [VARIABLE, SYMBOL]
 ];
 
 
@@ -119,19 +122,16 @@ class Analyzer {
     // check if symbol has correct syntax - <datatype>@const
     private function check_symbol_syntax(string $symbol) {
         global $DEBUG;
-        $split_symbol = explode("@", $symbol);
-        // missing @ in $symbol
-        if (count($split_symbol) == 1) {
-            if ($DEBUG) {echo "$split_symbol == 1\n";}
-            exit(23);
-        }
-
-        if (count($split_symbol) > 2) {
-            if ($DEBUG) {echo "$split_symbol > 2\n";}
+        $pattern = '/^(string|int|bool|nil|GF|LF|TF)@.+/';
+        if (!preg_match($pattern, $symbol)) {
+            // check for exception string@
+            if ($symbol == "string@") {return True;}
+            if ($DEBUG) {echo "Invalid symbol format";}
             exit(23);
         }
 
         // string@hello
+        $split_symbol = explode("@", $symbol);
         $type = trim($split_symbol[0]); // type of variable, left side of @
         $name = trim($split_symbol[1]); // name of variable, right side of @
 
@@ -186,78 +186,77 @@ class Analyzer {
         }
     }
 
-// TODO
-private function check_label_syntax(string $label) {
-    global $DEBUG;
-    if (!$this->is_identifier($label)) {
-        if ($DEBUG) {echo "Failed in check label syntax\n";}
-        exit(23);
-    }
-}
-
-private function check_syntax(array $instruction_arguments, array $expected_arguments) {
-    for ($i = 0; $i < count($expected_arguments); $i++) {
-        switch ($expected_arguments[$i]) {
-        case VARIABLE:
-            $this->check_variable_syntax($instruction_arguments[$i]);
-            break;
-
-        case SYMBOL:
-            $this->check_symbol_syntax($instruction_arguments[$i]);
-            break;
-
-        case TYPE:
-            $this->check_type_syntax($instruction_arguments[$i]);
-            break;
-
-        case LABEL:
-            $this->check_label_syntax($instruction_arguments[$i]);
-            break;
+    private function check_label_syntax(string $label) {
+        global $DEBUG;
+        if (!$this->is_identifier($label)) {
+            if ($DEBUG) {echo "Failed in check label syntax\n";}
+            exit(23);
         }
     }
-}
 
-public function analyze() {
-    # echo print_r($this->lines);
-    for ($i = 0; $i < count($this->lines); $i++) {
-        # echo $this->lines[$i];
-        // $this->lines[$i] = $this->remove_comment($this->lines[$i]);
-        if (!($this->instruction_ok($this->lines[$i]))) {
-            if ($DEBUG) {echo "Instruction is not ok\n";}
+    private function check_syntax(array $instruction_arguments, array $expected_arguments) {
+        for ($i = 0; $i < count($expected_arguments); $i++) {
+            switch ($expected_arguments[$i]) {
+            case VARIABLE:
+                $this->check_variable_syntax($instruction_arguments[$i]);
+                break;
+
+            case SYMBOL:
+                $this->check_symbol_syntax($instruction_arguments[$i]);
+                break;
+
+            case TYPE:
+                $this->check_type_syntax($instruction_arguments[$i]);
+                break;
+
+            case LABEL:
+                $this->check_label_syntax($instruction_arguments[$i]);
+                break;
+            }
+        }
+    }
+
+    public function analyze() {
+        # echo print_r($this->lines);
+        for ($i = 0; $i < count($this->lines); $i++) {
+            # echo $this->lines[$i];
+            // $this->lines[$i] = $this->remove_comment($this->lines[$i]);
+            if (!($this->instruction_ok($this->lines[$i]))) {
+                if ($DEBUG) {echo "Instruction is not ok\n";}
+                exit(22);
+            }
+        }
+    }
+
+    // return true if 'instruction' has the correct syntax
+    private function instruction_ok(string $instruction) {
+        global $instructions_dic;
+        global $DEBUG;
+        // split by any number of spaces and 
+        $split_instruction = preg_split('/\s+/', $instruction);
+        $split_instruction = array_map('trim', $split_instruction);
+
+        $opcode = $split_instruction[0];                 // name of the instruction
+        # echo $opcode . "\n";
+
+        // remove the opcode and reset indeces
+        $instruction_arguments = array_values(array_slice($split_instruction, 1)); // arguments of the instruction
+
+        // instruction doesn't exist
+        if (!array_key_exists(strtoupper($opcode), $instructions_dic)) {
+            if ($DEBUG) {echo "Instruction doesn't exist\n";}
+            # echo "This instruction doesn't exist\n"; 
             exit(22);
         }
-    }
-}
 
-// return true if 'instruction' has the correct syntax
-private function instruction_ok(string $instruction) {
-    global $instructions_dic;
-    global $DEBUG;
-    // split by any number of spaces and 
-    $split_instruction = preg_split('/\s+/', $instruction);
-    $split_instruction = array_map('trim', $split_instruction);
+        $expected_arguments = $instructions_dic[strtoupper($opcode)];
 
-    $opcode = $split_instruction[0];                 // name of the instruction
-    # echo $opcode . "\n";
-
-    // remove the opcode and reset indeces
-    $instruction_arguments = array_values(array_slice($split_instruction, 1)); // arguments of the instruction
-
-    // instruction doesn't exist
-    if (!array_key_exists(strtoupper($opcode), $instructions_dic)) {
-        if ($DEBUG) {echo "Instruction doesn't exist\n";}
-        # echo "This instruction doesn't exist\n"; 
-        exit(22);
-    }
-
-    $expected_arguments = $instructions_dic[strtoupper($opcode)];
-
-    // check if they're of the same length
-    if (count($expected_arguments) != count($instruction_arguments)) {
-        if ($DEBUG) {echo "Invalid number of arguments\n";}
-        # echo "Incorrect number of arguments\n";
-        exit(23);
-    }
+        // check if they're of the same length
+        if (count($expected_arguments) != count($instruction_arguments)) {
+            if ($DEBUG) {echo "Invalid number of arguments\n";}
+            # echo "Incorrect number of arguments\n";
+            exit(23);
+        }
 
         /*
         echo "These are the valid arguments for $opcode:"; 
@@ -266,10 +265,10 @@ private function instruction_ok(string $instruction) {
         print_r($instruction_arguments);
          */
 
-    $this->check_syntax($instruction_arguments, $expected_arguments);
+        $this->check_syntax($instruction_arguments, $expected_arguments);
 
-    return true;
-}
+        return true;
+    }
 }
 
 class MyXMLWriter {
@@ -419,7 +418,7 @@ if (count($lines) == 0) {
 
 $analyzer = new Analyzer($lines);
 $analyzer->analyze();
-#
+
 # if we got to this part of the code, we can start generating xml
 
 $generator = new XMLGenerator($lines);
