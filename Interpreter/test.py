@@ -36,24 +36,24 @@ class Test():
         self.src = src
         self.stdout = stdout
         self.stderr = stderr
-        self.return_code = return_code
+        self.return_code = int(return_code)
         self.expected_output = expected_output
-        self.expected_return_code = expected_return_code
+        self.expected_return_code = int(expected_return_code)
         self.test_num = test_num
         self.passed = True
         self.return_code_passed = True
         self.diff = ""
-    
+
     def check_if_passed(self):
         diff = difflib.unified_diff([line.strip() for line in self.stdout.splitlines()], [line.strip() for line in
                                                                                           self.expected_output.splitlines()], lineterm='', n=0)
-
         if self.return_code != self.expected_return_code:
             self.return_code_passed = False
 
-        if diff:
+        diff = "\n".join(list(diff))
+        if len(diff):
+            self.diff = diff
             self.passed = False
-            return "\n".join(list(diff))
 
     def print_test(self):
         num_dir_tests = num_files[self.dirname]
@@ -61,30 +61,31 @@ class Test():
             print(self.stderr)
 
         if self.passed:
-            if not selt.return_code_passed:
-                if int(args.verbose) == 1:
-                    print(self.src)
+            if not self.return_code_passed:
 
-                print(f"{GREEN} Test[{self.test_num}/{num_dir_tests}] {self.testname} successfull {BLACK}")
-                print("---------------------------------")
-                print()
-            else:
-                print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull {BLACK}")
+                print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull (wrong return code) {BLACK}")
                 if int(args.verbose) == 1:
                     print(self.src)
+                
+                print()
                 print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
                 print("---------------------------------")
                 print()
+            else:
+                print(f"{GREEN} Test [{self.test_num}/{num_dir_tests}] {self.testname} successful {BLACK}")
+                print("---------------------------------")
+
 
         else:
-            print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull {BLACK}")
+            print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull (wrong output) {'+ (wrong return code)' if not self.return_code_passed else ''}{BLACK}")
+
             if int(args.verbose) == 1:
                 print(self.src)
                 print("Expected output:")
                 print(self.expected_output)
-                # print("=================================")
+                print()
                 print("Program output:")
-                print(self.stdout, end="")
+                print(self.stdout)
                 print(self.diff)
 
             if not self.return_code_passed:
@@ -92,7 +93,6 @@ class Test():
                 print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
 
             print("---------------------------------")
-            print()
 
 def run_program(file_name: str, num_test: int) -> Test:
     command = f"py interpret.py --source={file_name}.src \
@@ -147,7 +147,7 @@ total = passed = 0
 
 for test_dir in test_dic.keys():
     for test in test_dic[test_dir]:
-        passed += test.passed
+        passed += test.passed and test.return_code_passed
         total += 1
 
 
