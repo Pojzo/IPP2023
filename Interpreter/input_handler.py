@@ -1,34 +1,117 @@
 import argparse
 from lxml import etree
+from enum import Enum
+
+
+class ArgumentType(Enum):
+    LABEL = 1
+    SYMBOL = 2
+    VARIABLE = 3
+    TYPE = 4
+
+
+# dictionary mappings where key is the name of instruction and
+# value is an array of arguments to that instruction
+# bruh this looks ugly as hell but it does the job (hopefully)
+instructions_dic = {
+        "MOVE": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
+        "CREATEFRAME": [],
+        "PUSHFRAME": [],
+        "POPFRAME": [],
+        "DEFVAR": [ArgumentType.VARIABLE],
+        "CALL": [ArgumentType.LABEL],
+        "RETURN": [],
+        "PUSHS": [ArgumentType.SYMBOL],
+        "POPS": [ArgumentType.VARIABLE],
+        "ADD": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+                ArgumentType.SYMBOL],
+        "SUB": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+                ArgumentType.SYMBOL],
+        "MUL": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+                ArgumentType.SYMBOL],
+        "IDIV": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+                 ArgumentType.SYMBOL],
+        "LT": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+               ArgumentType.SYMBOL],
+        "GT": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+               ArgumentType.SYMBOL],
+        "EQ": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+               ArgumentType.SYMBOL],
+        "AND": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+                ArgumentType.SYMBOL],
+        "OR": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+               ArgumentType.SYMBOL],
+        "NOT": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
+        "INT2CHAR": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
+        "STRI2INT": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+                     ArgumentType.SYMBOL],
+        "READ": [ArgumentType.VARIABLE, ArgumentType.TYPE],
+        "WRITE": [ArgumentType.SYMBOL],
+        "CONCAT": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+                   ArgumentType.SYMBOL],
+        "STRLEN": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
+        "GETCHAR": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+                    ArgumentType.SYMBOL],
+        "SETCHAR": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
+                    ArgumentType.SYMBOL],
+        "TYPE": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
+        "LABEL": [ArgumentType.LABEL],
+        "JUMP": [ArgumentType.LABEL],
+        "JUMPIFEQ": [ArgumentType.LABEL, ArgumentType.SYMBOL,
+                     ArgumentType.SYMBOL],
+        "JUMPIFNEQ": [ArgumentType.LABEL, ArgumentType.SYMBOL,
+                      ArgumentType.SYMBOL],
+        "EXIT": [ArgumentType.SYMBOL],
+        "DPRINT": [ArgumentType.SYMBOL],
+        "BREAK": []}
 
 
 class Instruction:
-    orders = set()
-    def __init__(self, opcode: str):
-        self.opcode = opcode
-
     @staticmethod
-    def verify_instruction(instruction_xml, orders: set) -> bool:
+    def verify_instruction(instruction_xml, orders: set, DEBUG=False) -> bool:
         order = instruction_xml.get("order")
         if order is None:
+            if DEBUG:
+                print("Missing order of instruction")
             return False
 
         order = int(order)
 
         if order in orders or order <= 0:
+            if DEBUG:
+                print("Wrong order of instruction")
             return False
 
         orders.add(order)
+        # check the opcode
+        opcode = instruction_xml.get("opcode")
+        if opcode is None:
+            if DEBUG:
+                print("Missing opcode")
+            return False
+
+        if opcode not in instructions_dic:
+            if DEBUG:
+                print("Wrong opcode")
+            return False
+
+        # get all children of instruction
+        for index, child in enumerate(instruction_xml.iterchildren()):
+            if child.tag != f"arg{index + 1}":
+                if DEBUG:
+                    print(f"Failed to verify arguments {child.tag}")
+                return False
 
         return True
 
+
 class InputHandler:
-    def __init__(self, debug=False):
+    def __init__(self):
         self.args = {}
         self.source_file = None
         self.input_file = None
         self.instruction_orders = set()
-        self.DEBUG = debug
+        self.DEBUG = False
 
     def parse_arguments(self):
         parser = argparse.ArgumentParser(add_help=False,
@@ -43,9 +126,15 @@ class InputHandler:
         parser.add_argument("--help", "--h", action="store_true",
                             help="Show this help message")
 
+        parser.add_argument("--debug", "--d", action="store_true",
+                            help="Enable debug mode")
+
         # help message is generated automatically
 
         cmd_args = parser.parse_args()
+        if cmd_args.debug:
+            self.DEBUG = True
+
         if cmd_args.help:
             # help can't be combined with any other arguments
             if cmd_args.source is not None or cmd_args.input is not None:
@@ -123,7 +212,7 @@ class InputHandler:
                     print("Other element than instruction found in <program>")
                 exit(32)
 
-            if not Instruction.verify_instruction(element, self.instruction_orders):
+            if not Instruction.verify_instruction(element, self.instruction_orders, DEBUG=self.DEBUG):
                 if self.DEBUG:
                     print("Failed to verify instruction")
 
