@@ -21,8 +21,8 @@ parser.add_argument("--verbose", "--v", default="1")
 
 args = parser.parse_args()
 
-print(args.verbose)
 test_dic = defaultdict(list)
+
 
 
 class Test():
@@ -43,7 +43,7 @@ class Test():
         self.passed = True
         self.return_code_passed = True
         self.diff = ""
-
+    
     def check_if_passed(self):
         diff = difflib.unified_diff([line.strip() for line in self.stdout.splitlines()], [line.strip() for line in
                                                                                           self.expected_output.splitlines()], lineterm='', n=0)
@@ -56,7 +56,8 @@ class Test():
             return "\n".join(list(diff))
 
     def print_test(self):
-        if self.stderr:
+        num_dir_tests = num_files[self.dirname]
+        if self.stderr and args.verbose:
             print(self.stderr)
 
         if self.passed:
@@ -64,11 +65,11 @@ class Test():
                 if int(args.verbose) == 1:
                     print(self.src)
 
-                print(f"{GREEN} Test[{self.test_num}/{len(test_dic[self.dirname])}] {self.testname} successfull {BLACK}")
+                print(f"{GREEN} Test[{self.test_num}/{num_dir_tests}] {self.testname} successfull {BLACK}")
                 print("---------------------------------")
                 print()
             else:
-                print(f"{RED} Test [{self.test_num}/{len(test_dic[self.dirname])}] {self.testname} unsuccessfull {BLACK}")
+                print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull {BLACK}")
                 if int(args.verbose) == 1:
                     print(self.src)
                 print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
@@ -76,7 +77,7 @@ class Test():
                 print()
 
         else:
-            print(f"{RED} Test [{self.test_num}/{len(test_dic[self.dirname])}] {self.testname} unsuccessfull {BLACK}")
+            print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull {BLACK}")
             if int(args.verbose) == 1:
                 print(self.src)
                 print("Expected output:")
@@ -130,11 +131,14 @@ def test_dir(dirname: str) -> None:
     files = list(map(lambda x: x.replace(".src", ""), list(glob.glob(path))))
     print(f"{BLUE} Runninng tests for {dirname} {BLACK}")
     for num_test, file in enumerate(files):
-        test = run_program(file, num_test)
+        test = run_program(file, num_test + 1)
         test.check_if_passed()
         test_dic[test.dirname].append(test)
         test.print_test()
 
+num_files = {}
+for folder in glob.glob("./interpret_tests/*"):
+    num_files[folder.split('/')[-1]] = len(list(glob.glob(os.path.join(folder, "*.src"))))
 
 for folder in glob.glob("./interpret_tests/*"):
     test_dir(folder)
