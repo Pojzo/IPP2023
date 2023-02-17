@@ -2,11 +2,32 @@ import argparse
 from lxml import etree
 
 
+class Instruction:
+    orders = set()
+    def __init__(self, opcode: str):
+        self.opcode = opcode
+
+    @staticmethod
+    def verify_instruction(instruction_xml, orders: set) -> bool:
+        order = instruction_xml.get("order")
+        if order is None:
+            return False
+
+        order = int(order)
+
+        if order in orders or order <= 0:
+            return False
+
+        orders.add(order)
+
+        return True
+
 class InputHandler:
     def __init__(self, debug=False):
         self.args = {}
         self.source_file = None
         self.input_file = None
+        self.instruction_orders = set()
         self.DEBUG = debug
 
     def parse_arguments(self):
@@ -83,7 +104,29 @@ class InputHandler:
             self.source_file = etree.fromstring(self.source_file.encode())
         except Exception as e:
             if self.DEBUG:
-                pass
+                print(f"Exception {e} when reading source file {self.source_file}")
 
-            print(f"Exception {e} when reading source file {self.source_file}")
             exit(31)
+
+    # verify the correct structure of xml, error 32
+    def verify_structure(self):
+        # check if there is any other element than program
+        top_elements = self.source_file.xpath("/*")
+        if len(list(top_elements)) != 1 or top_elements[0].tag != "program":
+            if self.DEBUG:
+                print("Missing program or more than one top level elements")
+            exit(32)
+
+        for element in self.source_file.xpath("/program/*"):
+            if element.tag != "instruction":
+                if self.DEBUG:
+                    print("Other element than instruction found in <program>")
+                exit(32)
+
+            if not Instruction.verify_instruction(element, self.instruction_orders):
+                if self.DEBUG:
+                    print("Failed to verify instruction")
+
+                exit(32)
+
+            # print(etree.tostring(element))

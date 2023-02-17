@@ -66,7 +66,7 @@ class Test():
                 print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull (wrong return code) {BLACK}")
                 if int(args.verbose) == 1:
                     print(self.src)
-                
+
                 print()
                 print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
                 print("---------------------------------")
