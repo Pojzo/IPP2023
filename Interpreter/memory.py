@@ -1,29 +1,28 @@
-# Global frames serves as a container for all global variables
-class GFrame:
+from input_handler import ArgumentType
+from error_codes import ErrorCodes
+from config import DEBUG
+
+
+class Frame:
     def __init__(self):
         self.variables = {}
 
+    def get(self, name):
+        if name in self.variables:
+            return self.variables[name]
+        else:
+            if DEBUG:
+                print("Variable {} not found in frame".format(name))
+            exit(ErrorCodes.VariableNotDefined)
 
-# Local frame is set to zero at the beginning and is used as a reference
-# to the top of the stack of frames (the current frame) and ised to store
-# local variables
-class LFrame:
-    def __init__(self, parent=None):
-        self.variables = {}
-        self.parent = parent
-
-
-# Temporary frame is used to store temporary variables
-class TFrame:
-    def __init__(self, parent=None):
-        self.variables = {}
-        self.parent = parent
+    def set(self, name, value):
+        self.variables[name] = value
 
 
 # Memory is resposible for handling all the frames
 class Memory:
     def __init__(self):
-        self.gframe = GFrame()
-        self.lframe = LFrame()
-        self.tframe = TFrame()
-
+        self.global_frame = Frame()
+        self.local_frame = None
+        self.temporary_frame = None
+        self.frame_stack = []
