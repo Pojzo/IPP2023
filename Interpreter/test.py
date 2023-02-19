@@ -79,7 +79,7 @@ class Test():
 
         else:
             print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull (wrong output) {'+ (wrong return code)' if not self.return_code_passed else ''}{BLACK}")
-
+        
             if int(args.verbose) == 1:
                 print(self.src)
                 print("Expected output:")
@@ -96,15 +96,30 @@ class Test():
             print("---------------------------------")
 
     def print_return_code(self):
+        return
         num_dir_tests = num_files[self.dirname]
-        if self.return_code_passed:
+
+        if self.return_code_passed and self.passed:
             print(f"{GREEN} Test [{self.test_num}/{num_dir_tests}] {self.testname} successful {BLACK}")
-        else:
+
+        elif self.return_code_passed and not self.passed:
+            print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull (wrong output) {BLACK}")
+            print("---------------------------------")
+        
+        elif not self.return_code_passed and self.passed:
             print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull (wrong return code) {BLACK}")
             if int(args.verbose) == 1:
                 print(self.src)
 
             print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
+
+        else: 
+            print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull (wrong output) + (wrong return code) {BLACK}")
+            if int(args.verbose) == 1:
+                print(self.src)
+
+            print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
+
         print("---------------------------------")
 
 def run_program(file_name: str, num_test: int) -> Test:
@@ -147,10 +162,7 @@ def test_dir(dirname: str) -> None:
         test = run_program(file, num_test + 1)
         test.check_if_passed()
         test_dic[test.dirname].append(test)
-        if args.return_code_only:
-            test.print_return_code()
-        else:
-            test.print_test()
+        test.print_test()
 
 num_files = {}
 for folder in glob.glob("./interpret_tests/*"):

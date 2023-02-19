@@ -63,12 +63,31 @@ instructions_dic = {
                       ArgumentType.SYMBOL],
         "EXIT": [ArgumentType.SYMBOL],
         "DPRINT": [ArgumentType.SYMBOL],
-        "BREAK": []}
+        "BREAK": [],
+        # bonus
+        "CLEARS": [],
+        "ADDS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "SUBS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "MULS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "IDIVS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "LTS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "GTS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "EQS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "ANDS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "ORS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "NOTS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
+        "INT2CHARS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
+        "STRI2INTS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "JUMPIFEQS": [ArgumentType.LABEL, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "JUMPIFNEQS": [ArgumentType.LABEL, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+}
+
 
 
 class Instruction:
     @staticmethod
-    def verify_instruction(instruction_xml, orders: set, DEBUG=False) -> bool:
+    def verify_instruction(instruction_xml, orders: set,
+                           DEBUG=False) -> bool:
         order = instruction_xml.get("order")
         if order is None:
             if DEBUG:
@@ -77,32 +96,38 @@ class Instruction:
 
         order = int(order)
 
-        if order in orders or order <= 0:
+        # checks whether order is correct, must be greater
+        # than zero and in the correct order
+        if order <= 0 or order in orders:
             if DEBUG:
                 print("Wrong order of instruction")
             return False
-
+    
         orders.add(order)
-        # check the opcode
         opcode = instruction_xml.get("opcode")
+        # check for missing opcode
         if opcode is None:
             if DEBUG:
                 print("Missing opcode")
             return False
 
+        # check for wrong(unknown) opcode
         if opcode not in instructions_dic:
             if DEBUG:
                 print("Wrong opcode")
             return False
 
         # get all children of instruction
+        expected_num_args = len(instructions_dic[opcode])
+        num_args = 0
         for index, child in enumerate(instruction_xml.iterchildren()):
             if child.tag != f"arg{index + 1}":
                 if DEBUG:
                     print(f"Failed to verify arguments {child.tag}")
                 return False
+            num_args += 1
 
-        return True
+        return num_args == expected_num_args
 
 
 class InputHandler:
@@ -212,7 +237,11 @@ class InputHandler:
                     print("Other element than instruction found in <program>")
                 exit(32)
 
-            if not Instruction.verify_instruction(element, self.instruction_orders, DEBUG=self.DEBUG):
+            # could've chosen a better name but whatever
+            if not Instruction.verify_instruction(
+                    element, self.instruction_orders,
+                    DEBUG=self.DEBUG):
+
                 if self.DEBUG:
                     print("Failed to verify instruction")
 
