@@ -18,6 +18,7 @@ TEST_DIR = "./interpret_tests"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--verbose", "--v", default="1")
+parser.add_argument("--return_code_only", "--rco", default="0")
 
 args = parser.parse_args()
 
@@ -94,6 +95,18 @@ class Test():
 
             print("---------------------------------")
 
+    def print_return_code(self):
+        num_dir_tests = num_files[self.dirname]
+        if self.return_code_passed:
+            print(f"{GREEN} Test [{self.test_num}/{num_dir_tests}] {self.testname} successful {BLACK}")
+        else:
+            print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull (wrong return code) {BLACK}")
+            if int(args.verbose) == 1:
+                print(self.src)
+
+            print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
+        print("---------------------------------")
+
 def run_program(file_name: str, num_test: int) -> Test:
     command = f"py interpret.py --source={file_name}.src \
             --input={file_name}.in"
@@ -134,7 +147,10 @@ def test_dir(dirname: str) -> None:
         test = run_program(file, num_test + 1)
         test.check_if_passed()
         test_dic[test.dirname].append(test)
-        test.print_test()
+        if args.return_code_only:
+            test.print_return_code()
+        else:
+            test.print_test()
 
 num_files = {}
 for folder in glob.glob("./interpret_tests/*"):
