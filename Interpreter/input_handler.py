@@ -1,6 +1,8 @@
 import argparse
 from lxml import etree
 from enum import Enum
+from error_codes import ErrorCodes
+from config import DEBUG
 
 
 class ArgumentType(Enum):
@@ -83,14 +85,13 @@ instructions_dic = {
 }
 
 
-
 class Instruction:
     @staticmethod
     def verify_instruction(instruction_xml, orders: set,
-                           DEBUG=False) -> bool:
+                           self.DEBUG=False) -> bool:
         order = instruction_xml.get("order")
         if order is None:
-            if DEBUG:
+            if self.DEBUG:
                 print("Missing order of instruction")
             return False
 
@@ -99,21 +100,21 @@ class Instruction:
         # checks whether order is correct, must be greater
         # than zero and in the correct order
         if order <= 0 or order in orders:
-            if DEBUG:
+            if self.DEBUG:
                 print("Wrong order of instruction")
             return False
-    
+
         orders.add(order)
         opcode = instruction_xml.get("opcode")
         # check for missing opcode
         if opcode is None:
-            if DEBUG:
+            if self.DEBUG:
                 print("Missing opcode")
             return False
 
         # check for wrong(unknown) opcode
         if opcode not in instructions_dic:
-            if DEBUG:
+            if self.DEBUG:
                 print("Wrong opcode")
             return False
 
@@ -122,7 +123,7 @@ class Instruction:
         num_args = 0
         for index, child in enumerate(instruction_xml.iterchildren()):
             if child.tag != f"arg{index + 1}":
-                if DEBUG:
+                if self.DEBUG:
                     print(f"Failed to verify arguments {child.tag}")
                 return False
             num_args += 1
@@ -220,31 +221,30 @@ class InputHandler:
             if self.DEBUG:
                 print(f"Exception {e} when reading source file {self.source_file}")
 
-            exit(31)
+            exit(ErrorCodes.InputNotWellFormed)
 
-    # verify the correct structure of xml, error 32
+    # verify the correct structure of xml, error ErrorCodes.InputStructureBad
     def verify_structure(self):
         # check if there is any other element than program
         top_elements = self.source_file.xpath("/*")
         if len(list(top_elements)) != 1 or top_elements[0].tag != "program":
             if self.DEBUG:
                 print("Missing program or more than one top level elements")
-            exit(32)
+            exit(ErrorCodes.InputStructureBad)
 
         for element in self.source_file.xpath("/program/*"):
             if element.tag != "instruction":
                 if self.DEBUG:
                     print("Other element than instruction found in <program>")
-                exit(32)
+                exit(ErrorCodes.InputStructureBad)
 
             # could've chosen a better name but whatever
             if not Instruction.verify_instruction(
                     element, self.instruction_orders,
-                    DEBUG=self.DEBUG):
+                    self.DEBUG=DEBUG):
 
                 if self.DEBUG:
                     print("Failed to verify instruction")
 
-                exit(32)
-
+                exit(ErrorCodes.InputStructureBad)
             # print(etree.tostring(element))
