@@ -19,8 +19,7 @@ def elements_equal(e1, e2):
     if e1.tag != e2.tag:
         return False
     if e1.text != e2.text:
-        if  e1.text!=None and e2.text!=None :
-            return False
+        return False
     if e1.tail != e2.tail:
         if e1.tail!=None and e2.tail!=None:
             return False
@@ -68,7 +67,7 @@ class DirTester:
 
             diff = difflib.unified_diff([line.strip() for line in result.stdout.splitlines()], [line.strip() for line in
                                                                                                 files["out"].splitlines()], lineterm='', n=0)
-
+            
             if files["out"] == "" and result.stdout != "":
                 files_same = False
 
@@ -76,7 +75,7 @@ class DirTester:
                 files_same = False
 
             elif result.stdout == "" and files["out"] == "":
-                files_same = True
+                files_same = int(files["rc"]) == int(result.returncode)
 
             else:
                 files_same = two_xml_equal(result.stdout, files["out"])
