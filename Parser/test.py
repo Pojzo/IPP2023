@@ -18,13 +18,27 @@ YELLOW = "\033[33m"
 def elements_equal(e1, e2):
     if e1.tag != e2.tag:
         return False
+
     if e1.text != e2.text:
+        # print(e1.text, e2.text, e1 == None, e2 == None)
         if e1.text!=None and e2.text!=None:
+            print("texts not equal")
             return False
+        
+        if e1.text is None and e2.text != "":
+            if e2.text.strip() != "":
+                return False
+        
+        if e2.text is None and e1.text != "":
+            if e1.text.strip() != "":
+                return False
+
+
     if e1.tail != e2.tail:
         # check if stripped are equal
         if e1.tail!=None and e2.tail!=None:
             if e1.tail.strip() != e2.tail.strip():
+                print("tails not equal")
                 return False
 
     if e1.attrib != e2.attrib:

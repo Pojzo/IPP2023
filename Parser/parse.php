@@ -369,10 +369,14 @@ class XMLGenerator {
 
         // instruction without any arguments
         if (count($argument_types) == 0) {
-            $instruction_xml[0] = ' ';
-            $instruction_xml[0] = '';
         }
 
+        # while there is "" in arguments, remove it 
+        while (($key = array_search("", $arguments)) !== false) {
+            unset($arguments[$key]);
+        }
+        # reset the array
+        $arguments = array_values($arguments);
 
         // this won't happen if there aren't any arguments
         for ($arg_count = 0; $arg_count < count($argument_types); $arg_count++) {
