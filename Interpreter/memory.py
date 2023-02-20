@@ -25,4 +25,4 @@ class Memory:
         self.global_frame = Frame()
         self.local_frame = None
         self.temporary_frame = None
-        self.frame_stack = []
+        self.stack = []

@@ -3,6 +3,7 @@ from lxml import etree
 from enum import Enum
 from error_codes import ErrorCodes
 from config import DEBUG
+import re
 
 
 class ArgumentType(Enum):
@@ -10,6 +11,18 @@ class ArgumentType(Enum):
     SYMBOL = 2
     VARIABLE = 3
     TYPE = 4
+
+    def __str__(self):
+        return self.name
+
+
+class Argument:
+    def __init__(self, arg_type: ArgumentType, value: str):
+        self.__type = arg_type
+        self.__value = value
+
+    def __repr__(self):
+        return f"type: {self.__type} value: {self.__value}"
 
 
 # dictionary mappings where key is the name of instruction and
@@ -78,20 +91,19 @@ instructions_dic = {
         "ANDS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
         "ORS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
         "NOTS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
-        "INT2CHARS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
-        "STRI2INTS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "JUMPIFEQS": [ArgumentType.LABEL, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "JUMPIFNEQS": [ArgumentType.LABEL, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
+        "INT2CHARS": [],
+        "STRI2INTS": [],
+        "JUMPIFEQS": [],
+        "JUMPIFNEQS": [],
 }
 
 
-class Instruction:
+class InstructionVerify:
     @staticmethod
-    def verify_instruction(instruction_xml, orders: set,
-                           self.DEBUG=False) -> bool:
+    def verify_instruction(instruction_xml, orders: set) -> bool:
         order = instruction_xml.get("order")
         if order is None:
-            if self.DEBUG:
+            if DEBUG:
                 print("Missing order of instruction")
             return False
 
@@ -100,7 +112,7 @@ class Instruction:
         # checks whether order is correct, must be greater
         # than zero and in the correct order
         if order <= 0 or order in orders:
-            if self.DEBUG:
+            if DEBUG:
                 print("Wrong order of instruction")
             return False
 
@@ -108,27 +120,29 @@ class Instruction:
         opcode = instruction_xml.get("opcode")
         # check for missing opcode
         if opcode is None:
-            if self.DEBUG:
+            if DEBUG:
                 print("Missing opcode")
             return False
 
         # check for wrong(unknown) opcode
         if opcode not in instructions_dic:
-            if self.DEBUG:
+            if DEBUG:
                 print("Wrong opcode")
             return False
 
         # get all children of instruction
         expected_num_args = len(instructions_dic[opcode])
-        num_args = 0
+        arg_numbers = set()
         for index, child in enumerate(instruction_xml.iterchildren()):
-            if child.tag != f"arg{index + 1}":
-                if self.DEBUG:
+            # check if arg matches arg<digit> using regex
+            if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
+                if DEBUG:
                     print(f"Failed to verify arguments {child.tag}")
                 return False
-            num_args += 1
 
-        return num_args == expected_num_args
+            arg_numbers.add(int(child.tag[3:]))
+
+        return len(arg_numbers) == expected_num_args
 
 
 class InputHandler:
@@ -137,7 +151,7 @@ class InputHandler:
         self.source_file = None
         self.input_file = None
         self.instruction_orders = set()
-        self.DEBUG = False
+        DEBUG = False
 
     def parse_arguments(self):
         parser = argparse.ArgumentParser(add_help=False,
@@ -158,13 +172,11 @@ class InputHandler:
         # help message is generated automatically
 
         cmd_args = parser.parse_args()
-        if cmd_args.debug:
-            self.DEBUG = True
 
         if cmd_args.help:
             # help can't be combined with any other arguments
             if cmd_args.source is not None or cmd_args.input is not None:
-                if self.DEBUG:
+                if DEBUG:
                     print("Can't combine help with other arguments")
                 exit(10)
 
@@ -173,14 +185,14 @@ class InputHandler:
 
         # at least one of these two must be present
         if cmd_args.source is None and cmd_args.input is None:
-            if self.DEBUG:
+            if DEBUG:
                 print("Missing one parameter")
             exit(10)
 
         self.args["source_file_parameter"] = cmd_args.source
         self.args["input_file_parameter"] = cmd_args.input
 
-        if self.DEBUG:
+        if DEBUG:
             print(f"{self.args['source_file_parameter']=}")
             print(f"{self.args['input_file_parameter']=}")
 
@@ -194,7 +206,7 @@ class InputHandler:
 
         # catch an exception when opening file
         except Exception as e:
-            if self.DEBUG:
+            if DEBUG:
                 print(f"Error when opening input file {e=} {file_name=}")
             exit(11)
 
@@ -218,7 +230,7 @@ class InputHandler:
         try:
             self.source_file = etree.fromstring(self.source_file.encode())
         except Exception as e:
-            if self.DEBUG:
+            if DEBUG:
                 print(f"Exception {e} when reading source file {self.source_file}")
 
             exit(ErrorCodes.InputNotWellFormed)
@@ -228,23 +240,38 @@ class InputHandler:
         # check if there is any other element than program
         top_elements = self.source_file.xpath("/*")
         if len(list(top_elements)) != 1 or top_elements[0].tag != "program":
-            if self.DEBUG:
+            if DEBUG:
                 print("Missing program or more than one top level elements")
             exit(ErrorCodes.InputStructureBad)
 
         for element in self.source_file.xpath("/program/*"):
             if element.tag != "instruction":
-                if self.DEBUG:
+                if DEBUG:
                     print("Other element than instruction found in <program>")
                 exit(ErrorCodes.InputStructureBad)
 
             # could've chosen a better name but whatever
-            if not Instruction.verify_instruction(
-                    element, self.instruction_orders,
-                    self.DEBUG=DEBUG):
+            if not InstructionVerify.verify_instruction(
+                    element, self.instruction_orders):
 
-                if self.DEBUG:
-                    print("Failed to verify instruction")
+                if DEBUG:
+                    print("Failed to verify instruction", etree.tostring(element))
 
                 exit(ErrorCodes.InputStructureBad)
             # print(etree.tostring(element))
+
+    # return the instruction in the format
+    # [opcode, [arg1, arg2, ...]] 
+    def get_instructions(self) -> list[str, list[Argument]]:
+        instructions = []
+        for instruction in self.source_file.xpath("/program/*"):
+            opcode = instruction.get("opcode")
+            arguments = []
+            for argument in instruction.iterchildren():
+                arg_type = argument.get("type")
+                arg_value = argument.text
+                arguments.append(Argument(arg_type, arg_value))
+
+            instructions.append([opcode, arguments])
+
+        return instructions
