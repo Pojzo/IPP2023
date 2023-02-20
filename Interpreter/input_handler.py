@@ -261,7 +261,7 @@ class InputHandler:
             # print(etree.tostring(element))
 
     # return the instruction in the format
-    # [opcode, [arg1, arg2, ...]] 
+    # [opcode, [arg1, arg2, ...]]
     def get_instructions(self) -> list[str, list[Argument]]:
         instructions = []
         for instruction in self.source_file.xpath("/program/*"):

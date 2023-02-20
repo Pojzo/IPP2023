@@ -1,11 +1,7 @@
 from input_handler import InputHandler
-from input_handler import instructions_dic
-from input_handler import ArgumentType
 from input_handler import Argument
 from memory import Memory
-
-from config import DEBUG
-
+import instructions as InstructionsClass
 
 inpt = InputHandler()
 inpt.parse_arguments()
@@ -16,37 +12,24 @@ inpt.verify_structure()
 
 # the interpreter gets list of lines from input handler
 class Interpreter:
-    def __init__(self, instructions: list[str, list[Argument]]):
-        self.__instructions = instructions
+    def __init__(self, instructions_raw: list[str, list[Argument]]):
+        self.__instructions = []
         self.__memory = Memory()
-        # self.__opcode_func = {
+        self.create_instructions(instructions_raw)
+
+    # created __instructions list of instruction objects
+    # based on opcode string and arguments
+    def create_instructions(self,
+                            instructions_raw: list[str, list[Argument]]) -> None:
+
+        for opcode, args in instructions_raw:
+            # dynamically create instruction object based on opcode string
+            instruction_obj = getattr(InstructionsClass, opcode)(opcode, args)
+            self.__instructions.append(instruction_obj)
 
     def print_instructions(self):
         for instruction in self.__instructions:
-            print("opcode:", instruction[0], "arguments:", instruction[1])
-
-
-class Instruction:
-    def __init__(self, type_, args: list[Argument]):
-        self.__type = type_
-        self.__args = args
-
-
-    def var_exists(self, arg: Argument):
-        if arg.get_type() == ArgumentType.VAR:
-            if not self.__memory.var_exists(arg.get_value()):
-                raise Exception("Variable does not exist")
-
-# MOVE ⟨var⟩ ⟨symb⟩
-# Přiřazení hodnoty do proměnné
-# Zkopíruje hodnotu ⟨symb⟩ do ⟨var⟩. Např. MOVE LF@par GF@var provede zkopírování hodnoty
-# proměnné var v globálním rámci do proměnné par v lokálním rámci.
-class MOVE(Instruction):
-    def __init__(self, type_, args: list[Argument]):
-        super().__init__(type_, args)
-
-    def execute(self):
-        var_exists(self.__args[0])
+            print(instruction)
 
 
 interpreter = Interpreter(inpt.get_instructions())
