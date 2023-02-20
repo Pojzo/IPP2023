@@ -19,10 +19,14 @@ def elements_equal(e1, e2):
     if e1.tag != e2.tag:
         return False
     if e1.text != e2.text:
-        return False
-    if e1.tail != e2.tail:
-        if e1.tail!=None and e2.tail!=None:
+        if e1.text!=None and e2.text!=None:
             return False
+    if e1.tail != e2.tail:
+        # check if stripped are equal
+        if e1.tail!=None and e2.tail!=None:
+            if e1.tail.strip() != e2.tail.strip():
+                return False
+
     if e1.attrib != e2.attrib:
         return False
     if len(e1) != len(e2):
@@ -176,7 +180,7 @@ def print_help():
                     --test_dir TEST_DIR\n\tPath to test dir
 
   """)
-    exit()
+
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('--run_generated', type=int, default=0, help='Set to True to run generated code')
