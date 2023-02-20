@@ -218,7 +218,7 @@ class Analyzer {
             // $this->lines[$i] = $this->remove_comment($this->lines[$i]);
             if (!($this->instruction_ok($this->lines[$i]))) {
                 if ($DEBUG) {echo "Instruction is not ok\n";}
-                exit(22);
+                exit(23);
             }
         }
     }
