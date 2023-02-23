@@ -1,16 +1,18 @@
 <?php
 
-$DEBUG = True;
+$DEBUG = False;
 
 // InputHandler class loads instructions and returns them for further processing
 class InputHandler {
     private $arg_count;
     private $argv;
+    private static $instance = null;
 
     function __construct(int $argc, array $argv) {
         $this->arg_count = $argc - 1; // the first argument is always the file name
         $this->argv = $argv;
     }
+
 
     // print help message for parser.php
     private function print_help() {
