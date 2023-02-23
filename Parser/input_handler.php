@@ -1,6 +1,6 @@
 <?php
 
-$DEBUG = False;
+$DEBUG = True;
 
 // InputHandler class loads instructions and returns them for further processing
 class InputHandler {

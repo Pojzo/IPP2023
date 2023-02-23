@@ -64,8 +64,10 @@ class Analyzer {
 
     // return true if $const is of type string based on rules specified in the
     private function is_string(string $const): bool {
-        return True;
-        // TODO 
+        $pattern = '/^(?:[^\x00-\x08\x0B\x0C\x0E-\x1F\x23\x5C]|\\(?:[0-9]{3}))*$/m';
+        echo $const . "\n";
+        $match =  preg_match($pattern, $const);
+        return $match;
     }
     
     // return true if $const is of type int 
