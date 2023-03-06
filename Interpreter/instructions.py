@@ -7,10 +7,8 @@ class Instruction:
         self.__opcode = opcode
         self.__args = args
 
-    def var_exists(self, arg: Argument):
-        if arg.get_type() == ArgumentType.VAR:
-            if not self.__memory.var_exists(arg.get_value()):
-                raise Exception("Variable does not exist")
+    def var_exists(self, var: str, frame: str) -> bool:
+        assert frame in ["GF", "LF", "TF"]
 
     def __repr__(self):
         return f"{self.__opcode} {self.__args}"
@@ -43,6 +41,7 @@ class READ(Instruction):
         pass
 
 
+# WRITE ⟨symb⟩
 class WRITE(Instruction):
     def __init__(self, type_, args: list[Argument]):
         super().__init__(type_, args)
