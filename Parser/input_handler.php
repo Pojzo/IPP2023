@@ -27,12 +27,14 @@ class InputHandler {
         }
 
         if ($this->arg_count == 1) {
-            // only --help argument is accepted
-            if ($this->argv[1] != "--help") {
+            // --help and --h are valid arguments
+            if ($this->argv[1] == "--help" or $this->argv[1] == "--h") {
+                $this->print_help();
+                exit(0);
+            }
+            else {
                 exit(10);
             }
-            $this->print_help();
-            exit(0); // terminate the program with exit code 0 after printing help
         }
     }
 
