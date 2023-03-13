@@ -18,7 +18,7 @@ class InputHandler {
     private function print_help() {
         echo "Usage: php your_program.php [--help] [instructions]" .
             "\n\nOptions:\n  --help    Show this help message\n\n" .
-            "Description:\n  Reads instructions from standard input and prints them to standard output.";
+            "Description:\n  Reads instructions from standard input and prints the output to standard output.\n";
     }
 
     public function handle_args() {
