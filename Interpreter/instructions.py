@@ -13,7 +13,7 @@ class DataType:
 
 class Instruction(abc.ABC):
     def __init__(self, args: list[Argument]):
-        self.__args = args
+        self._args = args
 
     @abc.abstractmethod
     def execute(self, memory) -> None:
@@ -24,7 +24,10 @@ class Instruction(abc.ABC):
     
     # extract the frame from variable string
     def get_frame_from_var(self, var: str) -> str:
-        return var[:2]
+        return var.split('@')[0]
+
+    def get_name_from_value(self, var: str) -> str:
+        return var.split('@')[1]
 
     def convert_strings_data_type_to_enum(self, str_datatype) -> DataType:
         return {'int':       type_int,
@@ -33,23 +36,40 @@ class Instruction(abc.ABC):
                 'nil':  type_nil}[str_datatype]
 
     def __repr__(self):
-        return f"{str(type(self))}, {self.__args}"
+        return f"{str(type(self))}, {self._args}"
 
 # DEFVAR ⟨var⟩
 class DEFVAR(Instruction):
     def __init__(self, args: list[Argument]):
-        super().__init__(type_, args)
+        super().__init__(args)
 
     def execute(self, memory):
-        var_arg = self.__args[0]
-        frame = self.get_frame_from_var(var_arg.value)
+        frame = self.get_frame_from_var(self._args[0].value)
+        name = self.get_name_from_value(self._args[0].value)
+        memory.define_var(name, frame)
+       
+#////---------- INSTRUCTIONS RELATED TO FRAMES ----------//// 
 
-        if memory.var_already_defined():
-            DEBUG_PRINT(f"Variable {var_args.value} in frame {frame} already defined")
-            exit(ErrorCodes.VariableRedefinition)
+class CREATEFRAME(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(args)
 
-        memory.define_var(self.__args[0].type_, self.__args[0].value)
-        
+    def execute(self, memory):
+        memory.create_frame()
+
+class PUSHFRAME(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(args)
+
+    def execute(self, memory):
+        memory.push_frame()
+
+class POPFRAME(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(args)
+
+    def execute(self, memory):
+        memory.pop_frame()
 
 # MOVE ⟨var⟩ ⟨symb⟩
 class MOVE(Instruction):

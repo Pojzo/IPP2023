@@ -51,13 +51,7 @@ class Memory(metaclass=Singleton):
         self._temporary_frame = None
         self._stack = []
     
-    # check if a variable has already been defined
-    def var_already_defined(var_name: str, frame: str) -> bool:
-        assert(frame in ["GF", "LF", "TF"])
-
-        return true
     
-
     # ///--------- DEFINING VARIABLES IN FRAMES -------\\\\\\
 
     # define a local variable
@@ -66,10 +60,9 @@ class Memory(metaclass=Singleton):
         if len(self._stack) == 0:
             exit(ErrorCodes.FrameNotDefined)
 
-        if self._local_frame == None:
-            self._local_frame = Frame()
+        local_frame = self._stack[-1]
 
-        self._local_frame.define(name)
+        local_frame.define(name)
 
     # define a variable in the temporary frame
     def _define_temporary(self, name: str) -> None:
@@ -91,11 +84,11 @@ class Memory(metaclass=Singleton):
 
     # create a new temporary frame
     # discard the old one if it exists
-    def create_temporary_frame(self) -> None:
+    def create_frame(self) -> None:
         self._temporary_frame = Frame()
 
     # push temporary frame onto the stack
-    def push_temporary_frame(self) -> None:
+    def push_frame(self) -> None:
         if self._temporary_frame == None:
             DEBUG_PRINT("Temporary frame doesn't exist")
             exit(ErrorCodes.FrameNotDefined)
@@ -106,7 +99,7 @@ class Memory(metaclass=Singleton):
         self._temporary_frame = None
 
     # pop local frame into the temporary frame
-    def pop_local_frame(self) -> None:
+    def pop_frame(self) -> None:
         # check if there's a local frame
         if len(self._stack) == 0:
             DEBUG_PRINT("Local frame doesn't exist")
@@ -117,5 +110,10 @@ class Memory(metaclass=Singleton):
 
         self._temporary_frame = self._stack.pop(-1)
 
+    # testing function
     def get_stack(self) -> list[Frame]:
         return self._stack
+
+    def get_global_frame(self) -> Frame:
+        return self._global_frame
+

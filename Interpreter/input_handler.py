@@ -18,8 +18,8 @@ class ArgumentType(Enum):
 
 class Argument:
     def __init__(self, arg_type: ArgumentType, value: str):
-        self.__type = arg_type
-        self.__value = value
+        self.type_ = arg_type
+        self.value = value
 
     def __repr__(self):
         return f"type: {self.__type} value: {self.__value}"
