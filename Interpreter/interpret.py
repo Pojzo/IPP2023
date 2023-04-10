@@ -3,18 +3,11 @@ from input_handler import Argument
 from memory import Memory
 import instructions as InstructionsClass
 
-inpt = InputHandler()
-inpt.parse_arguments()
-inpt.parse_input()
-inpt.convert_source()
-inpt.verify_structure()
-
 
 # the interpreter gets list of lines from input handler
 class Interpreter:
     def __init__(self, instructions_raw: list[str, list[Argument]]):
         self.__instructions = []
-        self.__memory = Memory()
         self.create_instructions(instructions_raw)
 
     # created __instructions list of instruction objects
@@ -32,5 +25,36 @@ class Interpreter:
             print(instruction)
 
 
-interpreter = Interpreter(inpt.get_instructions())
-interpreter.print_instructions()
+inpt = InputHandler()
+inpt.parse_arguments()
+inpt.parse_input()
+inpt.convert_source()
+inpt.verify_structure()
+
+instructions = inpt.get_instructions()
+# [print(x) for x in instructions]
+
+memory = Memory()
+
+memory.create_temporary_frame()
+memory.define_var("Gazdik", "TF")
+memory.push_temporary_frame()
+
+
+memory.create_temporary_frame()
+memory.define_var("Cmorik", "TF")
+memory.push_temporary_frame()
+
+
+memory.create_temporary_frame()
+memory.define_var("On", "TF")
+memory.push_temporary_frame()
+
+
+stack = memory.get_stack()
+for x in stack:
+    print(x.variables)
+    print()
+
+# interpreter = Interpreter(inpt.get_instructions())
+# interpreter.print_instructions()

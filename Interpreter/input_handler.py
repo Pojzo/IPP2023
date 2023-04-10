@@ -275,3 +275,4 @@ class InputHandler:
             instructions.append([opcode, arguments])
 
         return instructions
+
