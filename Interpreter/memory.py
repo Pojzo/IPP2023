@@ -1,38 +1,45 @@
 from input_handler import ArgumentType
+
 from error_codes import ErrorCodes
 from debug import DEBUG_PRINT
 from config import DEBUG
 from instructions import DataType
 
+class Variable:
+    def __init__(self, name_: str):
+        self.name = name_
+        self.value = None
+        self.datatype: DataType = None
+        
 
 class Frame:
     def __init__(self):
-        self.variables: set = {}
+        self.variables: set[Variable] = {}
 
     # get the value of a variable or exit with error if the variable doesn't exist
     def get(self, name: str) -> str:
         if name in self.variables:
             return self.variables[name]
         else:
-            DEBUG_PRINT("Variable {} not found in frame".format(name))
-            exit(ErrorCodes.VariableNotDefined)
+            return None
 
-    
+
     # define variable with None or exit with error if its aleady defined
     def define(self, name: str) -> None:
         if name in self.variables:
             DEBUG_PRINT("Variable {} not found in frame".format(name))
             exit(ErrorCodes.VariableRedefinition)
 
-        self.variables[name] = None
+        self.variables[name] = Variable(name)
 
     # set the value of a variable or exit with error
-    def set(self, name: str, value: str) -> None:
+    def set(self, name: str, value: str, type_: type) -> None:
         if not name in self.variables:
             DEBUG_PRINT("Variable {} not found in frame".format(name))
             exit(ErrorCodes.VariableNotDefined)
 
-        self.variables[name] = value
+        self.variables[name].value = value
+        self.variables[name].type_ = type_
 
 
 class Singleton(type):
@@ -49,7 +56,8 @@ class Memory(metaclass=Singleton):
     def __init__(self):
         self._global_frame = Frame()
         self._temporary_frame = None
-        self._stack = []
+        self._frame_stack = []
+        self._data_stack = []
     
     
     # ///--------- DEFINING VARIABLES IN FRAMES -------\\\\\\
@@ -57,10 +65,10 @@ class Memory(metaclass=Singleton):
     # define a local variable
     def _define_local(self, name: str) -> None:
         # check if there is any frame at all
-        if len(self._stack) == 0:
+        if len(self._frame_stack) == 0:
             exit(ErrorCodes.FrameNotDefined)
 
-        local_frame = self._stack[-1]
+        local_frame = self._frame_stack[-1]
 
         local_frame.define(name)
 
@@ -70,7 +78,6 @@ class Memory(metaclass=Singleton):
             self._temporary_frame = Frame()
 
         self._temporary_frame.define(name)
-        print("Tu som sa mal dostat", name)
 
     # define a variable in the global frame
     def _define_global(self, name: str) -> None:
@@ -81,6 +88,9 @@ class Memory(metaclass=Singleton):
         {'GF': self._define_global,
          'LF': self._define_local,
          'TF': self._define_temporary}[frame](name)
+
+    
+    # ///--------- FUNCTIONS WITH FRAME STACK -------\\\\\\
 
     # create a new temporary frame
     # discard the old one if it exists
@@ -93,27 +103,86 @@ class Memory(metaclass=Singleton):
             DEBUG_PRINT("Temporary frame doesn't exist")
             exit(ErrorCodes.FrameNotDefined)
         
-        self._stack.append(self._temporary_frame)
+        self._frame_stack.append(self._temporary_frame)
 
         # reset temporary frame 
         self._temporary_frame = None
-
+    
     # pop local frame into the temporary frame
     def pop_frame(self) -> None:
         # check if there's a local frame
-        if len(self._stack) == 0:
+        if len(self._frame_stack) == 0:
             DEBUG_PRINT("Local frame doesn't exist")
             exit(ErrorCodes.FrameNotDefined)
         
         if self._temporary_frame != None:
             del self._temporary_frame
 
-        self._temporary_frame = self._stack.pop(-1)
+        self._temporary_frame = self._frame_stack.pop(-1)
+    
+    # return variable in global frame
+    def _global_get_var(self, name: str) -> Variable:
+        return self._global_frame.get(name)
+
+    # return variable in local frame
+    def _local_get_var(self, name: str) -> Variable:
+        if len(self._frame_stack) == 0:        
+            DEBUG_PRINT(f"Local frame doesn't exist")
+            exit(ErrorCodes.FrameNotDefined)
+        
+        local_frame = self._frame_stack[-1]
+        var = local_frame.get(name)
+        return var
+
+    def _temporary_get_var(self, name: str) -> Variable:
+        if self._temporary_frame is None:
+            DEBUG_PRINT(f"Temporary frame doesn't exist")
+            exit(ErrorCodes.FrameNotDefined)
+
+        var = self._temporary_frame.get(name)
+        return var
+
+
+    def get_var(self, name: str, frame: str) -> str:
+        var =  {'GF': self._global_get_var,
+                'LF': self._local_get_var,
+                'TF': self._temporary_get_var}[frame](name)
+
+        if var is None:
+            DEBUG_PRINT(f"Variable {name} not defined in {frame}")
+            exit(ErrorCodes.VariableNotDefined)
+
+        return var
+    
+    def set_var(self, name: str, frame: str, value: str, datatype: DataType):
+        var = self.get_var(name, frame)
+        var.value = value
+        var.datatype = datatype
+
 
     # testing function
-    def get_stack(self) -> list[Frame]:
-        return self._stack
-
+    def get_frame_stack(self) -> list[Frame]:
+        return self._frame_stack
+    
     def get_global_frame(self) -> Frame:
         return self._global_frame
+    
+    # ///--------- FUNCTIONS WITH DATA STACK -------\\\\\\ 
+
+    # push data on top of the data stack
+    def push_data(self, value: str, datatype: DataType) -> None:
+        # "stack_var" is default name for stack variables - they can be anonymous
+        new_var = Variable("stack_var")
+        new_var.value = value
+        new_var.datatype = datatype
+        self._data_stack.append(new_var)
+
+    # pop data from the top of the data stack
+
+    def pop_data(self) -> str:
+        if len(self._data_stack) == 0:
+            DEBUG_PRINT("Data stack is empty")
+            exit(ErrorCodes.DataStackEmpty)
+
+        return self._data_stack.pop(-1)
 

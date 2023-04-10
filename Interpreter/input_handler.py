@@ -2,95 +2,108 @@ import argparse
 from lxml import etree
 from enum import Enum
 from error_codes import ErrorCodes
-from config import DEBUG
+from debug import DEBUG_PRINT
 import re
 
 
 class ArgumentType(Enum):
     LABEL = 1
-    SYMBOL = 2
-    VARIABLE = 3
-    TYPE = 4
+    TYPE = 2
+    VAR = 3
+    SYMB = 4
+
+    @staticmethod
+    def convert_to_enum(arg_type: str) -> "ArgumentType":
+        if arg_type == "label":
+            return ArgumentType.LABEL
+        elif arg_type == "var":
+            return ArgumentType.VAR
+        elif arg_type == "type":
+            return ArgumentType.TYPE
+        else:
+            return ArgumentType.SYMB
+
 
     def __str__(self):
         return self.name
 
-
 class Argument:
-    def __init__(self, arg_type: ArgumentType, value: str):
+    def __init__(self, arg_type: ArgumentType, value: str, datatype=None):
         self.type_ = arg_type
         self.value = value
+        # only for symbols
+        self.datatype = datatype
 
     def __repr__(self):
-        return f"type: {self.__type} value: {self.__value}"
+        return f"type: {self.type_} value: {self.value} datatype: {self.datatype}"
 
 
 # dictionary mappings where key is the name of instruction and
 # value is an array of arguments to that instruction
 # bruh this looks ugly as hell but it does the job (hopefully)
 instructions_dic = {
-        "MOVE": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
+        "MOVE": [ArgumentType.VAR, ArgumentType.SYMB],
         "CREATEFRAME": [],
         "PUSHFRAME": [],
         "POPFRAME": [],
-        "DEFVAR": [ArgumentType.VARIABLE],
+        "DEFVAR": [ArgumentType.VAR],
         "CALL": [ArgumentType.LABEL],
         "RETURN": [],
-        "PUSHS": [ArgumentType.SYMBOL],
-        "POPS": [ArgumentType.VARIABLE],
-        "ADD": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-                ArgumentType.SYMBOL],
-        "SUB": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-                ArgumentType.SYMBOL],
-        "MUL": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-                ArgumentType.SYMBOL],
-        "IDIV": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-                 ArgumentType.SYMBOL],
-        "LT": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-               ArgumentType.SYMBOL],
-        "GT": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-               ArgumentType.SYMBOL],
-        "EQ": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-               ArgumentType.SYMBOL],
-        "AND": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-                ArgumentType.SYMBOL],
-        "OR": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-               ArgumentType.SYMBOL],
-        "NOT": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
-        "INT2CHAR": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
-        "STRI2INT": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-                     ArgumentType.SYMBOL],
-        "READ": [ArgumentType.VARIABLE, ArgumentType.TYPE],
-        "WRITE": [ArgumentType.SYMBOL],
-        "CONCAT": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-                   ArgumentType.SYMBOL],
-        "STRLEN": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
-        "GETCHAR": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-                    ArgumentType.SYMBOL],
-        "SETCHAR": [ArgumentType.VARIABLE, ArgumentType.SYMBOL,
-                    ArgumentType.SYMBOL],
-        "TYPE": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
+        "PUSHS": [ArgumentType.SYMB],
+        "POPS": [ArgumentType.VAR],
+        "ADD": [ArgumentType.VAR, ArgumentType.SYMB,
+                ArgumentType.SYMB],
+        "SUB": [ArgumentType.VAR, ArgumentType.SYMB,
+                ArgumentType.SYMB],
+        "MUL": [ArgumentType.VAR, ArgumentType.SYMB,
+                ArgumentType.SYMB],
+        "IDIV": [ArgumentType.VAR, ArgumentType.SYMB,
+                 ArgumentType.SYMB],
+        "LT": [ArgumentType.VAR, ArgumentType.SYMB,
+               ArgumentType.SYMB],
+        "GT": [ArgumentType.VAR, ArgumentType.SYMB,
+               ArgumentType.SYMB],
+        "EQ": [ArgumentType.VAR, ArgumentType.SYMB,
+               ArgumentType.SYMB],
+        "AND": [ArgumentType.VAR, ArgumentType.SYMB,
+                ArgumentType.SYMB],
+        "OR": [ArgumentType.VAR, ArgumentType.SYMB,
+               ArgumentType.SYMB],
+        "NOT": [ArgumentType.VAR, ArgumentType.SYMB],
+        "INT2CHAR": [ArgumentType.VAR, ArgumentType.SYMB],
+        "STRI2INT": [ArgumentType.VAR, ArgumentType.SYMB,
+                     ArgumentType.SYMB],
+        "READ": [ArgumentType.VAR, ArgumentType.TYPE],
+        "WRITE": [ArgumentType.SYMB],
+        "CONCAT": [ArgumentType.VAR, ArgumentType.SYMB,
+                   ArgumentType.SYMB],
+        "STRLEN": [ArgumentType.VAR, ArgumentType.SYMB],
+        "GETCHAR": [ArgumentType.VAR, ArgumentType.SYMB,
+                    ArgumentType.SYMB],
+        "SETCHAR": [ArgumentType.VAR, ArgumentType.SYMB,
+                    ArgumentType.SYMB],
+        "TYPE": [ArgumentType.VAR, ArgumentType.SYMB],
         "LABEL": [ArgumentType.LABEL],
         "JUMP": [ArgumentType.LABEL],
-        "JUMPIFEQ": [ArgumentType.LABEL, ArgumentType.SYMBOL,
-                     ArgumentType.SYMBOL],
-        "JUMPIFNEQ": [ArgumentType.LABEL, ArgumentType.SYMBOL,
-                      ArgumentType.SYMBOL],
-        "EXIT": [ArgumentType.SYMBOL],
-        "DPRINT": [ArgumentType.SYMBOL],
+        "JUMPIFEQ": [ArgumentType.LABEL, ArgumentType.SYMB,
+                     ArgumentType.SYMB],
+        "JUMPIFNEQ": [ArgumentType.LABEL, ArgumentType.SYMB,
+                      ArgumentType.SYMB],
+        "EXIT": [ArgumentType.SYMB],
+        "DPRINT": [ArgumentType.SYMB],
         "BREAK": [],
         # bonus
         "CLEARS": [],
-        "ADDS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "SUBS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "MULS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "IDIVS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "LTS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "GTS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "EQS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "ANDS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "ORS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL, ArgumentType.SYMBOL],
-        "NOTS": [ArgumentType.VARIABLE, ArgumentType.SYMBOL],
+        "ADDS": [ArgumentType.VAR, ArgumentType.SYMB, ArgumentType.SYMB],
+        "SUBS": [ArgumentType.VAR, ArgumentType.SYMB, ArgumentType.SYMB],
+        "MULS": [ArgumentType.VAR, ArgumentType.SYMB, ArgumentType.SYMB],
+        "IDIVS": [ArgumentType.VAR, ArgumentType.SYMB, ArgumentType.SYMB],
+        "LTS": [ArgumentType.VAR, ArgumentType.SYMB, ArgumentType.SYMB],
+        "GTS": [ArgumentType.VAR, ArgumentType.SYMB, ArgumentType.SYMB],
+        "EQS": [ArgumentType.VAR, ArgumentType.SYMB, ArgumentType.SYMB],
+        "ANDS": [ArgumentType.VAR, ArgumentType.SYMB, ArgumentType.SYMB],
+        "ORS": [ArgumentType.VAR, ArgumentType.SYMB, ArgumentType.SYMB],
+        "NOTS": [ArgumentType.VAR, ArgumentType.SYMB],
         "INT2CHARS": [],
         "STRI2INTS": [],
         "JUMPIFEQS": [],
@@ -103,8 +116,7 @@ class InstructionVerify:
     def verify_instruction(instruction_xml, orders: set) -> bool:
         order = instruction_xml.get("order")
         if order is None:
-            if DEBUG:
-                print("Missing order of instruction")
+            DEBUG_PRINT("Missing order of instruction")
             return False
 
         order = int(order)
@@ -112,22 +124,19 @@ class InstructionVerify:
         # checks whether order is correct, must be greater
         # than zero and in the correct order
         if order <= 0 or order in orders:
-            if DEBUG:
-                print("Wrong order of instruction")
+            DEBUG_PRINT("Wrong order of instruction")
             return False
 
         orders.add(order)
         opcode = instruction_xml.get("opcode")
         # check for missing opcode
         if opcode is None:
-            if DEBUG:
-                print("Missing opcode")
+            DEBUG_PRINT("Missing opcode")
             return False
 
         # check for wrong(unknown) opcode
         if opcode not in instructions_dic:
-            if DEBUG:
-                print("Wrong opcode")
+            DEBUG_PRINT("Wrong opcode")
             return False
 
         # get all children of instruction
@@ -136,8 +145,7 @@ class InstructionVerify:
         for index, child in enumerate(instruction_xml.iterchildren()):
             # check if arg matches arg<digit> using regex
             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
-                if DEBUG:
-                    print(f"Failed to verify arguments {child.tag}")
+                DEBUG_PRINT(f"Failed to verify arguments {child.tag}")
                 return False
 
             arg_numbers.add(int(child.tag[3:]))
@@ -176,8 +184,7 @@ class InputHandler:
         if cmd_args.help:
             # help can't be combined with any other arguments
             if cmd_args.source is not None or cmd_args.input is not None:
-                if DEBUG:
-                    print("Can't combine help with other arguments")
+                DEBUG_PRINT("Can't combine help with other arguments")
                 exit(10)
 
             parser.print_help()
@@ -185,16 +192,14 @@ class InputHandler:
 
         # at least one of these two must be present
         if cmd_args.source is None and cmd_args.input is None:
-            if DEBUG:
-                print("Missing one parameter")
+            DEBUG_PRINT("Missing one parameter")
             exit(10)
 
         self.args["source_file_parameter"] = cmd_args.source
         self.args["input_file_parameter"] = cmd_args.input
 
-        if DEBUG:
-            print(f"{self.args['source_file_parameter']=}")
-            print(f"{self.args['input_file_parameter']=}")
+        # DEBUG_PRINT(f"{self.args['source_file_parameter']=}")
+        # DEBUG_PRINT(f"{self.args['input_file_parameter']=}")
 
     # open file and return its contents as string
     def load_file(self, file_name: str) -> str:
@@ -206,8 +211,7 @@ class InputHandler:
 
         # catch an exception when opening file
         except Exception as e:
-            if DEBUG:
-                print(f"Error when opening input file {e=} {file_name=}")
+            DEBUG_PRINT(f"Error when opening input file {e=} {file_name=}")
             exit(11)
 
     # load input to self.source_file and self.input_file
@@ -230,8 +234,7 @@ class InputHandler:
         try:
             self.source_file = etree.fromstring(self.source_file.encode())
         except Exception as e:
-            if DEBUG:
-                print(f"Exception {e} when reading source file {self.source_file}")
+            DEBUG_PRINT(f"Exception {e} when reading source file {self.source_file}")
 
             exit(ErrorCodes.InputNotWellFormed)
 
@@ -240,22 +243,19 @@ class InputHandler:
         # check if there is any other element than program
         top_elements = self.source_file.xpath("/*")
         if len(list(top_elements)) != 1 or top_elements[0].tag != "program":
-            if DEBUG:
-                print("Missing program or more than one top level elements")
+            DEBUG_PRINT("Missing program or more than one top level elements")
             exit(ErrorCodes.InputStructureBad)
 
         for element in self.source_file.xpath("/program/*"):
             if element.tag != "instruction":
-                if DEBUG:
-                    print("Other element than instruction found in <program>")
+                DEBUG_PRINT("Other element than instruction found in <program>")
                 exit(ErrorCodes.InputStructureBad)
 
             # could've chosen a better name but whatever
             if not InstructionVerify.verify_instruction(
                     element, self.instruction_orders):
 
-                if DEBUG:
-                    print("Failed to verify instruction", etree.tostring(element))
+                DEBUG_PRINT("Failed to verify instruction" + str(etree.tostring(element)))
 
                 exit(ErrorCodes.InputStructureBad)
             # print(etree.tostring(element))
@@ -268,9 +268,15 @@ class InputHandler:
             opcode = instruction.get("opcode")
             arguments = []
             for argument in instruction.iterchildren():
-                arg_type = argument.get("type")
+                arg_type = ArgumentType.convert_to_enum(argument.get("type"))
                 arg_value = argument.text
-                arguments.append(Argument(arg_type, arg_value))
+                if arg_type == ArgumentType.SYMB:
+                    argument = Argument(arg_type, arg_value, datatype=argument.get("type"))
+                else:
+                    argument = Argument(arg_type, arg_value)
+
+                arguments.append(argument)
+
 
             instructions.append([opcode, arguments])
 

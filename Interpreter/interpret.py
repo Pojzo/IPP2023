@@ -69,8 +69,12 @@ memory = Memory()
 interpreter = Interpreter(inpt.get_instructions())
 interpreter.execute_instructions(memory) 
 
-for x in memory.get_stack():
-    print(x.variables)
-
 x = memory.get_global_frame()
-print(x.variables)
+
+local_frame = memory.get_frame_stack()[-1]
+for name in local_frame.variables:
+    variable = local_frame.variables[name]
+    print(f"{variable.name=}")
+    print(f"{variable.value=}")
+    print(f"{variable.datatype=}")
+    print()
