@@ -225,6 +225,7 @@ class WRITE(Instruction):
 
 
     def _write_const(self, value: str, datatype: DataType):
+        # print(f"Printing this value: _{value}_")
         if datatype == DataType.TYPE_NIL:
             print(end='')
 
@@ -405,8 +406,7 @@ class TYPE(Instruction):
             if symb_var.datatype == None:
                 var.value = ""
             else:
-                var.datatype = DataType.TYPE_STRING
-                var.value = DataType.convert_to_string(symb_var.datatype)
+                memory.set_var(DataType.convert_to_string(symb_var.datatype, DataType.TYPE_STRING))
 
         else:
             var.value = symb_arg.datatype
@@ -425,14 +425,10 @@ class INT2CHAR(Instruction):
         var = memory.get_var(var_name, var_frame)
         
         if symb_arg.type_ == ArgumentType.VAR:
+
             symb_name = self.get_name_from_arg_value(symb_arg.value)
             symb_frame = self.get_frame_from_arg_value(symb_arg.value)
             symb = memory.get_var(symb_name, symb_frame)
-
-            if len(str(symb.value)) != 1:
-                DEBUG_PRINT("INT2CHAR got string or empty sequence")
-                print(symb.value)
-                exit(ErrorCodes.StringError)
 
             try: 
                 new_value = chr(int(symb.value))
@@ -447,4 +443,47 @@ class INT2CHAR(Instruction):
             except:
                 DEBUG_PRINT("Failed to convert int to chr")
                 exit(ErrorCodes.StringError)
+            
+            print("tuto to nactavujem")
             memory.set_var(var_name, var_frame, new_value, DataType.TYPE_STRING)
+
+# STRI2INT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class STRI2INT(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        pass
+
+
+# CONCAT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class CONCAT(ArithmeticInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "concat")
+
+# STRLEN ⟨var⟩ ⟨symb⟩
+class STRLEN(ArithmeticInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "strlen")
+
+# GETCHAR ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class GETCHAR(ArithmeticInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "getchar")
+
+# SETCHAR ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class SETCHAR(ArithmeticInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "setchar")

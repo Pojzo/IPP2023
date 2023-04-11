@@ -186,10 +186,8 @@ class Memory(metaclass=Singleton):
         second_operand = self.pop_data()
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
-
-        source_var = self.get_var(dest_name, dest_frame)
-        source_var.value = str(int(first_operand.value) + int(second_operand.value))
-        source_var.datatype = first_operand.datatype
+        
+        self.set_var(dest_name, dest_frame, str(int(first_operand.value) + int(second_operand.value)), first_operand.datatype)
 
     def sub(self, dest_name: str, dest_frame: str) -> None:
         first_operand = self.pop_data()
@@ -197,9 +195,7 @@ class Memory(metaclass=Singleton):
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
 
-        source_var = self.get_var(dest_name, dest_frame)
-        source_var.value = str(int(first_operand.value) - int(second_operand.value))
-        source_var.datatype = first_operand.datatype
+        self.set_var(dest_name, dest_frame, str(int(first_operand.value) - int(second_operand.value)), first_operand.datatype)
 
     def mul(self, dest_name: str, dest_frame: str) -> None:
         first_operand = self.pop_data()
@@ -207,9 +203,7 @@ class Memory(metaclass=Singleton):
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
 
-        source_var = self.get_var(dest_name, dest_frame)
-        source_var.value = str(int(first_operand.value) * int(second_operand.value))
-        source_var.datatype = first_operand.datatype
+        self.set_var(dest_name, dest_frame, str(int(first_operand.value) * int(second_operand.value)), first_operand.datatype)
 
     def idiv(self, dest_name: str, dest_frame: str) -> None:
         first_operand = self.pop_data()
@@ -217,15 +211,13 @@ class Memory(metaclass=Singleton):
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
        
-        source_var = self.get_var(dest_name, dest_frame)
         try:
-            source_var.value = str(int(first_operand.value) / int(second_operand.value))
+            new_value = str(int(first_operand.value) / int(second_operand.value))
         except ZeroDivisionError:
             DEBUG_PRINT("IDIV by zero")
             exit(ErrorCodes.OperandValueBad)
     
-        source_var.datatype = first_operand.datatype
-
+        self.set_var(dest_name, dest_frame, new_value, first_operand.datatype)
 
     def lt(self, dest_name: str, dest_frame: str) -> None:
         first_operand = self.pop_data()
@@ -248,8 +240,7 @@ class Memory(metaclass=Singleton):
             result = "true" if first_operand.value < second_operand.value else "false"
 
 
-        source_var.datatype = DataType.TYPE_BOOL
-        source_var.value = result
+        self.set_var(dest_name, dest_frame, result, DataType.TYPE_BOOL)
 
     def gt(self, dest_name: str, dest_frame: str) -> None:
         first_operand = self.pop_data()
@@ -272,8 +263,7 @@ class Memory(metaclass=Singleton):
             result = "true" if first_operand.value > second_operand.value else "false"
 
 
-        source_var.datatype = DataType.TYPE_BOOL
-        source_var.value = result
+        self.set_var(dest_name, dest_frame, result, DataType.TYPE_BOOL)
 
     def eq(self, dest_name: str, dest_frame: str) -> None:
         first_operand = self.pop_data()
@@ -302,8 +292,7 @@ class Memory(metaclass=Singleton):
         if first_operand.datatype == DataType.TYPE_NIL:
             result = "true" if first_operand.value == second_operand.value else "false"
 
-        source_var.datatype = DataType.TYPE_BOOL
-        source_var.value = result
+        self.set_var(dest_name, dest_frame, result, DataType.TYPE_BOOL)
 
     def and_(self, dest_name: str, dest_frame: str) -> None: 
         first_operand = self.pop_data()
@@ -311,10 +300,9 @@ class Memory(metaclass=Singleton):
 
         self._check_type(first_operand.datatype, [DataType.TYPE_BOOL])
         self._check_matching_operands(first_operand.datatype, second_operand.datataype)
-
-        source_var = self.get_var(dest_name, dest_frame)
-        source_var.datatype = DataType.TYPE_BOOL
-        source_var.value = convert_string_to_bool(first_operand.value) and convert_string_to_bool(second_operand.value)
+        
+        new_value = convert_string_to_bool(first_operand.value) and convert_string_to_bool(second_operand.value)
+        self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_BOOL)
 
     def or_(self, dest_name: str, dest_frame: str) -> None: 
         first_operand = self.pop_data()
@@ -322,19 +310,61 @@ class Memory(metaclass=Singleton):
 
         self._check_type(first_operand.datatype, [DataType.TYPE_BOOL])
         self._check_matching_operands(first_operand.datatype, second_operand.datataype)
-
-        source_var = self.get_var(dest_name, dest_frame)
-        source_var.datatype = DataType.TYPE_BOOL
-        source_var.value = str(convert_string_to_bool(first_operand.value) or
-                               convert_string_to_bool(second_operand.value))
+        
+        new_value = str(convert_string_to_bool(first_operand.value) or convert_string_to_bool(second_operand.value))
+        self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_BOOL)
 
     def not_(self, dest_name: str, dest_frame: str) -> None:
         operand = self.pop_data()
         self._check_type(operand.datatype, [DataType.TYPE_BOOL])
-        source_var = self.get_var(dest_name, dest_frame)
-        source_var.datatype = DataType.TYPE_BOOL
-        source_var.value = str(not convert_string_to_bool(operand.value))
+        self.set_var(dest_name, dest_frame, str(not convert_string_to_bool(operand.value), DataType.TYPE_BOOL))
+
+    def concat(self, dest_name: str, dest_frame: str) -> None:
+        operand1 = self.pop_data()
+        operand2 = self.pop_data()
+        self._check_type(operand1.datatype, [DataType.TYPE_STRING])
+        self._check_type(operand2.datatype, [DataType.TYPE_STRING])
+
+        new_value = operand1.value + operand2.value
+        self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_STRING)
     
+    
+    def strlen(self, dest_name: str, dest_frame: str) -> None:
+        operand = self.pop_data()
+        self._check_type(operand.datatype, [DataType.TYPE_STRING])
+        new_value = len(operand.value)
+        self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_INT)
+
+    
+    # get char from string at index
+    def getchar(self, dest_name: str, dest_frame: str) -> None:
+        operand1 = self.pop_data()
+        operand2 = self.pop_data()
+        self._check_type(operand1.datatype, [DataType.TYPE_STRING])
+        self._check_type(operand2.datatype, [DataType.TYPE_INT])
+        if int(operand2.value) >= len(operand1.value) or int(operand2.value) < 0:
+            DEBUG_PRINT("GETCHAR greater than length")
+            exit(ErrorCodes.StringError)
+
+        new_value = operand1.value[int(operand2.value)]
+        self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_STRING)
+    
+    # set char in string at index
+    def setchar(self, dest_name: str, dest_frame: str) -> None:
+        operand1 = self.pop_data()
+        operand2 = self.pop_data()
+        self._check_type(operand1.datatype, [DataType.TYPE_STRING])
+        self._check_type(operand2.datatype, [DataType.TYPE_INT])
+        
+        var = self.get_var(dest_name, dest_frame)
+        if int(operand2.value) >= len(var.value) or int(operand2.value) < 0:
+            DEBUG_PRINT("GETCHAR greater than length")
+            exit(ErrorCodes.StringError)
+        
+        index = int(operand2.value)
+        new_char = operand1.value[0]
+        new_string = var.value[:index] + new_char + var.value[index + 1:]
+        self.set_var(dest_name, dest_frame, new_string, DataType.TYPE_STRING)
     
     # testing function
     def get_frame_stack(self) -> list[Frame]:
