@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# pouziti:   is_it_ok.sh xlogin01-XYZ.zip testdir [task-num]
+# pouziti:   is_it_ok.sh xlogin01-XYZ.zip testdir [task-num] [--force]
 #  
 #   - POZOR: obsah adresare zadaneho druhym parametrem bude po dotazu VYMAZAN (nebo s volbou --force)!
 #   - rozbali archiv studenta xlogin99.zip do adresare testdir a overi formalni pozadavky pro odevzdani projektu IPP
@@ -9,7 +9,7 @@
 #   - detaily prubehu jsou logovany do souboru is_it_ok.log v adresari testdir
 
 # Autor: Zbynek Krivka
-# Verze: 1.5.5 (2023-02-08)
+# Verze: 1.5.6 (2023-04-08)
 #  2012-04-03  Zverejnena prvni verze
 #  2012-04-09  Pridana kontrola tretiho radku (prispel Vilem Jenis) a maximalni velikosti archivu
 #  2012-04-26  Oprava povolenych pripon archivu, aby to odpovidalo pozadavkum v terminu ve WIS
@@ -25,9 +25,10 @@
 #  2019-02-12  Uprava jmen a podporovanych formatu dokumentace (pdf|md)
 #  2020-01-30  Aktualizace prikazu pro PHP 7.4 a Python 3.8
 #  2022-02-03  Aktualizace prikazu pro PHP 8.1, rozsireni NVP, NVI
-#  2022-02-08  Skript vraci navratove kody (0=vse OK, 1=vyskytla se chyba v archivu, 2=spatne parametry/vstupyz, 3=spatna pripona skriptu), 
+#  2023-02-08  Skript vraci navratove kody (0=vse OK, 1=vyskytla se chyba v archivu, 2=spatne parametry/vstupyz, 3=spatna pripona skriptu), 
 #              Novy parametr --force (prepis existujiciho adresare).  
 #              Zruseno rozsireni NVI a FILES.
+#  2023-04-08  Aktualizace prikazu pro Python 3.10
 # TODO: --log pro jmeno souboru pro log, jinak se neloguje.
 
 LOG="is_it_ok.log"
@@ -35,7 +36,6 @@ MAX_ARCHIVE_SIZE=1100000
 COURSE="IPP"
 PARSESCRIPT="parse.php"
 INTERPRETSCRIPT="interpret.py"
-#TESTSCRIPT="test.php"
 
 # Konstanty barev
 REDCOLOR='\033[1;31m'
@@ -225,7 +225,7 @@ for SCRIPT in "${REQUIRED_SCRIPTS[@]}" "${NON_REQUIRED_SCRIPTS[@]}"; do
       php8.1 $SCRIPT --help >> $LOG 2>&1
       RETCODE=$?
 	  elif [[ "$EXT" = "py" ]]; then
-      python3.8 $SCRIPT --help >> $LOG 2>&1
+      python3.10 $SCRIPT --help >> $LOG 2>&1
       RETCODE=$?		 
 	  else
       echo_color red "INTERNAL ERROR: Unknown script extension."

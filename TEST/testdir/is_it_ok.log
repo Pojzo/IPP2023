@@ -1,8 +1,0 @@
-Archive:  xkovac66.zip
-  inflating: analyzer.php            
-  inflating: generator.php           
-  inflating: input_handler.php       
-  inflating: parse.php               
-  inflating: test.php                
-  inflating: readme1.md              
-./is_it_ok.sh: line 225: php8.1: command not found
