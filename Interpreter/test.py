@@ -128,7 +128,17 @@ def run_program(file_name: str, num_test: int) -> Test:
     command = f"py interpret.py --source={file_name}.src \
             --input={file_name}.in"
 
+    program_input = ""
+
+    # if exists read input
+    if os.path.exists(f"{file_name}.in"):
+        with open(f"{file_name}.in", "r") as file:
+            program_input = file.read()
+
+
+    print("This is program input", program_input)
     program = subprocess.run(command,
+                             input=program_input,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              encoding="utf-8",
@@ -147,7 +157,7 @@ def run_program(file_name: str, num_test: int) -> Test:
         src = file.read()
 
     directory, file_name = file_name.split("/")[-2:]
-     
+
     test = Test(directory, file_name,
                 expected_output, expected_rc,
                 program.stdout, program.stderr, program.returncode,
