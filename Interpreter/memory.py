@@ -59,7 +59,7 @@ class Memory(metaclass=Singleton):
     # ///--------- DEFINING VARIABLES IN FRAMES -------\\\\\\
 
     # define a local variable
-    def _define_local(self, name: str) -> None:
+    def _local_define(self, name: str) -> None:
         # check if there is any frame at all
         if len(self._frame_stack) == 0:
             exit(ErrorCodes.FrameNotDefined)
@@ -69,21 +69,22 @@ class Memory(metaclass=Singleton):
         local_frame.define(name)
 
     # define a variable in the temporary frame
-    def _define_temporary(self, name: str) -> None:
+    def _temporary_define(self, name: str) -> None:
         if self._temporary_frame == None: 
-            self._temporary_frame = Frame()
+            DEBUG_PRINT("Temporary frame doesn't exist")
+            exit(ErrorCodes.FrameNotDefined)
 
         self._temporary_frame.define(name)
 
     # define a variable in the global frame
-    def _define_global(self, name: str) -> None:
+    def _global_define(self, name: str) -> None:
         self._global_frame.define(name)
 
     def define_var(self, name: str, frame: str):
         assert(frame in ["GF", "LF", "TF"])
-        {'GF': self._define_global,
-         'LF': self._define_local,
-         'TF': self._define_temporary}[frame](name)
+        {'GF': self._global_define,
+         'LF': self._local_define,
+         'TF': self._temporary_define}[frame](name)
 
     
     # ///--------- FUNCTIONS WITH FRAME STACK -------\\\\\\

@@ -33,6 +33,19 @@ class DataType:
         elif datatype == "float":
             return DataType.TYPE_FLOAT
 
+    @staticmethod
+    def convert_to_string(datatype: "DataType") -> str:
+        if datatype == DataType.TYPE_INT:
+            return "int"
+        elif datatype == DataType.TYPE_STRING:
+            return "string"
+        elif datatype == DataType.TYPE_BOOL:
+            return "bool"
+        elif datatype == DataType.TYPE_NIL:
+            return "nil"
+        elif datatype == DataType.TYPE_FLOAT:
+            return "float"
+
 
 class Instruction(abc.ABC):
     def __init__(self, opcode: str, args: list[Argument]):
@@ -63,11 +76,13 @@ class Instruction(abc.ABC):
                     DEBUG_PRINT("Bad bool on input")
                     exit(ErrorCodes.InputStructureBad)
             
-            if arg.type_ == ArgumentType.VAR and expected_type == ArgumentType.SYMB:
-                continue
+            if expected_type == ArgumentType.SYMB:
+                if arg.type_ in [ArgumentType.SYMB, ArgumentType.VAR]:
+                    continue
 
             if not arg.type_ == expected_type:
                 DEBUG_PRINT("Not good type ")
+                print(arg.type_, expected_type)
                 exit(ErrorCodes.InputStructureBad)
 
     @abc.abstractmethod
@@ -82,7 +97,7 @@ class Instruction(abc.ABC):
 
     def get_name_from_arg_value(self, var: str) -> str:
         return var.split('@')[1]
-
+    
     def convert_strings_data_type_to_enum(self, str_datatype) -> DataType:
         return {'int':       TYPE_INT,
                 'string':    TYPE_STRING,
@@ -189,7 +204,18 @@ class READ(Instruction):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        pass
+        var_arg = self._args[0]
+        type_arg = self._args[1]
+        if type_arg.value not in ["string", "int", "bool", "float"]:
+            DEBUG_PRINT("Bad type on input")
+            exit(ErrorCodes.InputStructureBad)
+        
+        var_name = self.get_name_from_arg_value(var_arg.value)
+        var_frame = self.get_frame_from_arg_value(var_arg.value)
+        var = memory.get_var(var_name, var_frame)
+
+        var.value = input()
+        var.datatype = DataType.convert_to_enum(type_arg.value)
 
 
 # WRITE ⟨symb⟩
@@ -197,22 +223,21 @@ class WRITE(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def _write_var(self, var: Variable) -> None:
-        value = var.value
-        if var.datatype == DataType.TYPE_NIL:
+
+    def _write_const(self, value: str, datatype: DataType):
+        if datatype == DataType.TYPE_NIL:
             print(end='')
 
-        elif var.datatype == DataType.TYPE_INT:
+        elif datatype == DataType.TYPE_INT:
             if '.' in value:
                 print(int(float(value)), end='')
 
             else:
                 print(int(value), end='')
-        elif var.datatype == DataType.TYPE_FLOAT:
+        elif datatype == DataType.TYPE_FLOAT:
             print(float(value), end='')
         else:
             print(value, end='')
-
 
     def execute(self, memory):
         arg = self._args[0]
@@ -220,7 +245,11 @@ class WRITE(Instruction):
             name = self.get_name_from_arg_value(arg.value)
             frame = self.get_frame_from_arg_value(arg.value)
             var = memory.get_var(name, frame)
-            self._write_var(var)
+            self._write_const(var.value, var.datatype)
+        else:
+            value = arg.value
+            datatype = DataType.convert_to_enum(arg.datatype)
+            self._write_const(value, datatype)
 
 
 class ArithmeticInstruction(Instruction):
@@ -292,3 +321,29 @@ class IDIV(ArithmeticInstruction):
 
     def execute(self, memory):
         super().execute(memory, "idiv")
+
+# TYPE ⟨var⟩ ⟨symb⟩
+class TYPE(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        var_arg = self._args[0]
+        symb_arg = self._args[1]
+        
+        var_name = self.get_name_from_arg_value(var_arg.value)
+        var_frame = self.get_frame_from_arg_value(var_arg.value)
+        var = memory.get_var(var_name, var_frame)
+
+        if symb_arg.type_ == ArgumentType.VAR:
+            symb_name = self.get_name_from_arg_value(var_arg.value)
+            symb_frame = self.get_frame_from_arg_value(var_arg.value)
+            symb_var = memory.get_var(symb_name, symb_frame)
+            if symb_var.datatype == None:
+                var.value = ""
+            else:
+                var.datatype = DataType.TYPE_STRING
+                var.value = DataType.convert_to_string(symb_var.datatype)
+
+        else:
+            var.value = symb_arg.datatype

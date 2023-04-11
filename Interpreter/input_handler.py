@@ -119,7 +119,11 @@ class InstructionVerify:
             DEBUG_PRINT("Missing order of instruction")
             return False
 
-        order = int(order)
+        try:
+            order = int(order)
+        except:
+            DEBUG_PRINT("Wrong order of instruction")
+            exit(ErrorCodes.InputStructureBad)
 
         # checks whether order is correct, must be greater
         # than zero and in the correct order
@@ -211,6 +215,7 @@ class InputHandler:
 
         # catch an exception when opening file
         except Exception as e:
+            print(e)
             DEBUG_PRINT(f"Error when opening input file {e=} {file_name=}")
             exit(11)
 
@@ -272,17 +277,19 @@ class InputHandler:
             for argument in instruction.iterchildren():
                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
                 arg_value = argument.text
+                argument_order = int(argument.tag[3])
                 if arg_type == ArgumentType.SYMB:
                     argument = Argument(arg_type, arg_value, datatype=argument.get("type"))
                 else:
                     argument = Argument(arg_type, arg_value)
 
-                arguments.append(argument)
+                arguments.append([argument, argument_order])
 
-            order = int(instruction.get("order"))
+            instruction_order = int(instruction.get("order"))
 
-            
-            instructions.append([order, opcode, arguments])
+            arguments.sort(key=lambda x: x[1]) 
+            arguments = [x[0] for x in arguments]
+            instructions.append([instruction_order, opcode, arguments])
 
         instructions.sort(key=lambda x: x[0])
         
