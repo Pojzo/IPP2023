@@ -136,7 +136,6 @@ def run_program(file_name: str, num_test: int) -> Test:
             program_input = file.read()
 
 
-    print("This is program input", program_input)
     program = subprocess.run(command,
                              input=program_input,
                              stdout=subprocess.PIPE,
