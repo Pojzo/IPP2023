@@ -391,4 +391,3 @@ class Memory(metaclass=Singleton):
             exit(ErrorCodes.DataStackEmpty)
 
         return self._data_stack.pop(-1)
-

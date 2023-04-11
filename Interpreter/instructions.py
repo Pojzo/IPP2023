@@ -83,6 +83,7 @@ class Instruction(abc.ABC):
 
             if not arg.type_ == expected_type:
                 DEBUG_PRINT("Not good type ")
+                print(arg.type_, expected_type)
                 exit(ErrorCodes.InputStructureBad)
 
     @abc.abstractmethod
@@ -487,3 +488,26 @@ class SETCHAR(ArithmeticInstruction):
 
     def execute(self, memory):
         super().execute(memory, "setchar")
+
+class DPRINT(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        pass
+
+class BREAK(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        pass
+
+# JUMP
+class JUMP(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        arg = self._args[0]
+        return arg.value

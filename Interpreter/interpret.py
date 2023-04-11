@@ -9,7 +9,16 @@ from config import DEBUG
 class Interpreter:
     def __init__(self, instructions_raw: list[str, list[Argument]]):
         self._instructions = []
+        self._labels_indeces = {}
+        self._create_labels(instructions_raw)
         self._create_instructions(instructions_raw)
+
+
+    def _create_labels(self, instructions_raw: list[str, list[Argument]]) -> None:
+        for index, (opcode, args) in enumerate(instructions_raw):
+            if opcode == "LABEL":
+                self._labels_indeces[args[0].value] = index
+
 
     # created _instructions list of instruction objects
     # based on opcode string and arguments
@@ -17,13 +26,22 @@ class Interpreter:
                             instructions_raw: list[str, list[Argument]]) -> None:
 
         for opcode, args in instructions_raw:
+            if opcode == "LABEL":
+                continue
             # dynamically create instruction object based on opcode string
             instruction_obj = getattr(InstructionsClass, opcode)(args)
             self._instructions.append(instruction_obj)
 
     def execute_instructions(self, memory: Memory) -> None:
-        for instruction in self._instructions:
-            instruction.execute(memory)
+        index = 0
+        while index < len(self._instructions):
+            label = self._instructions[index].execute(memory)
+            if label is None:
+                index += 1
+                continue
+
+            index = self._labels_indeces[label]
+            print("Jumping to ", label)
 
     def print_instructions(self):
         for instruction in self._instructions:
