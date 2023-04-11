@@ -26,7 +26,7 @@
         <arg2 type="var">GF@add1</arg2>
         <arg3 type="var">GF@add2</arg3>
     </instruction>
-     <instruction order="8" opcode="ADD">
+     <instruction order="8" opcode="SUB">
         <arg1 type="var">GF@result</arg1>
         <arg2 type="var">GF@result</arg2>
         <arg3 type="int">100</arg3>

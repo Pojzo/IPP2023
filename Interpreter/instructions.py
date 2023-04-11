@@ -185,7 +185,7 @@ class ArithmeticInstruction(Instruction):
 
     # push variable onto the data stack
     # so it can be used by an operation in the memory
-    def push_var(self, memory, operand_arg: str) -> None:
+    def _push_var(self, memory, operand_arg: str) -> None:
         operand_name = self.get_name_from_arg_value(operand_arg.value)
         operand_frame = self.get_frame_from_arg_value(operand_arg.value)
         operand_var = memory.get_var(operand_name, operand_frame)
@@ -198,16 +198,19 @@ class ArithmeticInstruction(Instruction):
         source_name = self.get_name_from_arg_value(source_arg.value)
         source_frame = self.get_frame_from_arg_value(source_arg.value)
 
+        # check if we're dealing with a variable 
+        # or a symbol
+        if operand2_arg.type_ == ArgumentType.VAR:
+            self._push_var(memory, operand2_arg)
+        else:
+            memory.push_data(operand2_arg.value, DataType.convert_to_enum(operand2_arg.datatype))
         if operand1_arg.type_ == ArgumentType.VAR:
-            self.push_var(memory, operand1_arg)
+            self._push_var(memory, operand1_arg)
         else:
             memory.push_data(operand1_arg.value, DataType.convert_to_enum(operand1_arg.datatype))
 
-        if operand2_arg.type_ == ArgumentType.VAR:
-            self.push_var(memory, operand2_arg)
-        else:
-            memory.push_data(operand2_arg.value, DataType.convert_to_enum(operand2_arg.datatype))
 
+        # find the method name dynamically
         callback = getattr(memory, function_name)
         callback(source_name, source_frame)
 

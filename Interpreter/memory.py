@@ -163,7 +163,8 @@ class Memory(metaclass=Singleton):
         var.value = value
         var.datatype = datatype
     
-
+    
+    # i'll probably refactor this later to abide by DRY
     # the operands will be on the stack
     def add(self, dest_name, dest_frame) -> None:
         first_operand = self.pop_data()
@@ -183,8 +184,27 @@ class Memory(metaclass=Singleton):
             exit(ErrorCodes.OperandValueBad)
 
         source_var = self.get_var(dest_name, dest_frame)
-        source_var.value = int(first_operand.value) + int(second_operand.value)
+        source_var.value = int(first_operand.value) - int(second_operand.value)
 
+    def mul(self, dest_name, dest_frame) -> None:
+        first_operand = self.pop_data()
+        second_operand = self.pop_data()
+        if first_operand.datatype != second_operand.datatype:
+            DEBUG_PRINT("MUL datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
+            exit(ErrorCodes.OperandValueBad)
+
+        source_var = self.get_var(dest_name, dest_frame)
+        source_var.value = int(first_operand.value) * int(second_operand.value)
+
+    def idiv(self, dest_name, dest_frame) -> None:
+        first_operand = self.pop_data()
+        second_operand = self.pop_data()
+        if first_operand.datatype != second_operand.datatype:
+            DEBUG_PRINT("IDIV datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
+            exit(ErrorCodes.OperandValueBad)
+
+        source_var = self.get_var(dest_name, dest_frame)
+        source_var.value = int(first_operand.value) / int(second_operand.value)
     
     
     # testing function
