@@ -139,12 +139,12 @@ class InstructionVerify:
             return False
 
         # check for wrong(unknown) opcode
-        if opcode not in instructions_dic:
+        if opcode.upper() not in instructions_dic:
             DEBUG_PRINT("Wrong opcode")
             return False
 
         # get all children of instruction
-        expected_num_args = len(instructions_dic[opcode])
+        expected_num_args = len(instructions_dic[opcode.upper()])
         arg_numbers = set()
         for index, child in enumerate(instruction_xml.iterchildren()):
             # check if arg matches arg<digit> using regex
@@ -156,6 +156,19 @@ class InstructionVerify:
 
         return len(arg_numbers) == expected_num_args
 
+class Input:
+    rows: list [str]
+    counter: int = 0
+    @staticmethod
+    def get_next_input():
+        if Input.counter == len(Input.rows):
+            DEBUG_PRINT("Too few inputs")
+            exit(InputStructureBad)
+
+        to_return = Input.rows[Input.counter].strip()
+        Input.counter += 1
+        return to_return
+        
 
 class InputHandler:
     def __init__(self):
@@ -228,6 +241,8 @@ class InputHandler:
         else:
             self.input_file = input()
 
+        Input.rows = self.input_file.split('\n')
+
         if self.args["source_file_parameter"] is not None:
             self.source_file = self.load_file(
                     self.args["source_file_parameter"])
@@ -272,7 +287,7 @@ class InputHandler:
     def get_instructions(self) -> list[str, list[Argument]]:
         instructions = []
         for instruction in self.source_file.xpath("/program/*"):
-            opcode = instruction.get("opcode")
+            opcode = instruction.get("opcode").upper()
             arguments = []
             for argument in instruction.iterchildren():
                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))

@@ -6,7 +6,12 @@ from config import DEBUG
 from instructions import DataType
 from instructions import Variable
 
-       
+
+def convert_string_to_bool(string: str) -> bool:
+    if string.lower() == "true":
+        return True
+    return False
+
 
 class Frame:
     def __init__(self):
@@ -144,7 +149,7 @@ class Memory(metaclass=Singleton):
         var =  {'GF': self._global_get_var,
                 'LF': self._local_get_var,
                 'TF': self._temporary_get_var}[frame](name)
-
+            
         if var is None:
             DEBUG_PRINT(f"Variable {name} not defined in {frame}")
             exit(ErrorCodes.VariableNotDefined)
@@ -167,60 +172,51 @@ class Memory(metaclass=Singleton):
     
     def _check_type(self, type_: DataType, allowed_types: list[DataType]) -> None:
         if type_ not in allowed_types:
-            DEBUG_PRINT("IDIV wrong datatype")
+            DEBUG_PRINT("Instruction wrong datatype")
+            exit(ErrorCodes.OperandTypeBad)
+
+    def _check_matching_operands(self, operand1_datatype: DataType, operand2_datatype: DataType) -> None:
+        if operand1_datatype != operand2_datatype:
+            DEBUG_PRINT("ADD datatypes not matching"+ str(operand1_datatype) + "/" + str(operand2_datatype))
             exit(ErrorCodes.OperandTypeBad)
 
 
-    # i'll probably refactor this later to abide by DRY
-    # the operands will be on the stack
-    def add(self, dest_name, dest_frame) -> None:
+    def add(self, dest_name: str, dest_frame: str) -> None:
         first_operand = self.pop_data()
         second_operand = self.pop_data()
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
-
-        if first_operand.datatype != second_operand.datatype:
-            DEBUG_PRINT("ADD datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
-            exit(ErrorCodes.OperandTypeBad)
+        self._check_matching_operands(first_operand.datatype, second_operand.datatype)
 
         source_var = self.get_var(dest_name, dest_frame)
         source_var.value = str(int(first_operand.value) + int(second_operand.value))
         source_var.datatype = first_operand.datatype
 
-    def sub(self, dest_name, dest_frame) -> None:
+    def sub(self, dest_name: str, dest_frame: str) -> None:
         first_operand = self.pop_data()
         second_operand = self.pop_data()
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
-
-        if first_operand.datatype != second_operand.datatype:
-            DEBUG_PRINT("SUB datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
-            exit(ErrorCodes.OperandTypeBad)
+        self._check_matching_operands(first_operand.datatype, second_operand.datatype)
 
         source_var = self.get_var(dest_name, dest_frame)
         source_var.value = str(int(first_operand.value) - int(second_operand.value))
         source_var.datatype = first_operand.datatype
 
-    def mul(self, dest_name, dest_frame) -> None:
+    def mul(self, dest_name: str, dest_frame: str) -> None:
         first_operand = self.pop_data()
         second_operand = self.pop_data()
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
-
-        if first_operand.datatype != second_operand.datatype:
-            DEBUG_PRINT("MUL datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
-            exit(ErrorCodes.OperandTypeBad)
+        self._check_matching_operands(first_operand.datatype, second_operand.datatype)
 
         source_var = self.get_var(dest_name, dest_frame)
         source_var.value = str(int(first_operand.value) * int(second_operand.value))
         source_var.datatype = first_operand.datatype
 
-    def idiv(self, dest_name, dest_frame) -> None:
+    def idiv(self, dest_name: str, dest_frame: str) -> None:
         first_operand = self.pop_data()
         second_operand = self.pop_data()
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
+        self._check_matching_operands(first_operand.datatype, second_operand.datatype)
        
-        if first_operand.datatype != second_operand.datatype:
-            DEBUG_PRINT("IDIV datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
-            exit(ErrorCodes.OperandValueBad)
-
         source_var = self.get_var(dest_name, dest_frame)
         try:
             source_var.value = str(int(first_operand.value) / int(second_operand.value))
@@ -229,6 +225,116 @@ class Memory(metaclass=Singleton):
             exit(ErrorCodes.OperandValueBad)
     
         source_var.datatype = first_operand.datatype
+
+
+    def lt(self, dest_name: str, dest_frame: str) -> None:
+        first_operand = self.pop_data()
+        second_operand = self.pop_data()
+        self._check_matching_operands(first_operand.datatype, second_operand.datatype)
+        self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_STRING, DataType.TYPE_BOOL,
+                         DataType.TYPE_FLOAT])
+        
+        source_var = self.get_var(dest_name, dest_frame)
+        if first_operand.datatype == DataType.TYPE_INT:
+            result = "true" if int(first_operand.value) < int(second_operand.value) else "false"
+
+        if first_operand.datatype == DataType.TYPE_FLOAT:
+            result = "true" if float(first_operand.value) < float(second_operand.value) else "false"
+
+        if first_operand.datatype == DataType.TYPE_BOOL:
+            result = "true" if convert_string_to_bool(first_operand.value) < convert_string_to_bool(second_operand.value) else "false"
+
+        if first_operand.datatype == DataType.TYPE_STRING:
+            result = "true" if first_operand.value < second_operand.value else "false"
+
+
+        source_var.datatype = DataType.TYPE_BOOL
+        source_var.value = result
+
+    def gt(self, dest_name: str, dest_frame: str) -> None:
+        first_operand = self.pop_data()
+        second_operand = self.pop_data()
+        self._check_matching_operands(first_operand.datatype, second_operand.datatype)
+        self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_STRING, DataType.TYPE_BOOL,
+                         DataType.TYPE_FLOAT])
+        
+        source_var = self.get_var(dest_name, dest_frame)
+        if first_operand.datatype == DataType.TYPE_INT:
+            result = "true" if int(first_operand.value) > int(second_operand.value) else "false"
+
+        if first_operand.datatype == DataType.TYPE_FLOAT:
+            result = "true" if float(first_operand.value) > float(second_operand.value) else "false"
+
+        if first_operand.datatype == DataType.TYPE_BOOL:
+            result = "true" if convert_string_to_bool(first_operand.value) > convert_string_to_bool(second_operand.value) else "false"
+
+        if first_operand.datatype == DataType.TYPE_STRING:
+            result = "true" if first_operand.value > second_operand.value else "false"
+
+
+        source_var.datatype = DataType.TYPE_BOOL
+        source_var.value = result
+
+    def eq(self, dest_name: str, dest_frame: str) -> None:
+        first_operand = self.pop_data()
+        second_operand = self.pop_data()
+
+        # TODO neviem co tu spravit
+        # if first_operand.datatype == DataType.TYPE_NIL:
+            # if second_operand.datatype == DataType.TYPE_NIL
+
+        self._check_matching_operands(first_operand.datatype, second_operand.datatype)
+        
+        result = "true"
+        source_var = self.get_var(dest_name, dest_frame)
+        if first_operand.datatype == DataType.TYPE_INT:
+            result = "true" if int(first_operand.value) == int(second_operand.value) else "false"
+
+        if first_operand.datatype == DataType.TYPE_FLOAT:
+            result = "true" if float(first_operand.value) == float(second_operand.value) else "false"
+
+        if first_operand.datatype == DataType.TYPE_BOOL:
+            result = "true" if convert_string_to_bool(first_operand.value) == convert_string_to_bool(second_operand.value) else "false"
+
+        if first_operand.datatype == DataType.TYPE_STRING:
+            result = "true" if first_operand.value == second_operand.value else "false"
+
+        if first_operand.datatype == DataType.TYPE_NIL:
+            result = "true" if first_operand.value == second_operand.value else "false"
+
+        source_var.datatype = DataType.TYPE_BOOL
+        source_var.value = result
+
+    def and_(self, dest_name: str, dest_frame: str) -> None: 
+        first_operand = self.pop_data()
+        second_operand = self.pop_data()
+
+        self._check_type(first_operand.datatype, [DataType.TYPE_BOOL])
+        self._check_matching_operands(first_operand.datatype, second_operand.datataype)
+
+        source_var = self.get_var(dest_name, dest_frame)
+        source_var.datatype = DataType.TYPE_BOOL
+        source_var.value = convert_string_to_bool(first_operand.value) and convert_string_to_bool(second_operand.value)
+
+    def or_(self, dest_name: str, dest_frame: str) -> None: 
+        first_operand = self.pop_data()
+        second_operand = self.pop_data()
+
+        self._check_type(first_operand.datatype, [DataType.TYPE_BOOL])
+        self._check_matching_operands(first_operand.datatype, second_operand.datataype)
+
+        source_var = self.get_var(dest_name, dest_frame)
+        source_var.datatype = DataType.TYPE_BOOL
+        source_var.value = str(convert_string_to_bool(first_operand.value) or
+                               convert_string_to_bool(second_operand.value))
+
+    def not_(self, dest_name: str, dest_frame: str) -> None:
+        operand = self.pop_data()
+        self._check_type(operand.datatype, [DataType.TYPE_BOOL])
+        source_var = self.get_var(dest_name, dest_frame)
+        source_var.datatype = DataType.TYPE_BOOL
+        source_var.value = str(not convert_string_to_bool(operand.value))
+    
     
     # testing function
     def get_frame_stack(self) -> list[Frame]:

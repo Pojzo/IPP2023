@@ -75,11 +75,28 @@ interpret.py(1): from input_handler import InputHandler
 <frozen importlib._bootstrap_external>(601): <frozen importlib._bootstrap_external>(602): <frozen importlib._bootstrap_external>(606): <frozen importlib._bootstrap_external>(610):  --- modulename: _bootstrap_external, funcname: _unpack_uint32
 <frozen importlib._bootstrap_external>(86): <frozen importlib._bootstrap_external>(87): <frozen importlib._bootstrap_external>(612): <frozen importlib._bootstrap_external>(615): <frozen importlib._bootstrap_external>(985): <frozen importlib._bootstrap_external>(986): <frozen importlib._bootstrap_external>(987): <frozen importlib._bootstrap_external>(1000): <frozen importlib._bootstrap_external>(1001): <frozen importlib._bootstrap_external>(1002): <frozen importlib._bootstrap_external>(1003): <frozen importlib._bootstrap_external>(1004): <frozen importlib._bootstrap_external>(1005): <frozen importlib._bootstrap_external>(1000):  --- modulename: _bootstrap_external, funcname: _validate_timestamp_pyc
 <frozen importlib._bootstrap_external>(637):  --- modulename: _bootstrap_external, funcname: _unpack_uint32
-<frozen importlib._bootstrap_external>(86): <frozen importlib._bootstrap_external>(87): <frozen importlib._bootstrap_external>(641): <frozen importlib._bootstrap_external>(642):  --- modulename: _bootstrap_external, funcname: _unpack_uint32
-<frozen importlib._bootstrap_external>(86): <frozen importlib._bootstrap_external>(87): <frozen importlib._bootstrap_external>(1010): <frozen importlib._bootstrap_external>(1011): <frozen importlib._bootstrap_external>(1010):  --- modulename: _bootstrap, funcname: _verbose_message
-<frozen importlib._bootstrap>(246): <frozen importlib._bootstrap_external>(1012): <frozen importlib._bootstrap_external>(1013): <frozen importlib._bootstrap_external>(1014): <frozen importlib._bootstrap_external>(1012):  --- modulename: _bootstrap_external, funcname: _compile_bytecode
-<frozen importlib._bootstrap_external>(672): <frozen importlib._bootstrap_external>(673): <frozen importlib._bootstrap_external>(674):  --- modulename: _bootstrap, funcname: _verbose_message
-<frozen importlib._bootstrap>(246): <frozen importlib._bootstrap_external>(675): <frozen importlib._bootstrap_external>(676): <frozen importlib._bootstrap_external>(677): <frozen importlib._bootstrap_external>(880): <frozen importlib._bootstrap_external>(883):  --- modulename: _bootstrap, funcname: _call_with_frames_removed
+<frozen importlib._bootstrap_external>(86): <frozen importlib._bootstrap_external>(87): <frozen importlib._bootstrap_external>(638): <frozen importlib._bootstrap_external>(639):  --- modulename: _bootstrap, funcname: _verbose_message
+<frozen importlib._bootstrap>(246): <frozen importlib._bootstrap_external>(640): <frozen importlib._bootstrap_external>(1007): <frozen importlib._bootstrap_external>(1008): <frozen importlib._bootstrap_external>(1015): <frozen importlib._bootstrap_external>(1016):  --- modulename: _bootstrap_external, funcname: get_data
+<frozen importlib._bootstrap_external>(1072): <frozen importlib._bootstrap_external>(1073): <frozen importlib._bootstrap_external>(1074): <frozen importlib._bootstrap_external>(1073): <frozen importlib._bootstrap_external>(1017):  --- modulename: _bootstrap_external, funcname: source_to_code
+<frozen importlib._bootstrap_external>(947): <frozen importlib._bootstrap_external>(948): <frozen importlib._bootstrap_external>(947):  --- modulename: _bootstrap, funcname: _call_with_frames_removed
+<frozen importlib._bootstrap>(241): <frozen importlib._bootstrap_external>(1018):  --- modulename: _bootstrap, funcname: _verbose_message
+<frozen importlib._bootstrap>(246): <frozen importlib._bootstrap_external>(1019): <frozen importlib._bootstrap_external>(1020): <frozen importlib._bootstrap_external>(1021): <frozen importlib._bootstrap_external>(1026): <frozen importlib._bootstrap_external>(1027): <frozen importlib._bootstrap_external>(1026):  --- modulename: _bootstrap_external, funcname: _code_to_timestamp_pyc
+<frozen importlib._bootstrap_external>(685): <frozen importlib._bootstrap_external>(686):  --- modulename: _bootstrap_external, funcname: _pack_uint32
+<frozen importlib._bootstrap_external>(81): <frozen importlib._bootstrap_external>(687):  --- modulename: _bootstrap_external, funcname: _pack_uint32
+<frozen importlib._bootstrap_external>(81): <frozen importlib._bootstrap_external>(688):  --- modulename: _bootstrap_external, funcname: _pack_uint32
+<frozen importlib._bootstrap_external>(81): <frozen importlib._bootstrap_external>(689): <frozen importlib._bootstrap_external>(690): <frozen importlib._bootstrap_external>(1028): <frozen importlib._bootstrap_external>(1029):  --- modulename: _bootstrap_external, funcname: _cache_bytecode
+<frozen importlib._bootstrap_external>(1096):  --- modulename: _bootstrap_external, funcname: _calc_mode
+<frozen importlib._bootstrap_external>(524): <frozen importlib._bootstrap_external>(525):  --- modulename: _bootstrap_external, funcname: _path_stat
+<frozen importlib._bootstrap_external>(147): <frozen importlib._bootstrap_external>(530): <frozen importlib._bootstrap_external>(531): <frozen importlib._bootstrap_external>(1097):  --- modulename: _bootstrap_external, funcname: set_data
+<frozen importlib._bootstrap_external>(1101):  --- modulename: _bootstrap_external, funcname: _path_split
+<frozen importlib._bootstrap_external>(134):  --- modulename: _bootstrap_external, funcname: <genexpr>
+<frozen importlib._bootstrap_external>(134):  --- modulename: _bootstrap_external, funcname: <genexpr>
+<frozen importlib._bootstrap_external>(134): <frozen importlib._bootstrap_external>(135): <frozen importlib._bootstrap_external>(137): <frozen importlib._bootstrap_external>(1102): <frozen importlib._bootstrap_external>(1104):  --- modulename: _bootstrap_external, funcname: _path_isdir
+<frozen importlib._bootstrap_external>(166): <frozen importlib._bootstrap_external>(168):  --- modulename: _bootstrap_external, funcname: _path_is_mode_type
+<frozen importlib._bootstrap_external>(152): <frozen importlib._bootstrap_external>(153):  --- modulename: _bootstrap_external, funcname: _path_stat
+<frozen importlib._bootstrap_external>(147): <frozen importlib._bootstrap_external>(156): <frozen importlib._bootstrap_external>(1108): <frozen importlib._bootstrap_external>(1121): <frozen importlib._bootstrap_external>(1122):  --- modulename: _bootstrap_external, funcname: _write_atomic
+<frozen importlib._bootstrap_external>(190): <frozen importlib._bootstrap_external>(191): <frozen importlib._bootstrap_external>(192): <frozen importlib._bootstrap_external>(191): <frozen importlib._bootstrap_external>(193): <frozen importlib._bootstrap_external>(196): <frozen importlib._bootstrap_external>(197): <frozen importlib._bootstrap_external>(196): <frozen importlib._bootstrap_external>(198): <frozen importlib._bootstrap_external>(1123):  --- modulename: _bootstrap, funcname: _verbose_message
+<frozen importlib._bootstrap>(246): <frozen importlib._bootstrap_external>(1032): <frozen importlib._bootstrap_external>(880): <frozen importlib._bootstrap_external>(883):  --- modulename: _bootstrap, funcname: _call_with_frames_removed
 <frozen importlib._bootstrap>(241):  --- modulename: input_handler, funcname: <module>
 input_handler.py(1): import argparse
 input_handler.py(2): from lxml import etree
@@ -19906,7 +19923,7 @@ debug.py(1): from config import DEBUG
 <frozen importlib._bootstrap_external>(672): <frozen importlib._bootstrap_external>(673): <frozen importlib._bootstrap_external>(674):  --- modulename: _bootstrap, funcname: _verbose_message
 <frozen importlib._bootstrap>(246): <frozen importlib._bootstrap_external>(675): <frozen importlib._bootstrap_external>(676): <frozen importlib._bootstrap_external>(677): <frozen importlib._bootstrap_external>(880): <frozen importlib._bootstrap_external>(883):  --- modulename: _bootstrap, funcname: _call_with_frames_removed
 <frozen importlib._bootstrap>(241):  --- modulename: config, funcname: <module>
-config.py(1): DEBUG=False
+config.py(1): DEBUG=True
 <frozen importlib._bootstrap>(699): <frozen importlib._bootstrap>(700): <frozen importlib._bootstrap>(701):  --- modulename: _bootstrap, funcname: _verbose_message
 <frozen importlib._bootstrap>(246): <frozen importlib._bootstrap>(703): <frozen importlib._bootstrap>(705): <frozen importlib._bootstrap>(1007): <frozen importlib._bootstrap>(1016): <frozen importlib._bootstrap>(1024):  --- modulename: _bootstrap, funcname: __exit__
 <frozen importlib._bootstrap>(174):  --- modulename: _bootstrap, funcname: release
@@ -20892,16 +20909,23 @@ input_handler.py(114): class InstructionVerify:
 input_handler.py(114): class InstructionVerify:
 input_handler.py(115):     @staticmethod
 input_handler.py(116):     def verify_instruction(instruction_xml, orders: set) -> bool:
-input_handler.py(156): class InputHandler:
+input_handler.py(159): class Input:
+ --- modulename: input_handler, funcname: Input
+input_handler.py(159): class Input:
+input_handler.py(160):     rows: list [str]
+input_handler.py(161):     counter: int = 0
+input_handler.py(162):     @staticmethod
+input_handler.py(163):     def get_next_input():
+input_handler.py(173): class InputHandler:
  --- modulename: input_handler, funcname: InputHandler
-input_handler.py(156): class InputHandler:
-input_handler.py(157):     def __init__(self):
-input_handler.py(164):     def parse_arguments(self):
-input_handler.py(205):     def load_file(self, file_name: str) -> str:
-input_handler.py(219):     def parse_input(self):
-input_handler.py(233):     def convert_source(self):
-input_handler.py(242):     def verify_structure(self):
-input_handler.py(267):     def get_instructions(self) -> list[str, list[Argument]]:
+input_handler.py(173): class InputHandler:
+input_handler.py(174):     def __init__(self):
+input_handler.py(181):     def parse_arguments(self):
+input_handler.py(222):     def load_file(self, file_name: str) -> str:
+input_handler.py(237):     def parse_input(self):
+input_handler.py(253):     def convert_source(self):
+input_handler.py(262):     def verify_structure(self):
+input_handler.py(287):     def get_instructions(self) -> list[str, list[Argument]]:
 <frozen importlib._bootstrap>(699): <frozen importlib._bootstrap>(700): <frozen importlib._bootstrap>(701):  --- modulename: _bootstrap, funcname: _verbose_message
 <frozen importlib._bootstrap>(246): <frozen importlib._bootstrap>(703): <frozen importlib._bootstrap>(705): <frozen importlib._bootstrap>(1007): <frozen importlib._bootstrap>(1016): <frozen importlib._bootstrap>(1024):  --- modulename: _bootstrap, funcname: __exit__
 <frozen importlib._bootstrap>(174):  --- modulename: _bootstrap, funcname: release
@@ -21078,165 +21102,231 @@ memory.py(6): from instructions import DataType
 instructions.py(1): from input_handler import ArgumentType
 instructions.py(2): from input_handler import Argument
 instructions.py(3): from input_handler import instructions_dic
-instructions.py(4): from debug import DEBUG_PRINT
-instructions.py(5): from error_codes import ErrorCodes
-instructions.py(8): import abc
-instructions.py(10): class Variable:
+instructions.py(4): from input_handler import Input
+instructions.py(5): from debug import DEBUG_PRINT
+instructions.py(6): from error_codes import ErrorCodes
+instructions.py(9): import abc
+instructions.py(11): class Variable:
  --- modulename: instructions, funcname: Variable
-instructions.py(10): class Variable:
-instructions.py(11):     def __init__(self, name_: str):
-instructions.py(16): class DataType:
+instructions.py(11): class Variable:
+instructions.py(12):     def __init__(self, name_: str):
+instructions.py(17): class DataType:
  --- modulename: instructions, funcname: DataType
-instructions.py(16): class DataType:
-instructions.py(17):     TYPE_INT = 1
-instructions.py(18):     TYPE_STRING = 2
-instructions.py(19):     TYPE_BOOL = 3
-instructions.py(20):     TYPE_NIL = 4
-instructions.py(21):     TYPE_FLOAT = 5
-instructions.py(23):     @staticmethod
-instructions.py(24):     def convert_to_enum(datatype: str) -> "DataType":
-instructions.py(37): class Instruction(abc.ABC):
+instructions.py(17): class DataType:
+instructions.py(18):     TYPE_INT = 1
+instructions.py(19):     TYPE_STRING = 2
+instructions.py(20):     TYPE_BOOL = 3
+instructions.py(21):     TYPE_NIL = 4
+instructions.py(22):     TYPE_FLOAT = 5
+instructions.py(24):     @staticmethod
+instructions.py(25):     def convert_to_enum(datatype: str) -> "DataType":
+instructions.py(37):     @staticmethod
+instructions.py(38):     def convert_to_string(datatype: "DataType") -> str:
+instructions.py(51): class Instruction(abc.ABC):
  --- modulename: instructions, funcname: Instruction
-instructions.py(37): class Instruction(abc.ABC):
-instructions.py(38):     def __init__(self, opcode: str, args: list[Argument]):
-instructions.py(44):     def check_argument_types(self):
-instructions.py(75):     @abc.abstractmethod
-instructions.py(76):     def execute(self, memory) -> None:
+instructions.py(51): class Instruction(abc.ABC):
+instructions.py(52):     def __init__(self, opcode: str, args: list[Argument]):
+instructions.py(58):     def check_argument_types(self):
+instructions.py(88):     @abc.abstractmethod
+instructions.py(89):     def execute(self, memory) -> None:
  --- modulename: abc, funcname: abstractmethod
 abc.py(24):     funcobj.__isabstractmethod__ = True
 abc.py(25):     return funcobj
-instructions.py(82):     def get_frame_from_arg_value(self, var: str) -> str:
-instructions.py(85):     def get_name_from_arg_value(self, var: str) -> str:
-instructions.py(88):     def convert_strings_data_type_to_enum(self, str_datatype) -> DataType:
-instructions.py(95):     def __repr__(self):
+instructions.py(95):     def get_frame_from_arg_value(self, var: str) -> str:
+instructions.py(98):     def get_name_from_arg_value(self, var: str) -> str:
+instructions.py(101):     def convert_strings_data_type_to_enum(self, str_datatype) -> DataType:
+instructions.py(108):     def __repr__(self):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(99): class DEFVAR(Instruction):
+instructions.py(112): class DEFVAR(Instruction):
  --- modulename: instructions, funcname: DEFVAR
-instructions.py(99): class DEFVAR(Instruction):
-instructions.py(100):     def __init__(self, args: list[Argument]):
-instructions.py(103):     def execute(self, memory):
+instructions.py(112): class DEFVAR(Instruction):
+instructions.py(113):     def __init__(self, args: list[Argument]):
+instructions.py(116):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(110): class CREATEFRAME(Instruction):
+instructions.py(123): class CREATEFRAME(Instruction):
  --- modulename: instructions, funcname: CREATEFRAME
-instructions.py(110): class CREATEFRAME(Instruction):
-instructions.py(111):     def __init__(self, args: list[Argument]):
-instructions.py(114):     def execute(self, memory):
+instructions.py(123): class CREATEFRAME(Instruction):
+instructions.py(124):     def __init__(self, args: list[Argument]):
+instructions.py(127):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(117): class PUSHFRAME(Instruction):
+instructions.py(130): class PUSHFRAME(Instruction):
  --- modulename: instructions, funcname: PUSHFRAME
-instructions.py(117): class PUSHFRAME(Instruction):
-instructions.py(118):     def __init__(self, args: list[Argument]):
-instructions.py(121):     def execute(self, memory):
+instructions.py(130): class PUSHFRAME(Instruction):
+instructions.py(131):     def __init__(self, args: list[Argument]):
+instructions.py(134):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(124): class POPFRAME(Instruction):
+instructions.py(137): class POPFRAME(Instruction):
  --- modulename: instructions, funcname: POPFRAME
-instructions.py(124): class POPFRAME(Instruction):
-instructions.py(125):     def __init__(self, args: list[Argument]):
-instructions.py(128):     def execute(self, memory):
+instructions.py(137): class POPFRAME(Instruction):
+instructions.py(138):     def __init__(self, args: list[Argument]):
+instructions.py(141):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(132): class PUSHS(Instruction):
+instructions.py(145): class PUSHS(Instruction):
  --- modulename: instructions, funcname: PUSHS
-instructions.py(132): class PUSHS(Instruction):
-instructions.py(133):     def __init__(self, args: list[Argument]):
-instructions.py(136):     def execute(self, memory):
+instructions.py(145): class PUSHS(Instruction):
+instructions.py(146):     def __init__(self, args: list[Argument]):
+instructions.py(149):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(154): class POPS(Instruction):
+instructions.py(167): class POPS(Instruction):
  --- modulename: instructions, funcname: POPS
-instructions.py(154): class POPS(Instruction):
-instructions.py(155):     def __init__(self, args: list[Argument]):
-instructions.py(158):     def execute(self, memory):
+instructions.py(167): class POPS(Instruction):
+instructions.py(168):     def __init__(self, args: list[Argument]):
+instructions.py(171):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(168): class MOVE(Instruction):
+instructions.py(181): class MOVE(Instruction):
  --- modulename: instructions, funcname: MOVE
-instructions.py(168): class MOVE(Instruction):
-instructions.py(169):     def __init__(self, args: list[Argument]):
-instructions.py(172):     def execute(self, memory):
+instructions.py(181): class MOVE(Instruction):
+instructions.py(182):     def __init__(self, args: list[Argument]):
+instructions.py(185):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(189): class READ(Instruction):
+instructions.py(202): class READ(Instruction):
  --- modulename: instructions, funcname: READ
-instructions.py(189): class READ(Instruction):
-instructions.py(190):     def __init__(self, args: list[Argument]):
-instructions.py(193):     def execute(self, memory):
+instructions.py(202): class READ(Instruction):
+instructions.py(203):     def __init__(self, args: list[Argument]):
+instructions.py(206):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(198): class WRITE(Instruction):
+instructions.py(222): class WRITE(Instruction):
  --- modulename: instructions, funcname: WRITE
-instructions.py(198): class WRITE(Instruction):
-instructions.py(199):     def __init__(self, args: list[Argument]):
-instructions.py(202):     def _write_var(self, var: Variable) -> None:
-instructions.py(220):     def execute(self, memory):
+instructions.py(222): class WRITE(Instruction):
+instructions.py(223):     def __init__(self, args: list[Argument]):
+instructions.py(227):     def _write_const(self, value: str, datatype: DataType):
+instructions.py(242):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(229): class ArithmeticInstruction(Instruction):
+instructions.py(255): class ArithmeticInstruction(Instruction):
  --- modulename: instructions, funcname: ArithmeticInstruction
-instructions.py(229): class ArithmeticInstruction(Instruction):
-instructions.py(230):     def __init__(self, opcode: str, args: list[Argument]):
-instructions.py(235):     def _push_var(self, memory, operand_arg: str) -> None:
-instructions.py(242):     def execute(self, memory, function_name):
+instructions.py(255): class ArithmeticInstruction(Instruction):
+instructions.py(256):     def __init__(self, opcode: str, args: list[Argument]):
+instructions.py(261):     def _push_var(self, memory, operand_arg: str) -> None:
+instructions.py(268):     def execute(self, memory, function_name):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(267): class ADD(ArithmeticInstruction):
+instructions.py(293): class ADD(ArithmeticInstruction):
  --- modulename: instructions, funcname: ADD
-instructions.py(267): class ADD(ArithmeticInstruction):
-instructions.py(268):     def __init__(self, args: list[Argument]):
-instructions.py(271):     def execute(self, memory):
+instructions.py(293): class ADD(ArithmeticInstruction):
+instructions.py(294):     def __init__(self, args: list[Argument]):
+instructions.py(297):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(276): class SUB(ArithmeticInstruction):
+instructions.py(302): class SUB(ArithmeticInstruction):
  --- modulename: instructions, funcname: SUB
-instructions.py(276): class SUB(ArithmeticInstruction):
-instructions.py(277):     def __init__(self, args: list[Argument]):
-instructions.py(280):     def execute(self, memory):
+instructions.py(302): class SUB(ArithmeticInstruction):
+instructions.py(303):     def __init__(self, args: list[Argument]):
+instructions.py(306):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(284): class MUL(ArithmeticInstruction):
+instructions.py(310): class MUL(ArithmeticInstruction):
  --- modulename: instructions, funcname: MUL
-instructions.py(284): class MUL(ArithmeticInstruction):
-instructions.py(285):     def __init__(self, args: list[Argument]):
-instructions.py(288):     def execute(self, memory):
+instructions.py(310): class MUL(ArithmeticInstruction):
+instructions.py(311):     def __init__(self, args: list[Argument]):
+instructions.py(314):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
 abc.py(108):             return cls
-instructions.py(292): class IDIV(ArithmeticInstruction):
+instructions.py(318): class IDIV(ArithmeticInstruction):
  --- modulename: instructions, funcname: IDIV
-instructions.py(292): class IDIV(ArithmeticInstruction):
-instructions.py(293):     def __init__(self, args: list[Argument]):
-instructions.py(296):     def execute(self, memory):
+instructions.py(318): class IDIV(ArithmeticInstruction):
+instructions.py(319):     def __init__(self, args: list[Argument]):
+instructions.py(322):     def execute(self, memory):
+ --- modulename: abc, funcname: __new__
+abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
+abc.py(107):             _abc_init(cls)
+abc.py(108):             return cls
+instructions.py(326): class LT(ArithmeticInstruction):
+ --- modulename: instructions, funcname: LT
+instructions.py(326): class LT(ArithmeticInstruction):
+instructions.py(327):     def __init__(self, args: list[Argument]):
+instructions.py(330):     def execute(self, memory):
+ --- modulename: abc, funcname: __new__
+abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
+abc.py(107):             _abc_init(cls)
+abc.py(108):             return cls
+instructions.py(334): class GT(ArithmeticInstruction):
+ --- modulename: instructions, funcname: GT
+instructions.py(334): class GT(ArithmeticInstruction):
+instructions.py(335):     def __init__(self, args: list[Argument]):
+instructions.py(338):     def execute(self, memory):
+ --- modulename: abc, funcname: __new__
+abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
+abc.py(107):             _abc_init(cls)
+abc.py(108):             return cls
+instructions.py(343): class EQ(ArithmeticInstruction):
+ --- modulename: instructions, funcname: EQ
+instructions.py(343): class EQ(ArithmeticInstruction):
+instructions.py(344):     def __init__(self, args: list[Argument]):
+instructions.py(347):     def execute(self, memory):
+ --- modulename: abc, funcname: __new__
+abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
+abc.py(107):             _abc_init(cls)
+abc.py(108):             return cls
+instructions.py(351): class AND(ArithmeticInstruction):
+ --- modulename: instructions, funcname: AND
+instructions.py(351): class AND(ArithmeticInstruction):
+instructions.py(352):     def __init__(self, args: list[Argument]):
+instructions.py(355):     def execute(self, memory):
+ --- modulename: abc, funcname: __new__
+abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
+abc.py(107):             _abc_init(cls)
+abc.py(108):             return cls
+instructions.py(359): class OR(ArithmeticInstruction):
+ --- modulename: instructions, funcname: OR
+instructions.py(359): class OR(ArithmeticInstruction):
+instructions.py(360):     def __init__(self, args: list[Argument]):
+instructions.py(363):     def execute(self, memory):
+ --- modulename: abc, funcname: __new__
+abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
+abc.py(107):             _abc_init(cls)
+abc.py(108):             return cls
+instructions.py(367): class NOT(ArithmeticInstruction):
+ --- modulename: instructions, funcname: NOT
+instructions.py(367): class NOT(ArithmeticInstruction):
+instructions.py(368):     def __init__(self, args: list[Argument]):
+instructions.py(371):     def execute(self, memory):
+ --- modulename: abc, funcname: __new__
+abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
+abc.py(107):             _abc_init(cls)
+abc.py(108):             return cls
+instructions.py(375): class TYPE(Instruction):
+ --- modulename: instructions, funcname: TYPE
+instructions.py(375): class TYPE(Instruction):
+instructions.py(376):     def __init__(self, args: list[Argument]):
+instructions.py(379):     def execute(self, memory):
  --- modulename: abc, funcname: __new__
 abc.py(106):             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
 abc.py(107):             _abc_init(cls)
@@ -21262,28 +21352,30 @@ memory.py(51): class Memory(metaclass=Singleton):
  --- modulename: memory, funcname: Memory
 memory.py(51): class Memory(metaclass=Singleton):
 memory.py(52):     def __init__(self):
-memory.py(62):     def _define_local(self, name: str) -> None:
-memory.py(72):     def _define_temporary(self, name: str) -> None:
-memory.py(79):     def _define_global(self, name: str) -> None:
-memory.py(82):     def define_var(self, name: str, frame: str):
-memory.py(93):     def create_frame(self) -> None:
-memory.py(97):     def push_frame(self) -> None:
-memory.py(108):     def pop_frame(self) -> None:
-memory.py(120):     def _global_get_var(self, name: str) -> Variable:
-memory.py(124):     def _local_get_var(self, name: str) -> Variable:
-memory.py(133):     def _temporary_get_var(self, name: str) -> Variable:
-memory.py(142):     def get_var(self, name: str, frame: str) -> str:
-memory.py(154):     def move_var(self, source_name: str, source_frame: str, dest_name: str, dest_frame: str) -> None:
-memory.py(161):     def set_var(self, name: str, frame: str, value: str, datatype: DataType) -> None:
-memory.py(167):     def _check_type(self, type_: DataType, allowed_types: list[DataType]) -> None:
-memory.py(175):     def add(self, dest_name, dest_frame) -> None:
-memory.py(188):     def sub(self, dest_name, dest_frame) -> None:
-memory.py(201):     def mul(self, dest_name, dest_frame) -> None:
-memory.py(214):     def idiv(self, dest_name, dest_frame) -> None:
-memory.py(233):     def get_frame_stack(self) -> list[Frame]:
-memory.py(236):     def get_global_frame(self) -> Frame:
-memory.py(242):     def push_data(self, value: str, datatype: DataType) -> None:
-memory.py(251):     def pop_data(self) -> str:
+memory.py(62):     def _local_define(self, name: str) -> None:
+memory.py(72):     def _temporary_define(self, name: str) -> None:
+memory.py(80):     def _global_define(self, name: str) -> None:
+memory.py(83):     def define_var(self, name: str, frame: str):
+memory.py(94):     def create_frame(self) -> None:
+memory.py(98):     def push_frame(self) -> None:
+memory.py(109):     def pop_frame(self) -> None:
+memory.py(121):     def _global_get_var(self, name: str) -> Variable:
+memory.py(125):     def _local_get_var(self, name: str) -> Variable:
+memory.py(134):     def _temporary_get_var(self, name: str) -> Variable:
+memory.py(143):     def get_var(self, name: str, frame: str) -> str:
+memory.py(155):     def move_var(self, source_name: str, source_frame: str, dest_name: str, dest_frame: str) -> None:
+memory.py(162):     def set_var(self, name: str, frame: str, value: str, datatype: DataType) -> None:
+memory.py(168):     def _check_type(self, type_: DataType, allowed_types: list[DataType]) -> None:
+memory.py(173):     def _check_matching_operands(self, operand1_datatype: DataType, operand2_datatype: DataType) -> None:
+memory.py(179):     def add(self, dest_name, dest_frame) -> None:
+memory.py(189):     def sub(self, dest_name, dest_frame) -> None:
+memory.py(199):     def mul(self, dest_name, dest_frame) -> None:
+memory.py(209):     def idiv(self, dest_name, dest_frame) -> None:
+memory.py(224):     def lt(self, dest_name, dest_frame) -> None:
+memory.py(251):     def get_frame_stack(self) -> list[Frame]:
+memory.py(254):     def get_global_frame(self) -> Frame:
+memory.py(260):     def push_data(self, value: str, datatype: DataType) -> None:
+memory.py(269):     def pop_data(self) -> str:
 <frozen importlib._bootstrap>(699): <frozen importlib._bootstrap>(700): <frozen importlib._bootstrap>(701):  --- modulename: _bootstrap, funcname: _verbose_message
 <frozen importlib._bootstrap>(246): <frozen importlib._bootstrap>(703): <frozen importlib._bootstrap>(705): <frozen importlib._bootstrap>(1007): <frozen importlib._bootstrap>(1016): <frozen importlib._bootstrap>(1024):  --- modulename: _bootstrap, funcname: __exit__
 <frozen importlib._bootstrap>(174):  --- modulename: _bootstrap, funcname: release
@@ -21303,17 +21395,17 @@ interpret.py(24):     def execute_instructions(self, memory: Memory) -> None:
 interpret.py(28):     def print_instructions(self):
 interpret.py(33): inpt = InputHandler()
  --- modulename: input_handler, funcname: __init__
-input_handler.py(158):         self.args = {}
-input_handler.py(159):         self.source_file = None
-input_handler.py(160):         self.input_file = None
-input_handler.py(161):         self.instruction_orders = set()
-input_handler.py(162):         DEBUG = False
+input_handler.py(175):         self.args = {}
+input_handler.py(176):         self.source_file = None
+input_handler.py(177):         self.input_file = None
+input_handler.py(178):         self.instruction_orders = set()
+input_handler.py(179):         DEBUG = False
 interpret.py(34): inpt.parse_arguments()
  --- modulename: input_handler, funcname: parse_arguments
-input_handler.py(165):         parser = argparse.ArgumentParser(add_help=False,
-input_handler.py(166):                                          prog="input_handler.py",
-input_handler.py(167):                                          description="Handle command line \
-input_handler.py(165):         parser = argparse.ArgumentParser(add_help=False,
+input_handler.py(182):         parser = argparse.ArgumentParser(add_help=False,
+input_handler.py(183):                                          prog="input_handler.py",
+input_handler.py(184):                                          description="Handle command line \
+input_handler.py(182):         parser = argparse.ArgumentParser(add_help=False,
  --- modulename: argparse, funcname: __init__
 argparse.py(1709):         superinit = super(ArgumentParser, self).__init__
 argparse.py(1710):         superinit(description=description,
@@ -22421,7 +22513,7 @@ argparse.py(1365):         registry[value] = object
 argparse.py(1740):         default_prefix = '-' if '-' in prefix_chars else prefix_chars[0]
 argparse.py(1741):         if self.add_help:
 argparse.py(1748):         for parent in parents:
-input_handler.py(170):         parser.add_argument("--source", type=str, help="Specify source file")
+input_handler.py(187):         parser.add_argument("--source", type=str, help="Specify source file")
  --- modulename: argparse, funcname: add_argument
 argparse.py(1401):         chars = self.prefix_chars
 argparse.py(1402):         if not args or len(args) == 1 and args[0][0] not in chars:
@@ -22608,7 +22700,7 @@ argparse.py(1472):         return action
 argparse.py(1644):         self._group_actions.append(action)
 argparse.py(1645):         return action
 argparse.py(1810):         return action
-input_handler.py(172):         parser.add_argument("--input", type=str, help="Specify input file")
+input_handler.py(189):         parser.add_argument("--input", type=str, help="Specify input file")
  --- modulename: argparse, funcname: add_argument
 argparse.py(1401):         chars = self.prefix_chars
 argparse.py(1402):         if not args or len(args) == 1 and args[0][0] not in chars:
@@ -22795,9 +22887,9 @@ argparse.py(1472):         return action
 argparse.py(1644):         self._group_actions.append(action)
 argparse.py(1645):         return action
 argparse.py(1810):         return action
-input_handler.py(174):         parser.add_argument("--help", "--h", action="store_true",
-input_handler.py(175):                             help="Show this help message")
-input_handler.py(174):         parser.add_argument("--help", "--h", action="store_true",
+input_handler.py(191):         parser.add_argument("--help", "--h", action="store_true",
+input_handler.py(192):                             help="Show this help message")
+input_handler.py(191):         parser.add_argument("--help", "--h", action="store_true",
  --- modulename: argparse, funcname: add_argument
 argparse.py(1401):         chars = self.prefix_chars
 argparse.py(1402):         if not args or len(args) == 1 and args[0][0] not in chars:
@@ -23009,9 +23101,9 @@ argparse.py(1472):         return action
 argparse.py(1644):         self._group_actions.append(action)
 argparse.py(1645):         return action
 argparse.py(1810):         return action
-input_handler.py(177):         parser.add_argument("--debug", "--d", action="store_true",
-input_handler.py(178):                             help="Enable debug mode")
-input_handler.py(177):         parser.add_argument("--debug", "--d", action="store_true",
+input_handler.py(194):         parser.add_argument("--debug", "--d", action="store_true",
+input_handler.py(195):                             help="Enable debug mode")
+input_handler.py(194):         parser.add_argument("--debug", "--d", action="store_true",
  --- modulename: argparse, funcname: add_argument
 argparse.py(1401):         chars = self.prefix_chars
 argparse.py(1402):         if not args or len(args) == 1 and args[0][0] not in chars:
@@ -23223,7 +23315,7 @@ argparse.py(1472):         return action
 argparse.py(1644):         self._group_actions.append(action)
 argparse.py(1645):         return action
 argparse.py(1810):         return action
-input_handler.py(182):         cmd_args = parser.parse_args()
+input_handler.py(199):         cmd_args = parser.parse_args()
  --- modulename: argparse, funcname: parse_args
 argparse.py(1826):         args, argv = self.parse_known_args(args, namespace)
  --- modulename: argparse, funcname: parse_known_args
@@ -23566,76 +23658,78 @@ argparse.py(1866):         if hasattr(namespace, _UNRECOGNIZED_ARGS_ATTR):
 argparse.py(1869):         return namespace, args
 argparse.py(1827):         if argv:
 argparse.py(1830):         return args
-input_handler.py(184):         if cmd_args.help:
-input_handler.py(194):         if cmd_args.source is None and cmd_args.input is None:
-input_handler.py(198):         self.args["source_file_parameter"] = cmd_args.source
-input_handler.py(199):         self.args["input_file_parameter"] = cmd_args.input
+input_handler.py(201):         if cmd_args.help:
+input_handler.py(211):         if cmd_args.source is None and cmd_args.input is None:
+input_handler.py(215):         self.args["source_file_parameter"] = cmd_args.source
+input_handler.py(216):         self.args["input_file_parameter"] = cmd_args.input
 interpret.py(35): inpt.parse_input()
  --- modulename: input_handler, funcname: parse_input
-input_handler.py(220):         if self.args["input_file_parameter"] is not None:
-input_handler.py(221):             self.input_file = self.load_file(self.args["input_file_parameter"])
+input_handler.py(238):         if self.args["input_file_parameter"] is not None:
+input_handler.py(239):             self.input_file = self.load_file(self.args["input_file_parameter"])
  --- modulename: input_handler, funcname: load_file
-input_handler.py(206):         try:
-input_handler.py(207):             file = open(file_name)
+input_handler.py(223):         try:
+input_handler.py(224):             file = open(file_name)
  --- modulename: codecs, funcname: __init__
 codecs.py(310):         IncrementalDecoder.__init__(self, errors)
  --- modulename: codecs, funcname: __init__
 codecs.py(268):         self.errors = errors
 codecs.py(312):         self.buffer = b""
-input_handler.py(208):             file_content = file.read()
+input_handler.py(225):             file_content = file.read()
  --- modulename: codecs, funcname: decode
 codecs.py(321):         data = self.buffer + input
 codecs.py(322):         (result, consumed) = self._buffer_decode(data, self.errors, final)
 codecs.py(324):         self.buffer = data[consumed:]
 codecs.py(325):         return result
-input_handler.py(209):             file.close()
-input_handler.py(210):             return file_content
-input_handler.py(226):         if self.args["source_file_parameter"] is not None:
-input_handler.py(227):             self.source_file = self.load_file(
-input_handler.py(228):                     self.args["source_file_parameter"])
-input_handler.py(227):             self.source_file = self.load_file(
+input_handler.py(226):             file.close()
+input_handler.py(227):             return file_content
+input_handler.py(244):         Input.rows = self.input_file.split('\n')
+input_handler.py(246):         if self.args["source_file_parameter"] is not None:
+input_handler.py(247):             self.source_file = self.load_file(
+input_handler.py(248):                     self.args["source_file_parameter"])
+input_handler.py(247):             self.source_file = self.load_file(
  --- modulename: input_handler, funcname: load_file
-input_handler.py(206):         try:
-input_handler.py(207):             file = open(file_name)
+input_handler.py(223):         try:
+input_handler.py(224):             file = open(file_name)
  --- modulename: codecs, funcname: __init__
 codecs.py(310):         IncrementalDecoder.__init__(self, errors)
  --- modulename: codecs, funcname: __init__
 codecs.py(268):         self.errors = errors
 codecs.py(312):         self.buffer = b""
-input_handler.py(208):             file_content = file.read()
+input_handler.py(225):             file_content = file.read()
  --- modulename: codecs, funcname: decode
 codecs.py(321):         data = self.buffer + input
 codecs.py(322):         (result, consumed) = self._buffer_decode(data, self.errors, final)
 codecs.py(324):         self.buffer = data[consumed:]
 codecs.py(325):         return result
-input_handler.py(209):             file.close()
-input_handler.py(210):             return file_content
+input_handler.py(226):             file.close()
+input_handler.py(227):             return file_content
 interpret.py(36): inpt.convert_source()
  --- modulename: input_handler, funcname: convert_source
-input_handler.py(234):         try:
-input_handler.py(235):             self.source_file = etree.fromstring(self.source_file.encode())
+input_handler.py(254):         try:
+input_handler.py(255):             self.source_file = etree.fromstring(self.source_file.encode())
 interpret.py(37): inpt.verify_structure()
  --- modulename: input_handler, funcname: verify_structure
-input_handler.py(244):         top_elements = self.source_file.xpath("/*")
-input_handler.py(245):         if len(list(top_elements)) != 1 or top_elements[0].tag != "program":
-input_handler.py(249):         for element in self.source_file.xpath("/program/*"):
-input_handler.py(250):             if element.tag != "instruction":
-input_handler.py(255):             if not InstructionVerify.verify_instruction(
-input_handler.py(256):                     element, self.instruction_orders):
-input_handler.py(255):             if not InstructionVerify.verify_instruction(
+input_handler.py(264):         top_elements = self.source_file.xpath("/*")
+input_handler.py(265):         if len(list(top_elements)) != 1 or top_elements[0].tag != "program":
+input_handler.py(269):         for element in self.source_file.xpath("/program/*"):
+input_handler.py(270):             if element.tag != "instruction":
+input_handler.py(275):             if not InstructionVerify.verify_instruction(
+input_handler.py(276):                     element, self.instruction_orders):
+input_handler.py(275):             if not InstructionVerify.verify_instruction(
  --- modulename: input_handler, funcname: verify_instruction
 input_handler.py(117):         order = instruction_xml.get("order")
 input_handler.py(118):         if order is None:
-input_handler.py(122):         order = int(order)
-input_handler.py(126):         if order <= 0 or order in orders:
-input_handler.py(130):         orders.add(order)
-input_handler.py(131):         opcode = instruction_xml.get("opcode")
-input_handler.py(133):         if opcode is None:
-input_handler.py(138):         if opcode not in instructions_dic:
-input_handler.py(143):         expected_num_args = len(instructions_dic[opcode])
-input_handler.py(144):         arg_numbers = set()
-input_handler.py(145):         for index, child in enumerate(instruction_xml.iterchildren()):
-input_handler.py(147):             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
+input_handler.py(122):         try:
+input_handler.py(123):             order = int(order)
+input_handler.py(130):         if order <= 0 or order in orders:
+input_handler.py(134):         orders.add(order)
+input_handler.py(135):         opcode = instruction_xml.get("opcode")
+input_handler.py(137):         if opcode is None:
+input_handler.py(142):         if opcode not in instructions_dic:
+input_handler.py(147):         expected_num_args = len(instructions_dic[opcode])
+input_handler.py(148):         arg_numbers = set()
+input_handler.py(149):         for index, child in enumerate(instruction_xml.iterchildren()):
+input_handler.py(151):             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
  --- modulename: re, funcname: match
 re.py(190):     return _compile(pattern, flags).match(string)
  --- modulename: re, funcname: _compile
@@ -24302,73 +24396,112 @@ enum.py(688):             return cls._value2member_map_[value]
 re.py(305):         if len(_cache) >= _MAXCACHE:
 re.py(311):         _cache[type(pattern), pattern, flags] = p
 re.py(312):     return p
-input_handler.py(151):             arg_numbers.add(int(child.tag[3:]))
-input_handler.py(145):         for index, child in enumerate(instruction_xml.iterchildren()):
-input_handler.py(153):         return len(arg_numbers) == expected_num_args
-input_handler.py(249):         for element in self.source_file.xpath("/program/*"):
-input_handler.py(250):             if element.tag != "instruction":
-input_handler.py(255):             if not InstructionVerify.verify_instruction(
-input_handler.py(256):                     element, self.instruction_orders):
-input_handler.py(255):             if not InstructionVerify.verify_instruction(
+input_handler.py(155):             arg_numbers.add(int(child.tag[3:]))
+input_handler.py(149):         for index, child in enumerate(instruction_xml.iterchildren()):
+input_handler.py(157):         return len(arg_numbers) == expected_num_args
+input_handler.py(269):         for element in self.source_file.xpath("/program/*"):
+input_handler.py(270):             if element.tag != "instruction":
+input_handler.py(275):             if not InstructionVerify.verify_instruction(
+input_handler.py(276):                     element, self.instruction_orders):
+input_handler.py(275):             if not InstructionVerify.verify_instruction(
  --- modulename: input_handler, funcname: verify_instruction
 input_handler.py(117):         order = instruction_xml.get("order")
 input_handler.py(118):         if order is None:
-input_handler.py(122):         order = int(order)
-input_handler.py(126):         if order <= 0 or order in orders:
-input_handler.py(130):         orders.add(order)
-input_handler.py(131):         opcode = instruction_xml.get("opcode")
-input_handler.py(133):         if opcode is None:
-input_handler.py(138):         if opcode not in instructions_dic:
-input_handler.py(143):         expected_num_args = len(instructions_dic[opcode])
-input_handler.py(144):         arg_numbers = set()
-input_handler.py(145):         for index, child in enumerate(instruction_xml.iterchildren()):
-input_handler.py(147):             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
+input_handler.py(122):         try:
+input_handler.py(123):             order = int(order)
+input_handler.py(130):         if order <= 0 or order in orders:
+input_handler.py(134):         orders.add(order)
+input_handler.py(135):         opcode = instruction_xml.get("opcode")
+input_handler.py(137):         if opcode is None:
+input_handler.py(142):         if opcode not in instructions_dic:
+input_handler.py(147):         expected_num_args = len(instructions_dic[opcode])
+input_handler.py(148):         arg_numbers = set()
+input_handler.py(149):         for index, child in enumerate(instruction_xml.iterchildren()):
+input_handler.py(151):             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
  --- modulename: re, funcname: match
 re.py(190):     return _compile(pattern, flags).match(string)
  --- modulename: re, funcname: _compile
 re.py(290):     if isinstance(flags, RegexFlag):
 re.py(292):     try:
 re.py(293):         return _cache[type(pattern), pattern, flags]
-input_handler.py(151):             arg_numbers.add(int(child.tag[3:]))
-input_handler.py(145):         for index, child in enumerate(instruction_xml.iterchildren()):
-input_handler.py(147):             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
- --- modulename: re, funcname: match
-re.py(190):     return _compile(pattern, flags).match(string)
- --- modulename: re, funcname: _compile
-re.py(290):     if isinstance(flags, RegexFlag):
-re.py(292):     try:
-re.py(293):         return _cache[type(pattern), pattern, flags]
-input_handler.py(151):             arg_numbers.add(int(child.tag[3:]))
-input_handler.py(145):         for index, child in enumerate(instruction_xml.iterchildren()):
-input_handler.py(153):         return len(arg_numbers) == expected_num_args
-input_handler.py(249):         for element in self.source_file.xpath("/program/*"):
-input_handler.py(250):             if element.tag != "instruction":
-input_handler.py(255):             if not InstructionVerify.verify_instruction(
-input_handler.py(256):                     element, self.instruction_orders):
-input_handler.py(255):             if not InstructionVerify.verify_instruction(
+input_handler.py(155):             arg_numbers.add(int(child.tag[3:]))
+input_handler.py(149):         for index, child in enumerate(instruction_xml.iterchildren()):
+input_handler.py(157):         return len(arg_numbers) == expected_num_args
+input_handler.py(269):         for element in self.source_file.xpath("/program/*"):
+input_handler.py(270):             if element.tag != "instruction":
+input_handler.py(275):             if not InstructionVerify.verify_instruction(
+input_handler.py(276):                     element, self.instruction_orders):
+input_handler.py(275):             if not InstructionVerify.verify_instruction(
  --- modulename: input_handler, funcname: verify_instruction
 input_handler.py(117):         order = instruction_xml.get("order")
 input_handler.py(118):         if order is None:
-input_handler.py(122):         order = int(order)
-input_handler.py(126):         if order <= 0 or order in orders:
-input_handler.py(130):         orders.add(order)
-input_handler.py(131):         opcode = instruction_xml.get("opcode")
-input_handler.py(133):         if opcode is None:
-input_handler.py(138):         if opcode not in instructions_dic:
-input_handler.py(143):         expected_num_args = len(instructions_dic[opcode])
-input_handler.py(144):         arg_numbers = set()
-input_handler.py(145):         for index, child in enumerate(instruction_xml.iterchildren()):
-input_handler.py(147):             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
+input_handler.py(122):         try:
+input_handler.py(123):             order = int(order)
+input_handler.py(130):         if order <= 0 or order in orders:
+input_handler.py(134):         orders.add(order)
+input_handler.py(135):         opcode = instruction_xml.get("opcode")
+input_handler.py(137):         if opcode is None:
+input_handler.py(142):         if opcode not in instructions_dic:
+input_handler.py(147):         expected_num_args = len(instructions_dic[opcode])
+input_handler.py(148):         arg_numbers = set()
+input_handler.py(149):         for index, child in enumerate(instruction_xml.iterchildren()):
+input_handler.py(151):             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
  --- modulename: re, funcname: match
 re.py(190):     return _compile(pattern, flags).match(string)
  --- modulename: re, funcname: _compile
 re.py(290):     if isinstance(flags, RegexFlag):
 re.py(292):     try:
 re.py(293):         return _cache[type(pattern), pattern, flags]
-input_handler.py(151):             arg_numbers.add(int(child.tag[3:]))
-input_handler.py(145):         for index, child in enumerate(instruction_xml.iterchildren()):
-input_handler.py(153):         return len(arg_numbers) == expected_num_args
-input_handler.py(249):         for element in self.source_file.xpath("/program/*"):
+input_handler.py(155):             arg_numbers.add(int(child.tag[3:]))
+input_handler.py(149):         for index, child in enumerate(instruction_xml.iterchildren()):
+input_handler.py(151):             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
+ --- modulename: re, funcname: match
+re.py(190):     return _compile(pattern, flags).match(string)
+ --- modulename: re, funcname: _compile
+re.py(290):     if isinstance(flags, RegexFlag):
+re.py(292):     try:
+re.py(293):         return _cache[type(pattern), pattern, flags]
+input_handler.py(155):             arg_numbers.add(int(child.tag[3:]))
+input_handler.py(149):         for index, child in enumerate(instruction_xml.iterchildren()):
+input_handler.py(151):             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
+ --- modulename: re, funcname: match
+re.py(190):     return _compile(pattern, flags).match(string)
+ --- modulename: re, funcname: _compile
+re.py(290):     if isinstance(flags, RegexFlag):
+re.py(292):     try:
+re.py(293):         return _cache[type(pattern), pattern, flags]
+input_handler.py(155):             arg_numbers.add(int(child.tag[3:]))
+input_handler.py(149):         for index, child in enumerate(instruction_xml.iterchildren()):
+input_handler.py(157):         return len(arg_numbers) == expected_num_args
+input_handler.py(269):         for element in self.source_file.xpath("/program/*"):
+input_handler.py(270):             if element.tag != "instruction":
+input_handler.py(275):             if not InstructionVerify.verify_instruction(
+input_handler.py(276):                     element, self.instruction_orders):
+input_handler.py(275):             if not InstructionVerify.verify_instruction(
+ --- modulename: input_handler, funcname: verify_instruction
+input_handler.py(117):         order = instruction_xml.get("order")
+input_handler.py(118):         if order is None:
+input_handler.py(122):         try:
+input_handler.py(123):             order = int(order)
+input_handler.py(130):         if order <= 0 or order in orders:
+input_handler.py(134):         orders.add(order)
+input_handler.py(135):         opcode = instruction_xml.get("opcode")
+input_handler.py(137):         if opcode is None:
+input_handler.py(142):         if opcode not in instructions_dic:
+input_handler.py(147):         expected_num_args = len(instructions_dic[opcode])
+input_handler.py(148):         arg_numbers = set()
+input_handler.py(149):         for index, child in enumerate(instruction_xml.iterchildren()):
+input_handler.py(151):             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
+ --- modulename: re, funcname: match
+re.py(190):     return _compile(pattern, flags).match(string)
+ --- modulename: re, funcname: _compile
+re.py(290):     if isinstance(flags, RegexFlag):
+re.py(292):     try:
+re.py(293):         return _cache[type(pattern), pattern, flags]
+input_handler.py(155):             arg_numbers.add(int(child.tag[3:]))
+input_handler.py(149):         for index, child in enumerate(instruction_xml.iterchildren()):
+input_handler.py(157):         return len(arg_numbers) == expected_num_args
+input_handler.py(269):         for element in self.source_file.xpath("/program/*"):
 interpret.py(39): """
 interpret.py(65): memory = Memory()
  --- modulename: memory, funcname: __call__
@@ -24384,96 +24517,174 @@ memory.py(56):         self._data_stack = []
 memory.py(47):         return cls._instances[cls]
 interpret.py(66): interpreter = Interpreter(inpt.get_instructions())
  --- modulename: input_handler, funcname: get_instructions
-input_handler.py(268):         instructions = []
-input_handler.py(269):         for instruction in self.source_file.xpath("/program/*"):
-input_handler.py(270):             opcode = instruction.get("opcode")
-input_handler.py(271):             arguments = []
-input_handler.py(272):             for argument in instruction.iterchildren():
-input_handler.py(273):                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
+input_handler.py(288):         instructions = []
+input_handler.py(289):         for instruction in self.source_file.xpath("/program/*"):
+input_handler.py(290):             opcode = instruction.get("opcode")
+input_handler.py(291):             arguments = []
+input_handler.py(292):             for argument in instruction.iterchildren():
+input_handler.py(293):                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
  --- modulename: input_handler, funcname: convert_to_enum
 input_handler.py(17):         if arg_type == "label":
 input_handler.py(19):         elif arg_type == "var":
 input_handler.py(20):             return ArgumentType.VAR
-input_handler.py(274):                 arg_value = argument.text
-input_handler.py(275):                 if arg_type == ArgumentType.SYMB:
-input_handler.py(278):                     argument = Argument(arg_type, arg_value)
+input_handler.py(294):                 arg_value = argument.text
+input_handler.py(295):                 argument_order = int(argument.tag[3])
+input_handler.py(296):                 if arg_type == ArgumentType.SYMB:
+input_handler.py(299):                     argument = Argument(arg_type, arg_value)
  --- modulename: input_handler, funcname: __init__
 input_handler.py(32):         self.type_ = arg_type
 input_handler.py(33):         self.value = value
 input_handler.py(35):         self.datatype = datatype
-input_handler.py(280):                 arguments.append(argument)
-input_handler.py(272):             for argument in instruction.iterchildren():
-input_handler.py(282):             order = int(instruction.get("order"))
-input_handler.py(285):             instructions.append([order, opcode, arguments])
-input_handler.py(269):         for instruction in self.source_file.xpath("/program/*"):
-input_handler.py(270):             opcode = instruction.get("opcode")
-input_handler.py(271):             arguments = []
-input_handler.py(272):             for argument in instruction.iterchildren():
-input_handler.py(273):                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
+input_handler.py(301):                 arguments.append([argument, argument_order])
+input_handler.py(292):             for argument in instruction.iterchildren():
+input_handler.py(303):             instruction_order = int(instruction.get("order"))
+input_handler.py(305):             arguments.sort(key=lambda x: x[1]) 
+ --- modulename: input_handler, funcname: <lambda>
+input_handler.py(305):             arguments.sort(key=lambda x: x[1]) 
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+ --- modulename: input_handler, funcname: <listcomp>
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+input_handler.py(307):             instructions.append([instruction_order, opcode, arguments])
+input_handler.py(289):         for instruction in self.source_file.xpath("/program/*"):
+input_handler.py(290):             opcode = instruction.get("opcode")
+input_handler.py(291):             arguments = []
+input_handler.py(292):             for argument in instruction.iterchildren():
+input_handler.py(293):                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
+ --- modulename: input_handler, funcname: convert_to_enum
+input_handler.py(17):         if arg_type == "label":
+input_handler.py(19):         elif arg_type == "var":
+input_handler.py(20):             return ArgumentType.VAR
+input_handler.py(294):                 arg_value = argument.text
+input_handler.py(295):                 argument_order = int(argument.tag[3])
+input_handler.py(296):                 if arg_type == ArgumentType.SYMB:
+input_handler.py(299):                     argument = Argument(arg_type, arg_value)
+ --- modulename: input_handler, funcname: __init__
+input_handler.py(32):         self.type_ = arg_type
+input_handler.py(33):         self.value = value
+input_handler.py(35):         self.datatype = datatype
+input_handler.py(301):                 arguments.append([argument, argument_order])
+input_handler.py(292):             for argument in instruction.iterchildren():
+input_handler.py(303):             instruction_order = int(instruction.get("order"))
+input_handler.py(305):             arguments.sort(key=lambda x: x[1]) 
+ --- modulename: input_handler, funcname: <lambda>
+input_handler.py(305):             arguments.sort(key=lambda x: x[1]) 
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+ --- modulename: input_handler, funcname: <listcomp>
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+input_handler.py(307):             instructions.append([instruction_order, opcode, arguments])
+input_handler.py(289):         for instruction in self.source_file.xpath("/program/*"):
+input_handler.py(290):             opcode = instruction.get("opcode")
+input_handler.py(291):             arguments = []
+input_handler.py(292):             for argument in instruction.iterchildren():
+input_handler.py(293):                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
+ --- modulename: input_handler, funcname: convert_to_enum
+input_handler.py(17):         if arg_type == "label":
+input_handler.py(19):         elif arg_type == "var":
+input_handler.py(20):             return ArgumentType.VAR
+input_handler.py(294):                 arg_value = argument.text
+input_handler.py(295):                 argument_order = int(argument.tag[3])
+input_handler.py(296):                 if arg_type == ArgumentType.SYMB:
+input_handler.py(299):                     argument = Argument(arg_type, arg_value)
+ --- modulename: input_handler, funcname: __init__
+input_handler.py(32):         self.type_ = arg_type
+input_handler.py(33):         self.value = value
+input_handler.py(35):         self.datatype = datatype
+input_handler.py(301):                 arguments.append([argument, argument_order])
+input_handler.py(292):             for argument in instruction.iterchildren():
+input_handler.py(293):                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
  --- modulename: input_handler, funcname: convert_to_enum
 input_handler.py(17):         if arg_type == "label":
 input_handler.py(19):         elif arg_type == "var":
 input_handler.py(21):         elif arg_type == "type":
 input_handler.py(24):             return ArgumentType.SYMB
-input_handler.py(274):                 arg_value = argument.text
-input_handler.py(275):                 if arg_type == ArgumentType.SYMB:
-input_handler.py(276):                     argument = Argument(arg_type, arg_value, datatype=argument.get("type"))
+input_handler.py(294):                 arg_value = argument.text
+input_handler.py(295):                 argument_order = int(argument.tag[3])
+input_handler.py(296):                 if arg_type == ArgumentType.SYMB:
+input_handler.py(297):                     argument = Argument(arg_type, arg_value, datatype=argument.get("type"))
  --- modulename: input_handler, funcname: __init__
 input_handler.py(32):         self.type_ = arg_type
 input_handler.py(33):         self.value = value
 input_handler.py(35):         self.datatype = datatype
-input_handler.py(280):                 arguments.append(argument)
-input_handler.py(272):             for argument in instruction.iterchildren():
-input_handler.py(273):                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
+input_handler.py(301):                 arguments.append([argument, argument_order])
+input_handler.py(292):             for argument in instruction.iterchildren():
+input_handler.py(293):                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
  --- modulename: input_handler, funcname: convert_to_enum
 input_handler.py(17):         if arg_type == "label":
 input_handler.py(19):         elif arg_type == "var":
-input_handler.py(20):             return ArgumentType.VAR
-input_handler.py(274):                 arg_value = argument.text
-input_handler.py(275):                 if arg_type == ArgumentType.SYMB:
-input_handler.py(278):                     argument = Argument(arg_type, arg_value)
+input_handler.py(21):         elif arg_type == "type":
+input_handler.py(24):             return ArgumentType.SYMB
+input_handler.py(294):                 arg_value = argument.text
+input_handler.py(295):                 argument_order = int(argument.tag[3])
+input_handler.py(296):                 if arg_type == ArgumentType.SYMB:
+input_handler.py(297):                     argument = Argument(arg_type, arg_value, datatype=argument.get("type"))
  --- modulename: input_handler, funcname: __init__
 input_handler.py(32):         self.type_ = arg_type
 input_handler.py(33):         self.value = value
 input_handler.py(35):         self.datatype = datatype
-input_handler.py(280):                 arguments.append(argument)
-input_handler.py(272):             for argument in instruction.iterchildren():
-input_handler.py(282):             order = int(instruction.get("order"))
-input_handler.py(285):             instructions.append([order, opcode, arguments])
-input_handler.py(269):         for instruction in self.source_file.xpath("/program/*"):
-input_handler.py(270):             opcode = instruction.get("opcode")
-input_handler.py(271):             arguments = []
-input_handler.py(272):             for argument in instruction.iterchildren():
-input_handler.py(273):                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
- --- modulename: input_handler, funcname: convert_to_enum
-input_handler.py(17):         if arg_type == "label":
-input_handler.py(19):         elif arg_type == "var":
-input_handler.py(20):             return ArgumentType.VAR
-input_handler.py(274):                 arg_value = argument.text
-input_handler.py(275):                 if arg_type == ArgumentType.SYMB:
-input_handler.py(278):                     argument = Argument(arg_type, arg_value)
- --- modulename: input_handler, funcname: __init__
-input_handler.py(32):         self.type_ = arg_type
-input_handler.py(33):         self.value = value
-input_handler.py(35):         self.datatype = datatype
-input_handler.py(280):                 arguments.append(argument)
-input_handler.py(272):             for argument in instruction.iterchildren():
-input_handler.py(282):             order = int(instruction.get("order"))
-input_handler.py(285):             instructions.append([order, opcode, arguments])
-input_handler.py(269):         for instruction in self.source_file.xpath("/program/*"):
-input_handler.py(287):         instructions.sort(key=lambda x: x[0])
+input_handler.py(301):                 arguments.append([argument, argument_order])
+input_handler.py(292):             for argument in instruction.iterchildren():
+input_handler.py(303):             instruction_order = int(instruction.get("order"))
+input_handler.py(305):             arguments.sort(key=lambda x: x[1]) 
  --- modulename: input_handler, funcname: <lambda>
-input_handler.py(287):         instructions.sort(key=lambda x: x[0])
+input_handler.py(305):             arguments.sort(key=lambda x: x[1]) 
  --- modulename: input_handler, funcname: <lambda>
-input_handler.py(287):         instructions.sort(key=lambda x: x[0])
+input_handler.py(305):             arguments.sort(key=lambda x: x[1]) 
  --- modulename: input_handler, funcname: <lambda>
-input_handler.py(287):         instructions.sort(key=lambda x: x[0])
-input_handler.py(290):         return [x[1:] for x in instructions]
+input_handler.py(305):             arguments.sort(key=lambda x: x[1]) 
+input_handler.py(306):             arguments = [x[0] for x in arguments]
  --- modulename: input_handler, funcname: <listcomp>
-input_handler.py(290):         return [x[1:] for x in instructions]
-input_handler.py(290):         return [x[1:] for x in instructions]
-input_handler.py(290):         return [x[1:] for x in instructions]
-input_handler.py(290):         return [x[1:] for x in instructions]
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+input_handler.py(307):             instructions.append([instruction_order, opcode, arguments])
+input_handler.py(289):         for instruction in self.source_file.xpath("/program/*"):
+input_handler.py(290):             opcode = instruction.get("opcode")
+input_handler.py(291):             arguments = []
+input_handler.py(292):             for argument in instruction.iterchildren():
+input_handler.py(293):                 arg_type = ArgumentType.convert_to_enum(argument.get("type"))
+ --- modulename: input_handler, funcname: convert_to_enum
+input_handler.py(17):         if arg_type == "label":
+input_handler.py(19):         elif arg_type == "var":
+input_handler.py(20):             return ArgumentType.VAR
+input_handler.py(294):                 arg_value = argument.text
+input_handler.py(295):                 argument_order = int(argument.tag[3])
+input_handler.py(296):                 if arg_type == ArgumentType.SYMB:
+input_handler.py(299):                     argument = Argument(arg_type, arg_value)
+ --- modulename: input_handler, funcname: __init__
+input_handler.py(32):         self.type_ = arg_type
+input_handler.py(33):         self.value = value
+input_handler.py(35):         self.datatype = datatype
+input_handler.py(301):                 arguments.append([argument, argument_order])
+input_handler.py(292):             for argument in instruction.iterchildren():
+input_handler.py(303):             instruction_order = int(instruction.get("order"))
+input_handler.py(305):             arguments.sort(key=lambda x: x[1]) 
+ --- modulename: input_handler, funcname: <lambda>
+input_handler.py(305):             arguments.sort(key=lambda x: x[1]) 
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+ --- modulename: input_handler, funcname: <listcomp>
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+input_handler.py(306):             arguments = [x[0] for x in arguments]
+input_handler.py(307):             instructions.append([instruction_order, opcode, arguments])
+input_handler.py(289):         for instruction in self.source_file.xpath("/program/*"):
+input_handler.py(309):         instructions.sort(key=lambda x: x[0])
+ --- modulename: input_handler, funcname: <lambda>
+input_handler.py(309):         instructions.sort(key=lambda x: x[0])
+ --- modulename: input_handler, funcname: <lambda>
+input_handler.py(309):         instructions.sort(key=lambda x: x[0])
+ --- modulename: input_handler, funcname: <lambda>
+input_handler.py(309):         instructions.sort(key=lambda x: x[0])
+ --- modulename: input_handler, funcname: <lambda>
+input_handler.py(309):         instructions.sort(key=lambda x: x[0])
+input_handler.py(312):         return [x[1:] for x in instructions]
+ --- modulename: input_handler, funcname: <listcomp>
+input_handler.py(312):         return [x[1:] for x in instructions]
+input_handler.py(312):         return [x[1:] for x in instructions]
+input_handler.py(312):         return [x[1:] for x in instructions]
+input_handler.py(312):         return [x[1:] for x in instructions]
+input_handler.py(312):         return [x[1:] for x in instructions]
  --- modulename: interpret, funcname: __init__
 interpret.py(11):         self._instructions = []
 interpret.py(12):         self._create_instructions(instructions_raw)
@@ -24481,60 +24692,276 @@ interpret.py(12):         self._create_instructions(instructions_raw)
 interpret.py(19):         for opcode, args in instructions_raw:
 interpret.py(21):             instruction_obj = getattr(InstructionsClass, opcode)(args)
  --- modulename: instructions, funcname: __init__
-instructions.py(101):         super().__init__(self.__class__.__name__, args)
+instructions.py(114):         super().__init__(self.__class__.__name__, args)
  --- modulename: instructions, funcname: __init__
-instructions.py(39):         self.opcode = opcode
-instructions.py(40):         self._args = args
-instructions.py(41):         self.check_argument_types()
+instructions.py(53):         self.opcode = opcode
+instructions.py(54):         self._args = args
+instructions.py(55):         self.check_argument_types()
  --- modulename: instructions, funcname: check_argument_types
-instructions.py(45):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
-instructions.py(46):             if arg.datatype == "int":
-instructions.py(54):             if arg.datatype == "float":
-instructions.py(61):             if arg.datatype == "bool":
-instructions.py(66):             if arg.type_ == ArgumentType.VAR and expected_type == ArgumentType.SYMB:
-instructions.py(69):             if not arg.type_ == expected_type:
-instructions.py(45):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+instructions.py(59):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+instructions.py(60):             if arg.datatype == "int":
+instructions.py(68):             if arg.datatype == "float":
+instructions.py(75):             if arg.datatype == "bool":
+instructions.py(80):             if expected_type == ArgumentType.SYMB:
+instructions.py(84):             if not arg.type_ == expected_type:
+instructions.py(59):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
 interpret.py(22):             self._instructions.append(instruction_obj)
 interpret.py(19):         for opcode, args in instructions_raw:
 interpret.py(21):             instruction_obj = getattr(InstructionsClass, opcode)(args)
  --- modulename: instructions, funcname: __init__
-instructions.py(170):         super().__init__(self.__class__.__name__, args)
+instructions.py(114):         super().__init__(self.__class__.__name__, args)
  --- modulename: instructions, funcname: __init__
-instructions.py(39):         self.opcode = opcode
-instructions.py(40):         self._args = args
-instructions.py(41):         self.check_argument_types()
+instructions.py(53):         self.opcode = opcode
+instructions.py(54):         self._args = args
+instructions.py(55):         self.check_argument_types()
  --- modulename: instructions, funcname: check_argument_types
-instructions.py(45):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
-instructions.py(46):             if arg.datatype == "int":
-instructions.py(54):             if arg.datatype == "float":
-instructions.py(61):             if arg.datatype == "bool":
-instructions.py(66):             if arg.type_ == ArgumentType.VAR and expected_type == ArgumentType.SYMB:
-instructions.py(69):             if not arg.type_ == expected_type:
-instructions.py(70):                 DEBUG_PRINT("Not good type ")
- --- modulename: debug, funcname: DEBUG_PRINT
-debug.py(4):     if not DEBUG:
-debug.py(5):         return
-instructions.py(71):                 print(arg.type_, expected_type)
- --- modulename: input_handler, funcname: __str__
-input_handler.py(28):         return self.name
- --- modulename: types, funcname: __get__
-types.py(177):         if instance is None:
-types.py(181):         elif self.fget is None:
-types.py(183):         return self.fget(instance)
- --- modulename: enum, funcname: name
-enum.py(799):         return self._name_
-SYMB  --- modulename: input_handler, funcname: __str__
-input_handler.py(28):         return self.name
- --- modulename: types, funcname: __get__
-types.py(177):         if instance is None:
-types.py(181):         elif self.fget is None:
-types.py(183):         return self.fget(instance)
- --- modulename: enum, funcname: name
-enum.py(799):         return self._name_
-VAR
-instructions.py(72):                 print(self.opcode)
-MOVE
-instructions.py(73):                 exit(ErrorCodes.InputStructureBad)
+instructions.py(59):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+instructions.py(60):             if arg.datatype == "int":
+instructions.py(68):             if arg.datatype == "float":
+instructions.py(75):             if arg.datatype == "bool":
+instructions.py(80):             if expected_type == ArgumentType.SYMB:
+instructions.py(84):             if not arg.type_ == expected_type:
+instructions.py(59):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+interpret.py(22):             self._instructions.append(instruction_obj)
+interpret.py(19):         for opcode, args in instructions_raw:
+interpret.py(21):             instruction_obj = getattr(InstructionsClass, opcode)(args)
+ --- modulename: instructions, funcname: __init__
+instructions.py(328):         super().__init__(self.__class__.__name__, args)
+ --- modulename: instructions, funcname: __init__
+instructions.py(257):         super().__init__(opcode, args)
+ --- modulename: instructions, funcname: __init__
+instructions.py(53):         self.opcode = opcode
+instructions.py(54):         self._args = args
+instructions.py(55):         self.check_argument_types()
+ --- modulename: instructions, funcname: check_argument_types
+instructions.py(59):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+instructions.py(60):             if arg.datatype == "int":
+instructions.py(68):             if arg.datatype == "float":
+instructions.py(75):             if arg.datatype == "bool":
+instructions.py(80):             if expected_type == ArgumentType.SYMB:
+instructions.py(84):             if not arg.type_ == expected_type:
+instructions.py(59):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+instructions.py(60):             if arg.datatype == "int":
+instructions.py(68):             if arg.datatype == "float":
+instructions.py(75):             if arg.datatype == "bool":
+instructions.py(76):                 if not arg.value.lower() in ["true", "false"]:
+instructions.py(80):             if expected_type == ArgumentType.SYMB:
+instructions.py(81):                 if arg.type_ in [ArgumentType.SYMB, ArgumentType.VAR]:
+instructions.py(82):                     continue
+instructions.py(59):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+instructions.py(60):             if arg.datatype == "int":
+instructions.py(68):             if arg.datatype == "float":
+instructions.py(75):             if arg.datatype == "bool":
+instructions.py(76):                 if not arg.value.lower() in ["true", "false"]:
+instructions.py(80):             if expected_type == ArgumentType.SYMB:
+instructions.py(81):                 if arg.type_ in [ArgumentType.SYMB, ArgumentType.VAR]:
+instructions.py(82):                     continue
+instructions.py(59):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+interpret.py(22):             self._instructions.append(instruction_obj)
+interpret.py(19):         for opcode, args in instructions_raw:
+interpret.py(21):             instruction_obj = getattr(InstructionsClass, opcode)(args)
+ --- modulename: instructions, funcname: __init__
+instructions.py(224):         super().__init__(self.__class__.__name__, args)
+ --- modulename: instructions, funcname: __init__
+instructions.py(53):         self.opcode = opcode
+instructions.py(54):         self._args = args
+instructions.py(55):         self.check_argument_types()
+ --- modulename: instructions, funcname: check_argument_types
+instructions.py(59):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+instructions.py(60):             if arg.datatype == "int":
+instructions.py(68):             if arg.datatype == "float":
+instructions.py(75):             if arg.datatype == "bool":
+instructions.py(80):             if expected_type == ArgumentType.SYMB:
+instructions.py(81):                 if arg.type_ in [ArgumentType.SYMB, ArgumentType.VAR]:
+instructions.py(82):                     continue
+instructions.py(59):         for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+interpret.py(22):             self._instructions.append(instruction_obj)
+interpret.py(19):         for opcode, args in instructions_raw:
+interpret.py(67): interpreter.execute_instructions(memory) 
+ --- modulename: interpret, funcname: execute_instructions
+interpret.py(25):         for instruction in self._instructions:
+interpret.py(26):             instruction.execute(memory)
+ --- modulename: instructions, funcname: execute
+instructions.py(117):         frame = self.get_frame_from_arg_value(self._args[0].value)
+ --- modulename: instructions, funcname: get_frame_from_arg_value
+instructions.py(96):         return var.split('@')[0]
+instructions.py(118):         name = self.get_name_from_arg_value(self._args[0].value)
+ --- modulename: instructions, funcname: get_name_from_arg_value
+instructions.py(99):         return var.split('@')[1]
+instructions.py(119):         memory.define_var(name, frame)
+ --- modulename: memory, funcname: define_var
+memory.py(84):         assert(frame in ["GF", "LF", "TF"])
+memory.py(85):         {'GF': self._global_define,
+memory.py(86):          'LF': self._local_define,
+memory.py(87):          'TF': self._temporary_define}[frame](name)
+memory.py(85):         {'GF': self._global_define,
+memory.py(87):          'TF': self._temporary_define}[frame](name)
+memory.py(85):         {'GF': self._global_define,
+memory.py(87):          'TF': self._temporary_define}[frame](name)
+memory.py(85):         {'GF': self._global_define,
+ --- modulename: memory, funcname: _global_define
+memory.py(81):         self._global_frame.define(name)
+ --- modulename: memory, funcname: define
+memory.py(25):         if name in self.variables:
+memory.py(29):         self.variables[name] = Variable(name)
+ --- modulename: instructions, funcname: __init__
+instructions.py(13):         self.name = name_
+instructions.py(14):         self.value = None
+instructions.py(15):         self.datatype: DataType = None
+interpret.py(25):         for instruction in self._instructions:
+interpret.py(26):             instruction.execute(memory)
+ --- modulename: instructions, funcname: execute
+instructions.py(117):         frame = self.get_frame_from_arg_value(self._args[0].value)
+ --- modulename: instructions, funcname: get_frame_from_arg_value
+instructions.py(96):         return var.split('@')[0]
+instructions.py(118):         name = self.get_name_from_arg_value(self._args[0].value)
+ --- modulename: instructions, funcname: get_name_from_arg_value
+instructions.py(99):         return var.split('@')[1]
+instructions.py(119):         memory.define_var(name, frame)
+ --- modulename: memory, funcname: define_var
+memory.py(84):         assert(frame in ["GF", "LF", "TF"])
+memory.py(85):         {'GF': self._global_define,
+memory.py(86):          'LF': self._local_define,
+memory.py(87):          'TF': self._temporary_define}[frame](name)
+memory.py(85):         {'GF': self._global_define,
+memory.py(87):          'TF': self._temporary_define}[frame](name)
+memory.py(85):         {'GF': self._global_define,
+memory.py(87):          'TF': self._temporary_define}[frame](name)
+memory.py(85):         {'GF': self._global_define,
+ --- modulename: memory, funcname: _global_define
+memory.py(81):         self._global_frame.define(name)
+ --- modulename: memory, funcname: define
+memory.py(25):         if name in self.variables:
+memory.py(29):         self.variables[name] = Variable(name)
+ --- modulename: instructions, funcname: __init__
+instructions.py(13):         self.name = name_
+instructions.py(14):         self.value = None
+instructions.py(15):         self.datatype: DataType = None
+interpret.py(25):         for instruction in self._instructions:
+interpret.py(26):             instruction.execute(memory)
+ --- modulename: instructions, funcname: execute
+instructions.py(331):         super().execute(memory, "lt")
+ --- modulename: instructions, funcname: execute
+instructions.py(269):         source_arg, operand1_arg, operand2_arg = self._args
+instructions.py(271):         source_name = self.get_name_from_arg_value(source_arg.value)
+ --- modulename: instructions, funcname: get_name_from_arg_value
+instructions.py(99):         return var.split('@')[1]
+instructions.py(272):         source_frame = self.get_frame_from_arg_value(source_arg.value)
+ --- modulename: instructions, funcname: get_frame_from_arg_value
+instructions.py(96):         return var.split('@')[0]
+instructions.py(276):         if operand2_arg.type_ == ArgumentType.VAR:
+instructions.py(279):             memory.push_data(operand2_arg.value, DataType.convert_to_enum(operand2_arg.datatype))
+ --- modulename: instructions, funcname: convert_to_enum
+instructions.py(26):         if datatype == "int":
+instructions.py(28):         elif datatype == "string":
+instructions.py(30):         elif datatype == "bool":
+instructions.py(31):             return DataType.TYPE_BOOL
+ --- modulename: memory, funcname: push_data
+memory.py(262):         new_var = Variable("stack_var")
+ --- modulename: instructions, funcname: __init__
+instructions.py(13):         self.name = name_
+instructions.py(14):         self.value = None
+instructions.py(15):         self.datatype: DataType = None
+memory.py(263):         new_var.value = value
+memory.py(264):         new_var.datatype = datatype
+memory.py(265):         self._data_stack.append(new_var)
+instructions.py(281):         if operand1_arg.type_ == ArgumentType.VAR:
+instructions.py(284):             memory.push_data(operand1_arg.value, DataType.convert_to_enum(operand1_arg.datatype))
+ --- modulename: instructions, funcname: convert_to_enum
+instructions.py(26):         if datatype == "int":
+instructions.py(28):         elif datatype == "string":
+instructions.py(30):         elif datatype == "bool":
+instructions.py(31):             return DataType.TYPE_BOOL
+ --- modulename: memory, funcname: push_data
+memory.py(262):         new_var = Variable("stack_var")
+ --- modulename: instructions, funcname: __init__
+instructions.py(13):         self.name = name_
+instructions.py(14):         self.value = None
+instructions.py(15):         self.datatype: DataType = None
+memory.py(263):         new_var.value = value
+memory.py(264):         new_var.datatype = datatype
+memory.py(265):         self._data_stack.append(new_var)
+instructions.py(288):         callback = getattr(memory, function_name)
+instructions.py(289):         callback(source_name, source_frame)
+ --- modulename: memory, funcname: lt
+memory.py(225):         first_operand = self.pop_data()
+ --- modulename: memory, funcname: pop_data
+memory.py(270):         if len(self._data_stack) == 0:
+memory.py(274):         return self._data_stack.pop(-1)
+memory.py(226):         second_operand = self.pop_data()
+ --- modulename: memory, funcname: pop_data
+memory.py(270):         if len(self._data_stack) == 0:
+memory.py(274):         return self._data_stack.pop(-1)
+memory.py(227):         print(first_operand.value, second_operand.value)
+True FALSE
+memory.py(228):         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
+ --- modulename: memory, funcname: _check_matching_operands
+memory.py(174):         if operand1_datatype != operand2_datatype:
+memory.py(229):         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_STRING, DataType.TYPE_BOOL,
+memory.py(230):                          DataType.TYPE_FLOAT])
+memory.py(229):         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_STRING, DataType.TYPE_BOOL,
+ --- modulename: memory, funcname: _check_type
+memory.py(169):         if type_ not in allowed_types:
+memory.py(232):         source_var = self.get_var(dest_name, dest_frame)
+ --- modulename: memory, funcname: get_var
+memory.py(144):         var =  {'GF': self._global_get_var,
+memory.py(145):                 'LF': self._local_get_var,
+memory.py(146):                 'TF': self._temporary_get_var}[frame](name)
+memory.py(144):         var =  {'GF': self._global_get_var,
+memory.py(146):                 'TF': self._temporary_get_var}[frame](name)
+memory.py(144):         var =  {'GF': self._global_get_var,
+memory.py(146):                 'TF': self._temporary_get_var}[frame](name)
+memory.py(144):         var =  {'GF': self._global_get_var,
+ --- modulename: memory, funcname: _global_get_var
+memory.py(122):         return self._global_frame.get(name)
+ --- modulename: memory, funcname: get
+memory.py(17):         if name in self.variables:
+memory.py(18):             return self.variables[name]
+memory.py(148):         if var is None:
+memory.py(152):         return var
+memory.py(233):         if first_operand.datatype == DataType.TYPE_INT:
+memory.py(236):         if first_operand.datatype == DataType.TYPE_FLOAT:
+memory.py(239):         if first_operand.datatype == DataType.TYPE_BOOL:
+memory.py(240):             result = "true" if bool(first_operand.value) < bool(second_operand.value) else "false"
+memory.py(242):         if first_operand.datatype == DataType.TYPE_STRING:
+memory.py(246):         source_var.datatype = DataType.TYPE_STRING
+memory.py(247):         source_var.value = result
+interpret.py(25):         for instruction in self._instructions:
+interpret.py(26):             instruction.execute(memory)
+ --- modulename: instructions, funcname: execute
+instructions.py(243):         arg = self._args[0]
+instructions.py(244):         if arg.type_ == ArgumentType.VAR:
+instructions.py(245):             name = self.get_name_from_arg_value(arg.value)
+ --- modulename: instructions, funcname: get_name_from_arg_value
+instructions.py(99):         return var.split('@')[1]
+instructions.py(246):             frame = self.get_frame_from_arg_value(arg.value)
+ --- modulename: instructions, funcname: get_frame_from_arg_value
+instructions.py(96):         return var.split('@')[0]
+instructions.py(247):             var = memory.get_var(name, frame)
+ --- modulename: memory, funcname: get_var
+memory.py(144):         var =  {'GF': self._global_get_var,
+memory.py(145):                 'LF': self._local_get_var,
+memory.py(146):                 'TF': self._temporary_get_var}[frame](name)
+memory.py(144):         var =  {'GF': self._global_get_var,
+memory.py(146):                 'TF': self._temporary_get_var}[frame](name)
+memory.py(144):         var =  {'GF': self._global_get_var,
+memory.py(146):                 'TF': self._temporary_get_var}[frame](name)
+memory.py(144):         var =  {'GF': self._global_get_var,
+ --- modulename: memory, funcname: _global_get_var
+memory.py(122):         return self._global_frame.get(name)
+ --- modulename: memory, funcname: get
+memory.py(17):         if name in self.variables:
+memory.py(18):             return self.variables[name]
+memory.py(148):         if var is None:
+memory.py(152):         return var
+instructions.py(248):             self._write_const(var.value, var.datatype)
+ --- modulename: instructions, funcname: _write_const
+instructions.py(228):         if datatype == DataType.TYPE_NIL:
+instructions.py(231):         elif datatype == DataType.TYPE_INT:
+instructions.py(237):         elif datatype == DataType.TYPE_FLOAT:
+instructions.py(240):             print(value, end='')
+falseinterpret.py(25):         for instruction in self._instructions:
+interpret.py(69): exit(0)
  --- modulename: _sitebuiltins, funcname: __call__
 _sitebuiltins.py(22):         try:
 _sitebuiltins.py(23):             sys.stdin.close()

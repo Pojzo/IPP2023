@@ -1,6 +1,7 @@
 from input_handler import ArgumentType
 from input_handler import Argument
 from input_handler import instructions_dic
+from input_handler import Input
 from debug import DEBUG_PRINT
 from error_codes import ErrorCodes
 
@@ -72,7 +73,7 @@ class Instruction(abc.ABC):
                     exit(ErrorCodes.InputStructureBad)
 
             if arg.datatype == "bool":
-                if not arg.value in ["true", "false"]:
+                if not arg.value.lower() in ["true", "false"]:
                     DEBUG_PRINT("Bad bool on input")
                     exit(ErrorCodes.InputStructureBad)
             
@@ -82,7 +83,6 @@ class Instruction(abc.ABC):
 
             if not arg.type_ == expected_type:
                 DEBUG_PRINT("Not good type ")
-                print(arg.type_, expected_type)
                 exit(ErrorCodes.InputStructureBad)
 
     @abc.abstractmethod
@@ -170,7 +170,7 @@ class POPS(Instruction):
 
     def execute(self, memory):
         arg = self._args[0]
-        name = get_name_from_arg_value(arg.value)
+        name = self.get_name_from_arg_value(arg.value)
         frame = self.get_frame_from_arg_value(arg.value)
         popped = memory.pop_data()
         memory.set_var(name, frame, popped.value, popped.datatype)
@@ -214,7 +214,7 @@ class READ(Instruction):
         var_frame = self.get_frame_from_arg_value(var_arg.value)
         var = memory.get_var(var_name, var_frame)
 
-        var.value = input()
+        var.value = Input.get_next_input()
         var.datatype = DataType.convert_to_enum(type_arg.value)
 
 
@@ -322,6 +322,69 @@ class IDIV(ArithmeticInstruction):
     def execute(self, memory):
         super().execute(memory, "idiv")
 
+# LT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class LT(ArithmeticInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "lt")
+
+# GT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class GT(ArithmeticInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "gt")
+
+
+# EQ ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class EQ(ArithmeticInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "eq")
+
+# AND ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class AND(ArithmeticInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "and_")
+
+# OR ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class OR(ArithmeticInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "or_")
+
+# NOT ⟨var⟩ ⟨symb1⟩
+class NOT(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        source_arg, operand1_arg= self._args
+        source_name = self.get_name_from_arg_value(source_arg.value)
+        source_frame = self.get_frame_from_arg_value(source_arg.value)
+
+        if operand1_arg.type_ == ArgumentType.VAR:
+            operand_name = self.get_name_from_arg_value(operand_arg.value)
+            operand_frame = self.get_frame_from_arg_value(operand_arg.value)
+            operand_var = memory.get_var(operand_name, operand_frame)
+
+            memory.push_data(operand_var.value, operand_var.datatype)
+        else:
+            memory.push_data(operand1_arg.value, DataType.convert_to_enum(operand1_arg.datatype))
+
+        memory.not_(source_name, source_frame)
+
+       
 # TYPE ⟨var⟩ ⟨symb⟩
 class TYPE(Instruction):
     def __init__(self, args: list[Argument]):
@@ -330,7 +393,7 @@ class TYPE(Instruction):
     def execute(self, memory):
         var_arg = self._args[0]
         symb_arg = self._args[1]
-        
+
         var_name = self.get_name_from_arg_value(var_arg.value)
         var_frame = self.get_frame_from_arg_value(var_arg.value)
         var = memory.get_var(var_name, var_frame)
@@ -347,3 +410,41 @@ class TYPE(Instruction):
 
         else:
             var.value = symb_arg.datatype
+
+# INT2CHAR ⟨var⟩ ⟨symb⟩
+class INT2CHAR(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        var_arg = self._args[0]
+        symb_arg = self._args[1]
+
+        var_name = self.get_name_from_arg_value(var_arg.value)
+        var_frame = self.get_frame_from_arg_value(var_arg.value)
+        var = memory.get_var(var_name, var_frame)
+        
+        if symb_arg.type_ == ArgumentType.VAR:
+            symb_name = self.get_name_from_arg_value(symb_arg.value)
+            symb_frame = self.get_frame_from_arg_value(symb_arg.value)
+            symb = memory.get_var(symb_name, symb_frame)
+
+            if len(str(symb.value)) != 1:
+                DEBUG_PRINT("INT2CHAR got string or empty sequence")
+                print(symb.value)
+                exit(ErrorCodes.StringError)
+
+            try: 
+                new_value = chr(int(symb.value))
+            except:
+                DEBUG_PRINT("Failed to convert int to chr")
+                exit(ErrorCodes.StringError)
+
+            memory.set_var(var_name, var_frame, new_value, DataType.TYPE_STRING)
+        else:
+            try:
+                new_value = chr(int(symb_arg.value))
+            except:
+                DEBUG_PRINT("Failed to convert int to chr")
+                exit(ErrorCodes.StringError)
+            memory.set_var(var_name, var_frame, new_value, DataType.TYPE_STRING)
