@@ -19,11 +19,13 @@ TEST_DIR = "./interpret_tests"
 parser = argparse.ArgumentParser()
 parser.add_argument("--verbose", "--v", default="1")
 parser.add_argument("--return_code_only", "--rco", default="0")
+parser.add_argument("--run_only")
+
+
 
 args = parser.parse_args()
 
 test_dic = defaultdict(list)
-
 
 
 class Test():
@@ -169,7 +171,13 @@ for folder in glob.glob("./interpret_tests/*"):
     num_files[folder.split('/')[-1]] = len(list(glob.glob(os.path.join(folder, "*.src"))))
 
 for folder in glob.glob("./interpret_tests/*"):
-    test_dir(folder)
+    if args.run_only:
+        if folder.split('/')[-1] == args.run_only:
+            test_dir(folder)
+        else:
+            continue
+    else:
+        test_dir(folder)
 
 total = passed = 0
 
