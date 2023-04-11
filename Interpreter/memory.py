@@ -164,48 +164,70 @@ class Memory(metaclass=Singleton):
         var.datatype = datatype
     
     
+    def _check_type(self, type_: DataType, allowed_types: list[DataType]) -> None:
+        if type_ not in allowed_types:
+            DEBUG_PRINT("IDIV wrong datatype")
+            exit(ErrorCodes.OperandTypeBad)
+
+
     # i'll probably refactor this later to abide by DRY
     # the operands will be on the stack
     def add(self, dest_name, dest_frame) -> None:
         first_operand = self.pop_data()
         second_operand = self.pop_data()
+        self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
+
         if first_operand.datatype != second_operand.datatype:
             DEBUG_PRINT("ADD datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
-            exit(ErrorCodes.OperandValueBad)
+            exit(ErrorCodes.OperandTypeBad)
 
         source_var = self.get_var(dest_name, dest_frame)
-        source_var.value = int(first_operand.value) + int(second_operand.value)
+        source_var.value = str(int(first_operand.value) + int(second_operand.value))
+        source_var.datatype = first_operand.datatype
 
     def sub(self, dest_name, dest_frame) -> None:
         first_operand = self.pop_data()
         second_operand = self.pop_data()
+        self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
+
         if first_operand.datatype != second_operand.datatype:
             DEBUG_PRINT("SUB datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
-            exit(ErrorCodes.OperandValueBad)
+            exit(ErrorCodes.OperandTypeBad)
 
         source_var = self.get_var(dest_name, dest_frame)
-        source_var.value = int(first_operand.value) - int(second_operand.value)
+        source_var.value = str(int(first_operand.value) - int(second_operand.value))
+        source_var.datatype = first_operand.datatype
 
     def mul(self, dest_name, dest_frame) -> None:
         first_operand = self.pop_data()
         second_operand = self.pop_data()
+        self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
+
         if first_operand.datatype != second_operand.datatype:
             DEBUG_PRINT("MUL datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
-            exit(ErrorCodes.OperandValueBad)
+            exit(ErrorCodes.OperandTypeBad)
 
         source_var = self.get_var(dest_name, dest_frame)
-        source_var.value = int(first_operand.value) * int(second_operand.value)
+        source_var.value = str(int(first_operand.value) * int(second_operand.value))
+        source_var.datatype = first_operand.datatype
 
     def idiv(self, dest_name, dest_frame) -> None:
         first_operand = self.pop_data()
         second_operand = self.pop_data()
+        self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
+       
         if first_operand.datatype != second_operand.datatype:
             DEBUG_PRINT("IDIV datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
             exit(ErrorCodes.OperandValueBad)
 
         source_var = self.get_var(dest_name, dest_frame)
-        source_var.value = int(first_operand.value) / int(second_operand.value)
+        try:
+            source_var.value = str(int(first_operand.value) / int(second_operand.value))
+        except ZeroDivisionError:
+            DEBUG_PRINT("IDIV by zero")
+            exit(ErrorCodes.OperandValueBad)
     
+        source_var.datatype = first_operand.datatype
     
     # testing function
     def get_frame_stack(self) -> list[Frame]:

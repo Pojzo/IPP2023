@@ -14,42 +14,61 @@ class Variable:
         self.datatype: DataType = None
  
 class DataType:
-    type_int = 1
-    type_string = 2
-    type_bool = 3
-    type_nil = 4
-    type_float = 5
+    TYPE_INT = 1
+    TYPE_STRING = 2
+    TYPE_BOOL = 3
+    TYPE_NIL = 4
+    TYPE_FLOAT = 5
 
     @staticmethod
     def convert_to_enum(datatype: str) -> "DataType":
         if datatype == "int":
-            return DataType.type_int
+            return DataType.TYPE_INT
         elif datatype == "string":
-            return DataType.type_string
+            return DataType.TYPE_STRING
         elif datatype == "bool":
-            return DataType.type_bool
+            return DataType.TYPE_BOOL
         elif datatype == "nil":
-            return DataType.type_nil
+            return DataType.TYPE_NIL
         elif datatype == "float":
-            return DataType.type_float
-
+            return DataType.TYPE_FLOAT
 
 
 class Instruction(abc.ABC):
     def __init__(self, opcode: str, args: list[Argument]):
         self.opcode = opcode
         self._args = args
-        if not self.check_argument_types():
-            DEBUG_PRINT("Check argument types failed")
-            exit(ErrorCodes.InputNotWellFormed)
-
+        self.check_argument_types()
 
     # i don't know if this is necessary but whatever
     def check_argument_types(self):
-        expected_types = instructions_dic[self.opcode]
-        our_types = [arg.type_ for arg in self._args]
-        return True
-        # return all([a == b for a, b in zip(expected_types, our_types)])
+        for arg, expected_type in zip(self._args, instructions_dic[self.opcode]):
+            if arg.datatype == "int":
+                try:
+                    int(arg.value)
+                except Exception as e:
+                    DEBUG_PRINT("Bad int on input")
+
+                    exit(ErrorCodes.InputStructureBad)
+
+            if arg.datatype == "float":
+                try:
+                    int(arg.value)
+                except Exception as e:
+                    DEBUG_PRINT("Bad float on input")
+                    exit(ErrorCodes.InputStructureBad)
+
+            if arg.datatype == "bool":
+                if not arg.value in ["true", "false"]:
+                    DEBUG_PRINT("Bad bool on input")
+                    exit(ErrorCodes.InputStructureBad)
+            
+            if arg.type_ == ArgumentType.VAR and expected_type == ArgumentType.SYMB:
+                continue
+
+            if not arg.type_ == expected_type:
+                DEBUG_PRINT("Not good type ")
+                exit(ErrorCodes.InputStructureBad)
 
     @abc.abstractmethod
     def execute(self, memory) -> None:
@@ -65,10 +84,11 @@ class Instruction(abc.ABC):
         return var.split('@')[1]
 
     def convert_strings_data_type_to_enum(self, str_datatype) -> DataType:
-        return {'int':       type_int,
-                'string':    type_string,
-                'bool': type_bool,
-                'nil':  type_nil}[str_datatype]
+        return {'int':       TYPE_INT,
+                'string':    TYPE_STRING,
+                'bool': TYPE_BOOL,
+                'nil':  TYPE_NIL,
+                'float': TYPE_FLOAT}[str_datatype]
 
     def __repr__(self):
         return f"{str(type(self))}, {self._args}"
@@ -156,11 +176,12 @@ class MOVE(Instruction):
             source_name = self.get_name_from_arg_value(dest_arg.value)
             source_frame = self.get_frame_from_arg_value(dest_arg.value)
             memory.move_var(source_name, source_frame, dest_name, dest_frame)
+
         else:
             source_datatype = source_arg.datatype
             source_value = source_arg.value
             memory.set_var(dest_name, dest_frame, source_value, DataType.convert_to_enum(source_datatype))
-             
+
 
 # READ ⟨var⟩ ⟨type⟩
 class READ(Instruction):
@@ -176,8 +197,31 @@ class WRITE(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
+    def _write_var(self, var: Variable) -> None:
+        value = var.value
+        if var.datatype == DataType.TYPE_NIL:
+            print(end='')
+
+        elif var.datatype == DataType.TYPE_INT:
+            if '.' in value:
+                print(int(float(value)), end='')
+
+            else:
+                print(int(value), end='')
+        elif var.datatype == DataType.TYPE_FLOAT:
+            print(float(value), end='')
+        else:
+            print(value, end='')
+
+
     def execute(self, memory):
-        pass
+        arg = self._args[0]
+        if arg.type_ == ArgumentType.VAR:
+            name = self.get_name_from_arg_value(arg.value)
+            frame = self.get_frame_from_arg_value(arg.value)
+            var = memory.get_var(name, frame)
+            self._write_var(var)
+
 
 class ArithmeticInstruction(Instruction):
     def __init__(self, opcode: str, args: list[Argument]):
@@ -204,6 +248,7 @@ class ArithmeticInstruction(Instruction):
             self._push_var(memory, operand2_arg)
         else:
             memory.push_data(operand2_arg.value, DataType.convert_to_enum(operand2_arg.datatype))
+
         if operand1_arg.type_ == ArgumentType.VAR:
             self._push_var(memory, operand1_arg)
         else:

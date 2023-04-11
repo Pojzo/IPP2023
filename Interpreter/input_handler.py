@@ -260,6 +260,8 @@ class InputHandler:
                 exit(ErrorCodes.InputStructureBad)
             # print(etree.tostring(element))
 
+
+
     # return the instruction in the format
     # [opcode, [arg1, arg2, ...]]
     def get_instructions(self) -> list[str, list[Argument]]:
@@ -277,8 +279,13 @@ class InputHandler:
 
                 arguments.append(argument)
 
+            order = int(instruction.get("order"))
 
-            instructions.append([opcode, arguments])
+            
+            instructions.append([order, opcode, arguments])
 
-        return instructions
+        instructions.sort(key=lambda x: x[0])
+        
+        # return just the opcode and arguments
+        return [x[1:] for x in instructions]
 

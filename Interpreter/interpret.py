@@ -2,6 +2,7 @@ from input_handler import InputHandler
 from input_handler import Argument
 from memory import Memory
 import instructions as InstructionsClass
+from config import DEBUG
 
 
 # the interpreter gets list of lines from input handler
@@ -64,6 +65,8 @@ memory.move_var("global", "GF", "On3", "LF")
 memory = Memory()
 interpreter = Interpreter(inpt.get_instructions())
 interpreter.execute_instructions(memory) 
+
+exit(0)
 
 # local_frame = memory.get_frame_stack()[-1]
 local_frame = []
