@@ -175,6 +175,17 @@ class Memory(metaclass=Singleton):
         source_var = self.get_var(dest_name, dest_frame)
         source_var.value = int(first_operand.value) + int(second_operand.value)
 
+    def sub(self, dest_name, dest_frame) -> None:
+        first_operand = self.pop_data()
+        second_operand = self.pop_data()
+        if first_operand.datatype != second_operand.datatype:
+            DEBUG_PRINT("SUB datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
+            exit(ErrorCodes.OperandValueBad)
+
+        source_var = self.get_var(dest_name, dest_frame)
+        source_var.value = int(first_operand.value) + int(second_operand.value)
+
+    
     
     # testing function
     def get_frame_stack(self) -> list[Frame]:

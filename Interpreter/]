@@ -192,7 +192,7 @@ class ArithmeticInstruction(Instruction):
 
         memory.push_data(operand_var.value, operand_var.datatype)
 
-    def execute(self, memory, function_name):
+    def execute(self, memory, memory_callback):
         source_arg, operand1_arg, operand2_arg = self._args
 
         source_name = self.get_name_from_arg_value(source_arg.value)
@@ -208,8 +208,7 @@ class ArithmeticInstruction(Instruction):
         else:
             memory.push_data(operand2_arg.value, DataType.convert_to_enum(operand2_arg.datatype))
 
-        callback = getattr(memory, function_name)
-        callback(source_name, source_frame)
+        memory_callback(source_name, source_frame)
 
 
 # ADD ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
@@ -217,30 +216,48 @@ class ADD(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
+
     def execute(self, memory):
-        super().execute(memory, "add")
+        super(ArithmeticInstruction, self).execute(memory.add)
 
 
  # SUB ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
-class SUB(ArithmeticInstruction):
+class SUB(Instruction, ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        super().execute(memory, "sub")
+        source_arg, operand1_arg, operand2_arg = self._args
+
+        source_name = self.get_name_from_arg_value(source_arg.value)
+        source_frame = self.get_frame_from_arg_value(source_arg.value)
+
+        if operand1_arg.type_ == ArgumentType.VAR:
+            self.push_var(memory, operand1_arg)
+        else:
+            memory.push_data(operand1_arg.value, DataType.convert_to_enum(operand1_arg.datatype))
+
+        if operand2_arg.type_ == ArgumentType.VAR:
+            self.push_var(memory, operand2_arg)
+        else:
+            memory.push_data(operand2_arg.value, DataType.convert_to_enum(operand2_arg.datatype))
+
+        memory.sub(source_name, source_frame)
+
+        pass
 
 # MUL ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
-class MUL(ArithmeticInstruction):
+class MUL(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        super().execute(memory, "mul")
+        pass
 
 # IDIV ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
-class IDIV(ArithmeticInstruction):
+class IDIV(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        super().execute(memory, "idiv")
+        pass
