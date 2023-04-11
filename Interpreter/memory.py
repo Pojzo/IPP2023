@@ -169,7 +169,7 @@ class Memory(metaclass=Singleton):
         first_operand = self.pop_data()
         second_operand = self.pop_data()
         if first_operand.datatype != second_operand.datatype:
-            DEBUG_PRINT("ADD datatypes not matching")
+            DEBUG_PRINT("ADD datatypes not matching"+ str(first_operand.datatype) + "/" + str(second_operand.datatype))
             exit(ErrorCodes.OperandValueBad)
 
         source_var = self.get_var(dest_name, dest_frame)

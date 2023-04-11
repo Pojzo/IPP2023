@@ -159,7 +159,7 @@ class MOVE(Instruction):
         else:
             source_datatype = source_arg.datatype
             source_value = source_arg.value
-            memory.set_var(dest_name, dest_frame, source_value, source_datatype)
+            memory.set_var(dest_name, dest_frame, source_value, DataType.convert_to_enum(source_datatype))
              
 
 # READ ⟨var⟩ ⟨type⟩
