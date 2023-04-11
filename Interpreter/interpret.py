@@ -35,21 +35,15 @@ inpt.parse_input()
 inpt.convert_source()
 inpt.verify_structure()
 
-instructions = inpt.get_instructions()
-# [print(x) for x in instructions]
-
-
 """
 memory = Memory()
 memory.create_frame()
 memory.define_var("Gazdik", "TF")
 memory.push_frame()
 
-
 memory.create_frame()
 memory.define_var("Cmorik", "TF")
 memory.push_frame()
-
 
 memory.create_frame()
 memory.define_var("On", "TF")
@@ -61,19 +55,30 @@ memory.push_frame()
 
 memory.define_var("On3", "LF")
 
-memory.define_var("toto by malo byt v globalnom frame", "GF")
+memory.define_var("global", "GF")
+memory.set_var("global", "GF", "gazdik", 3)
 
+memory.move_var("global", "GF", "On3", "LF")
 """
 
 memory = Memory()
 interpreter = Interpreter(inpt.get_instructions())
 interpreter.execute_instructions(memory) 
 
-x = memory.get_global_frame()
+# local_frame = memory.get_frame_stack()[-1]
+local_frame = []
+for frame in memory.get_frame_stack():
+    print(frame)
+    for name in frame.variables:
+        variable = frame.variables[name]
+        print(f"{variable.name=}")
+        print(f"{variable.value=}")
+        print(f"{variable.datatype=}")
+        print()
 
-local_frame = memory.get_frame_stack()[-1]
-for name in local_frame.variables:
-    variable = local_frame.variables[name]
+print("Global frame: ")
+for name in memory._global_frame.variables:
+    variable = memory._global_frame.variables[name]
     print(f"{variable.name=}")
     print(f"{variable.value=}")
     print(f"{variable.datatype=}")

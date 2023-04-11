@@ -4,13 +4,9 @@ from error_codes import ErrorCodes
 from debug import DEBUG_PRINT
 from config import DEBUG
 from instructions import DataType
+from instructions import Variable
 
-class Variable:
-    def __init__(self, name_: str):
-        self.name = name_
-        self.value = None
-        self.datatype: DataType = None
-        
+       
 
 class Frame:
     def __init__(self):
@@ -154,12 +150,32 @@ class Memory(metaclass=Singleton):
 
         return var
     
-    def set_var(self, name: str, frame: str, value: str, datatype: DataType):
+    # move var value from source to dest
+    def move_var(self, source_name: str, source_frame: str, dest_name: str, dest_frame: str) -> None:
+        source_var = self.get_var(source_name, source_frame)
+        dest_var = self.get_var(dest_name, dest_frame)
+        dest_var.value = source_var.value
+        dest_var.datatype = source_var.datatype
+
+    
+    def set_var(self, name: str, frame: str, value: str, datatype: DataType) -> None:
         var = self.get_var(name, frame)
         var.value = value
         var.datatype = datatype
+    
 
+    # the operands will be on the stack
+    def add(self, dest_name, dest_frame) -> None:
+        first_operand = self.pop_data()
+        second_operand = self.pop_data()
+        if first_operand.datatype != second_operand.datatype:
+            DEBUG_PRINT("ADD datatypes not matching")
+            exit(ErrorCodes.OperandValueBad)
 
+        source_var = self.get_var(dest_name, dest_frame)
+        source_var.value = int(first_operand.value) + int(second_operand.value)
+
+    
     # testing function
     def get_frame_stack(self) -> list[Frame]:
         return self._frame_stack
