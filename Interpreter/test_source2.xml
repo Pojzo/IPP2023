@@ -34,7 +34,6 @@
     <instruction order="9" opcode="WRITE">
         <arg1 type="var">GF@var</arg1>
     </instruction>
-
     <instruction order="10" opcode="IDIV">
         <arg1 type="var">GF@var</arg1>
         <arg2 type="var">GF@var</arg2>
