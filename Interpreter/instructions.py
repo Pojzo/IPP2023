@@ -111,6 +111,11 @@ class Instruction(abc.ABC):
         else:
             memory.push_to_data_stack(arg.value, DataType.convert_to_enum(arg.datatype))
 
+    def get_var_from_arg(self, arg: Argument) -> tuple[str, str]:
+        name = self.get_name_from_arg_value(arg.value)
+        frame = self.get_frame_from_arg_value(arg.value)
+        return name, frame
+
     def __repr__(self):
         return f"{str(type(self))}, {self._args}"
 
@@ -372,6 +377,44 @@ class NOT(Instruction):
         self.push_var_to_stack(operand1_arg, memory)
         memory.not_(source_name, source_frame)
 
+
+class ArithmeticStackInstruction(Instruction):
+    def __init__(self, opcode: str, args: list[Argument]):
+        super().__init__(opcode, args)
+
+    def execute(self, memory, function_name):
+        callback = getattr(memory, function_name)
+        # we don't need to pass any variable to store the result to
+        callback("", "", stack_only=True)
+
+class ADDS(ArithmeticStackInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "add")
+
+class SUBS(ArithmeticStackInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "sub")
+
+class MULS(ArithmeticStackInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "mul")
+
+class IDIVS(ArithmeticStackInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "idiv")
+
        
 # TYPE ⟨var⟩ ⟨symb⟩
 class TYPE(Instruction):
@@ -398,47 +441,92 @@ class TYPE(Instruction):
         else:
             var.value = symb_arg.datatype
 
+class ConvertInstruction(Instruction):
+    def __init__(self, opcode: str, args: list[Argument]):
+        super().__init__(opcode, args)
+
+    def _convert_to_chr(self, value: str) -> chr:
+        try: 
+            return chr(int(value))
+        except:
+            DEBUG_PRINT("Failed to convert int to chr")
+            exit(ErrorCodes.StringError)
+
+    def _convert_to_int(self, value: str) -> chr:
+        try:
+            return str(int(value))
+        except:
+            DEBUG_PRINT("Failed to convert chr to int")
+            exit(ErrorCodes.StringError)
+
+
 # INT2CHAR ⟨var⟩ ⟨symb⟩
-class INT2CHAR(Instruction):
+class INT2CHAR(ConvertInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        var_arg = self._args[0]
-        symb_arg = self._args[1]
+        source_arg = self._args[0]
+        dest_arg = self._args[1]
 
-        var_name = self.get_name_from_arg_value(var_arg.value)
-        var_frame = self.get_frame_from_arg_value(var_arg.value)
-        var = memory.get_var(var_name, var_frame)
-        
-        if symb_arg.type_ == ArgumentType.VAR:
-            symb_name = self.get_name_from_arg_value(symb_arg.value)
-            symb_frame = self.get_frame_from_arg_value(symb_arg.value)
-            symb = memory.get_var(symb_name, symb_frame)
+        if source_arg.type_ == ArgumentType.VAR:
+            source_name = self.get_name_from_arg_value(source_arg.value)
+            source_frame = self.get_frame_from_arg_value(source_arg.value)
+            source_var = memory.get_var(source_name, source_frame)
 
-            try: 
-                new_value = chr(int(symb.value))
-            except:
-                DEBUG_PRINT("Failed to convert int to chr")
-                exit(ErrorCodes.StringError)
-
-            memory.set_var(var_name, var_frame, new_value, DataType.TYPE_STRING)
+            new_value = self._convert_to_chr(source_var.value)
         else:
-            try:
-                new_value = chr(int(symb_arg.value))
-            except:
-                DEBUG_PRINT("Failed to convert int to chr")
-                exit(ErrorCodes.StringError)
-            
-            memory.set_var(var_name, var_frame, new_value, DataType.TYPE_STRING)
+            new_value = self._convert_to_chr(source_arg.value)
 
-# STRI2INT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
-class STRI2INT(Instruction):
+        dest_name, dest_frame = self.get_var(dest_arg)
+        memory.set_var(dest_name, dest_frame, new_value, DataType.TYPE_STRING)
+
+# INT2CHARS
+class INT2CHARS(ConvertInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        pass
+        var = memory.pop_data_from_stack()
+        value = self._convert_to_chr(var.value)
+        memory.push_data_to_stack(value, DataType.TYPE_STRING)
+
+# INT2CHAR ⟨var⟩ ⟨symb⟩
+class STRI2INT(ConvertInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        dest_arg, source_arg = self._args
+        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
+        
+        if source_arg.type_ == ArgumentType.VAR:
+            source_name, source_frame = self.get_var_from_arg(source_arg)
+            var = memory.get_var(source_name, source_frame)
+            if var.datatype != DataType.TYPE_STRING:
+                DEBUG_PRINT("STRI2INT bad source type")
+                exit(ErrorCodes.OperandTypeBad)
+
+            new_value = self._convert_to_int(var.value)
+        else:
+            new_value = self._convert_to_int(var.value)
+        
+        memory.set_var(dest_name, dest_frame, new_value, DataType.TYPE_INT)
+        
+
+# STRI2INTS
+class STRI2INTS(ConvertInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        var = memory.pop_from_data_stack()
+        if var.datatype != DataType.TYPE_STRING:
+            DEBUG_PRINT("STR2INTS bad source type")
+            exit(ErrorCodes.OperandTypeBad)
+
+        value = self._convert_to_int(var.value)
+        memory.push_to_data_stack(value, DataType.TYPE_INT)
 
 
 # CONCAT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
@@ -528,7 +616,7 @@ class JUMPIFEQ(JumpInstruction):
         temp_var_index += 1
         if result.value == "true":
             return label_arg.value
-        
+
 
 # JUMPIFEQ
 class JUMPIFNEQ(JumpInstruction):
@@ -540,7 +628,7 @@ class JUMPIFNEQ(JumpInstruction):
         global temp_var_index
         self._push_var(memory)
         memory.eq("<temp_result>" + str(temp_var_index), "GF")
-        
+
         result = memory.get_var("<temp_result>" + str(temp_var_index), "GF")
 
         temp_var_index += 1
