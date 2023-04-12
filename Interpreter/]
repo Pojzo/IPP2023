@@ -6,8 +6,6 @@ from debug import DEBUG_PRINT
 from error_codes import ErrorCodes
 from typing import Callable
 
-import re
-
 
 import abc
 
@@ -228,15 +226,6 @@ class WRITE(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    # find any escaped sequences and convert them to ascii
-    def _convert_to_ascii(self, string: str) -> str:
-        pattern = r'\\[0-9]{3}'
-        new_string = string
-        new_string = re.sub(pattern, lambda m: chr(int(m.group(0)[1:])), new_string)
-        new_string = new_string.replace('\\', '')
-
-        return new_string
-
 
     def _write_const(self, value: str, datatype: DataType):
         # print(f"Printing this value: _{value}_")
@@ -252,9 +241,7 @@ class WRITE(Instruction):
         elif datatype == DataType.TYPE_FLOAT:
             print(float(value), end='')
         else:
-            print_value = self._convert_to_ascii(value)
-            if len(print_value):
-                print(print_value, end='')
+            print(value, end='')
 
     def execute(self, memory):
         arg = self._args[0]
@@ -500,7 +487,7 @@ temp_var_index = 0
 
 class JumpInstruction(Instruction):
     def __init__(self, opcode: str, args: list[Argument]):
-        super().__init__(opcode, args)
+        super().__init__(self, opcode, args)
 
     def _push_var(self, memory):
         global temp_var_index
@@ -519,16 +506,14 @@ class JUMPIFEQ(JumpInstruction):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        global temp_var_index
-        label_arg = self._args[0]
         self._push_var(memory)     
 
         memory.eq("<temp_result>" + str(temp_var_index), "GF")
         result = memory.get_var("<temp_result>" + str(temp_var_index), "GF")
-        temp_var_index += 1
         if result.value == "true":
             return label_arg.value
         
+        temp_var_index += 1
 
 # JUMPIFEQ
 class JUMPIFNEQ(JumpInstruction):
@@ -536,16 +521,14 @@ class JUMPIFNEQ(JumpInstruction):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        label_arg = self._args[0]
-        global temp_var_index
         self._push_var(memory)
         memory.eq("<temp_result>" + str(temp_var_index), "GF")
         
         result = memory.get_var("<temp_result>" + str(temp_var_index), "GF")
-
-        temp_var_index += 1
         if result.value == "false":
             return label_arg.value
+        
+        temp_var_index += 1
 
 
 # LABEL   
@@ -565,7 +548,7 @@ class CALL(Instruction):
         label_arg = self._args[0]
         cur_index = Instruction.instruction_index_callback()
         memory.push_to_call_stack(cur_index + 1)
-        return label_arg.value
+        return arg.value
 
 # RETURN
 class RETURN(Instruction):
@@ -575,48 +558,3 @@ class RETURN(Instruction):
     def execute(self, memory):
         index = memory.pop_from_call_stack()
         return index
-
-# EXIT <symb>
-class EXIT(Instruction):
-    def __init__(self, args: list[Argument]):
-        super().__init__(self.__class__.__name__, args)
-
-    def execute(self, memory):
-        arg = self._args[0]
-        if arg.type_ == ArgumentType.VAR:
-            name = self.get_name_from_arg_value(arg.value)
-            frame = self.get_frame_from_arg_value(arg.value)
-            var = memory.get_var(name, frame)
-            if var.datatype != DataType.TYPE_INT:
-                # TODO nie som si isty
-                DEBUG_PRINT("Exit bad operand 1")
-                exit(ErrorCodes.OperandValueBad)
-
-            try:
-                x = int(var.value)
-            except:
-                DEBUG_PRINT("Exit bad operand 2")
-                exit(ErrorCodes.OperandValueBad)
-
-            if x >= 0 and x <= 49:
-                exit(x)
-            else:
-                DEBUG_PRINT("Exit bad operand 3")
-                exit(ErrorCodes.OperandValueBad)
-
-        if arg.datatype != "int":
-            DEBUG_PRINT("Exit bad operand 4")
-            exit(ErrorCodes.OperandValueBad)
-
-        try:
-            x = int(arg.value)
-        except Exception as e:
-            DEBUG_PRINT("Exit bad operand 5")
-            exit(ErrorCodes.OperandValueBad)
-
-        if x >= 0 and x <= 49:
-            exit(x)
-        else:
-            DEBUG_PRINT("Exit bad operand 6")
-            exit(ErrorCodes.OperandValueBad)
-

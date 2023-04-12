@@ -59,6 +59,7 @@ class Memory(metaclass=Singleton):
         self._temporary_frame = None
         self._frame_stack = []
         self._data_stack = []
+        self._call_stack = []
     
     
     # ///--------- DEFINING VARIABLES IN FRAMES -------\\\\\\
@@ -185,32 +186,32 @@ class Memory(metaclass=Singleton):
 
 
     def add(self, dest_name: str, dest_frame: str) -> None:
-        first_operand = self.pop_data()
-        second_operand = self.pop_data()
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
         
         self.set_var(dest_name, dest_frame, str(int(first_operand.value) + int(second_operand.value)), first_operand.datatype)
 
     def sub(self, dest_name: str, dest_frame: str) -> None:
-        first_operand = self.pop_data()
-        second_operand = self.pop_data()
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
 
         self.set_var(dest_name, dest_frame, str(int(first_operand.value) - int(second_operand.value)), first_operand.datatype)
 
     def mul(self, dest_name: str, dest_frame: str) -> None:
-        first_operand = self.pop_data()
-        second_operand = self.pop_data()
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
 
         self.set_var(dest_name, dest_frame, str(int(first_operand.value) * int(second_operand.value)), first_operand.datatype)
 
     def idiv(self, dest_name: str, dest_frame: str) -> None:
-        first_operand = self.pop_data()
-        second_operand = self.pop_data()
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
        
@@ -223,8 +224,8 @@ class Memory(metaclass=Singleton):
         self.set_var(dest_name, dest_frame, new_value, first_operand.datatype)
 
     def lt(self, dest_name: str, dest_frame: str) -> None:
-        first_operand = self.pop_data()
-        second_operand = self.pop_data()
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_STRING, DataType.TYPE_BOOL,
                          DataType.TYPE_FLOAT])
@@ -246,8 +247,8 @@ class Memory(metaclass=Singleton):
         self.set_var(dest_name, dest_frame, result, DataType.TYPE_BOOL)
 
     def gt(self, dest_name: str, dest_frame: str) -> None:
-        first_operand = self.pop_data()
-        second_operand = self.pop_data()
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_STRING, DataType.TYPE_BOOL,
                          DataType.TYPE_FLOAT])
@@ -269,8 +270,8 @@ class Memory(metaclass=Singleton):
         self.set_var(dest_name, dest_frame, result, DataType.TYPE_BOOL)
 
     def eq(self, dest_name: str, dest_frame: str) -> None:
-        first_operand = self.pop_data()
-        second_operand = self.pop_data()
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
 
         # TODO neviem co tu spravit
         # if first_operand.datatype == DataType.TYPE_NIL:
@@ -298,8 +299,8 @@ class Memory(metaclass=Singleton):
         self.set_var(dest_name, dest_frame, result, DataType.TYPE_BOOL)
 
     def and_(self, dest_name: str, dest_frame: str) -> None: 
-        first_operand = self.pop_data()
-        second_operand = self.pop_data()
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
 
         self._check_type(first_operand.datatype, [DataType.TYPE_BOOL])
         self._check_matching_operands(first_operand.datatype, second_operand.datataype)
@@ -308,8 +309,8 @@ class Memory(metaclass=Singleton):
         self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_BOOL)
 
     def or_(self, dest_name: str, dest_frame: str) -> None: 
-        first_operand = self.pop_data()
-        second_operand = self.pop_data()
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
 
         self._check_type(first_operand.datatype, [DataType.TYPE_BOOL])
         self._check_matching_operands(first_operand.datatype, second_operand.datataype)
@@ -318,13 +319,13 @@ class Memory(metaclass=Singleton):
         self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_BOOL)
 
     def not_(self, dest_name: str, dest_frame: str) -> None:
-        operand = self.pop_data()
+        operand = self.pop_from_data_stack()
         self._check_type(operand.datatype, [DataType.TYPE_BOOL])
         self.set_var(dest_name, dest_frame, str(not convert_string_to_bool(operand.value), DataType.TYPE_BOOL))
 
     def concat(self, dest_name: str, dest_frame: str) -> None:
-        operand1 = self.pop_data()
-        operand2 = self.pop_data()
+        operand1 = self.pop_from_data_stack()
+        operand2 = self.pop_from_data_stack()
         self._check_type(operand1.datatype, [DataType.TYPE_STRING])
         self._check_type(operand2.datatype, [DataType.TYPE_STRING])
 
@@ -333,7 +334,7 @@ class Memory(metaclass=Singleton):
     
     
     def strlen(self, dest_name: str, dest_frame: str) -> None:
-        operand = self.pop_data()
+        operand = self.pop_from_data_stack()
         self._check_type(operand.datatype, [DataType.TYPE_STRING])
         new_value = len(operand.value)
         self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_INT)
@@ -341,8 +342,8 @@ class Memory(metaclass=Singleton):
     
     # get char from string at index
     def getchar(self, dest_name: str, dest_frame: str) -> None:
-        operand1 = self.pop_data()
-        operand2 = self.pop_data()
+        operand1 = self.pop_from_data_stack()
+        operand2 = self.pop_from_data_stack()
         self._check_type(operand1.datatype, [DataType.TYPE_STRING])
         self._check_type(operand2.datatype, [DataType.TYPE_INT])
         if int(operand2.value) >= len(operand1.value) or int(operand2.value) < 0:
@@ -354,8 +355,8 @@ class Memory(metaclass=Singleton):
     
     # set char in string at index
     def setchar(self, dest_name: str, dest_frame: str) -> None:
-        operand1 = self.pop_data()
-        operand2 = self.pop_data()
+        operand1 = self.pop_from_data_stack()
+        operand2 = self.pop_from_data_stack()
         self._check_type(operand1.datatype, [DataType.TYPE_STRING])
         self._check_type(operand2.datatype, [DataType.TYPE_INT])
         
@@ -379,7 +380,7 @@ class Memory(metaclass=Singleton):
     # ///--------- FUNCTIONS WITH DATA STACK -------\\\\\\ 
 
     # push data on top of the data stack
-    def push_data(self, value: str, datatype: DataType) -> None:
+    def push_to_data_stack(self, value: str, datatype: DataType) -> None:
         # "stack_var" is default name for stack variables - they can be anonymous
         new_var = Variable("stack_var")
         new_var.value = value
@@ -388,9 +389,22 @@ class Memory(metaclass=Singleton):
 
     # pop data from the top of the data stack
 
-    def pop_data(self) -> str:
+    def pop_from_data_stack(self) -> str:
         if len(self._data_stack) == 0:
             DEBUG_PRINT("Data stack is empty")
             exit(ErrorCodes.DataStackEmpty)
 
         return self._data_stack.pop(-1)
+    
+    # push current index to call stack
+    # when running CALL instruction
+    def push_to_call_stack(self, index: int) -> None:
+        self._call_stack.append(index)
+
+    # pop index from call stack
+    # if it's empty exit with error
+    def pop_from_call_stack(self) -> int:
+        if not len(self._call_stack):
+            DEBUG_PRINT("Call stack is empty")
+            exit(ErrorCodes.CallStackEmpty)
+        return self._call_stack.pop(-1)

@@ -10,7 +10,7 @@ class ErrorCodes:
     FrameNotDefined = 55
 
     MissingValue = 56
-    DataStackEmpty = 56
+    CallStackEmpty = 56
 
     OperandValueBad = 57
     StringError = 58
