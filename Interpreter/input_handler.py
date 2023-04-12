@@ -151,8 +151,13 @@ class InstructionVerify:
             if not re.match(r"arg[0-9]+", child.tag) or int(child.tag[3:]) in arg_numbers:
                 DEBUG_PRINT(f"Failed to verify arguments {child.tag}")
                 return False
-
+            
             arg_numbers.add(int(child.tag[3:]))
+
+        # check if it matches the numbers
+        if not all([x in arg_numbers for x in range(1, expected_num_args + 1)]):
+            DEBUG_PRINT("Missing argument or wrong order")
+            return False
 
         return len(arg_numbers) == expected_num_args
 

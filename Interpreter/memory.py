@@ -194,8 +194,8 @@ class Memory(metaclass=Singleton):
         self.set_var(dest_name, dest_frame, str(int(first_operand.value) + int(second_operand.value)), first_operand.datatype)
 
     def sub(self, dest_name: str, dest_frame: str) -> None:
-        first_operand = self.pop_from_data_stack()
         second_operand = self.pop_from_data_stack()
+        first_operand = self.pop_from_data_stack()
         self._check_type(first_operand.datatype, [DataType.TYPE_INT, DataType.TYPE_FLOAT])
         self._check_matching_operands(first_operand.datatype, second_operand.datatype)
 
