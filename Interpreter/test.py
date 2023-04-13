@@ -30,7 +30,7 @@ test_dic = defaultdict(list)
 
 class Test():
     def __init__(self, dirname: str, testname: str,
-                 expected_output: str, expected_return_code: str,
+                 expected_output: str, expected_return_codes: list[int],
                  stdout: str, stderr: str, return_code, src,
                  test_num: int):
 
@@ -41,7 +41,7 @@ class Test():
         self.stderr = stderr
         self.return_code = int(return_code)
         self.expected_output = expected_output
-        self.expected_return_code = int(expected_return_code)
+        self.expected_return_codes = expected_return_codes
         self.test_num = test_num
         self.passed = True
         self.return_code_passed = True
@@ -50,7 +50,7 @@ class Test():
     def check_if_passed(self):
         diff = difflib.unified_diff([line.strip() for line in self.stdout.splitlines()], [line.strip() for line in
                                                                                           self.expected_output.splitlines()], lineterm='', n=0)
-        if self.return_code != self.expected_return_code:
+        if self.return_code not in self.expected_return_codes:
             self.return_code_passed = False
 
         diff = "\n".join(list(diff))
@@ -71,7 +71,7 @@ class Test():
                     print(self.src)
 
                 print()
-                print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
+                print(f"{RED} Expected return code {self.expected_return_codes} got {self.return_code} {BLACK}")
                 print("---------------------------------")
                 print()
             else:
@@ -93,7 +93,7 @@ class Test():
 
             if not self.return_code_passed:
                 # print("=================================")
-                print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
+                print(f"{RED} Expected return code {self.expected_return_codes} got {self.return_code} {BLACK}")
 
             print("---------------------------------")
 
@@ -113,14 +113,14 @@ class Test():
             if int(args.verbose) == 1:
                 print(self.src)
 
-            print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
+            print(f"{RED} Expected return code {self.expected_return_codes} got {self.return_code} {BLACK}")
 
         else: 
             print(f"{RED} Test [{self.test_num}/{num_dir_tests}] {self.testname} unsuccessfull (wrong output) + (wrong return code) {BLACK}")
             if int(args.verbose) == 1:
                 print(self.src)
 
-            print(f"{RED} Expected return code {self.expected_return_code} got {self.return_code} {BLACK}")
+            print(f"{RED} Expected return code {self.expected_return_codes} got {self.return_code} {BLACK}")
 
         print("---------------------------------")
 
@@ -144,7 +144,7 @@ def run_program(file_name: str, num_test: int) -> Test:
             expected_output = file.read()
 
     with open(f"{file_name}.rc", "r") as file:
-        expected_rc = int(file.read())
+        expected_rc = list(map(int, file.read().split(",")))
 
     with open(f"{file_name}.src", "r") as file:
         src = file.read()
