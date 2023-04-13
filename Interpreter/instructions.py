@@ -290,8 +290,9 @@ class ArithmeticInstruction(Instruction):
         self.push_var_to_stack(operand2_arg, memory)
 
         # find the method name dynamically
-        source_name = self.get_name_from_arg_value(source_arg.value)
-        source_frame = self.get_frame_from_arg_value(source_arg.value)
+        source_name, source_frame = self.get_var_from_arg(source_arg)
+
+
         callback = getattr(memory, function_name)
         callback(source_name, source_frame)
 
@@ -328,6 +329,16 @@ class IDIV(ArithmeticInstruction):
 
     def execute(self, memory):
         super().execute(memory, "idiv")
+
+# DIV ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class DIV(ArithmeticInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "div")
+
+
 
 # LT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
 class LT(ArithmeticInstruction):
@@ -500,6 +511,17 @@ class ConvertInstruction(Instruction):
     def __init__(self, opcode: str, args: list[Argument]):
         super().__init__(opcode, args)
 
+    def check_vars_exist(self, memory):
+        dest_arg, source_arg = self._args
+        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
+        memory.get_var(dest_name, dest_frame)
+        if source_arg.type_ == ArgumentType.SYMB:
+            return 
+
+        source_name, source_frame = self.get_var_from_arg(source_arg)
+        memory.check_var_set(source_name, source_frame)
+
+
     def _convert_to_chr(self, value: str) -> chr:
         try: 
             return chr(int(value))
@@ -523,7 +545,7 @@ class ConvertInstruction(Instruction):
 
     def _convert_int_to_float(self, value: str) -> int:
         try:
-            return float.hex(int(value))
+            return float.hex(float(value))
         except:
             DEBUG_PRINT("Failed to convert int to float")
             exit(ErrorCodes.OperandTypeBad)
@@ -536,8 +558,10 @@ class INT2CHAR(ConvertInstruction):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
+        self.check_vars_exist(memory)
         dest_arg = self._args[0]
         source_arg = self._args[1]
+        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
 
         if source_arg.type_ == ArgumentType.VAR:
             source_name, source_frame = self.get_var_from_arg(source_arg)
@@ -549,7 +573,6 @@ class INT2CHAR(ConvertInstruction):
         else:
             new_value = self._convert_to_chr(source_arg.value)
 
-        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
 
         memory.set_var(dest_name, dest_frame, new_value, DataType.TYPE_STRING)
 
@@ -559,8 +582,12 @@ class INT2FLOAT(ConvertInstruction):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
+        self.check_vars_exist(memory)
+
         dest_arg = self._args[0]
         source_arg = self._args[1]
+
+        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
 
         if source_arg.type_ == ArgumentType.VAR:
             source_name, source_frame = self.get_var_from_arg(source_arg)
@@ -568,12 +595,12 @@ class INT2FLOAT(ConvertInstruction):
             if source_var.datatype != DataType.TYPE_INT:
                 DEBUG_PRINT("INT2CHAR bad type")
                 exit(ErrorCodes.OperandTypeBad)
+
             new_value = self._convert_int_to_float(source_var.value)
         else:
             new_value = self._convert_int_to_float(source_arg.value)
 
-        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
-
+        
         memory.set_var(dest_name, dest_frame, new_value, DataType.TYPE_FLOAT)
 
 
@@ -583,13 +610,16 @@ class FLOAT2INT(ConvertInstruction):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
+        self.check_vars_exist(memory)
+
         dest_arg = self._args[0]
         source_arg = self._args[1]
+        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
 
         if source_arg.type_ == ArgumentType.VAR:
             source_name, source_frame = self.get_var_from_arg(source_arg)
             source_var = memory.get_var(source_name, source_frame)
-            if source_var.datatype != DataType.TYPE_INT:
+            if source_var.datatype != DataType.TYPE_FLOAT:
                 DEBUG_PRINT("INT2CHAR bad type")
                 exit(ErrorCodes.OperandTypeBad)
 
@@ -597,10 +627,8 @@ class FLOAT2INT(ConvertInstruction):
         else:
             new_value = self._convert_float_to_int(source_arg.value)
 
-        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
 
         memory.set_var(dest_name, dest_frame, str(new_value), DataType.TYPE_INT)
-
 
 
 # INT2CHARS
@@ -628,6 +656,7 @@ class STRI2INT(ConvertInstruction):
 
         if source_arg.type_ == ArgumentType.VAR:
             source_name, source_frame = self.get_var_from_arg(source_arg)
+
             source_var = memory.get_var(source_name, source_frame)
             if source_var.datatype != DataType.TYPE_STRING:
                 DEBUG_PRINT("STRI2INT bad source type")
@@ -677,7 +706,7 @@ class STRI2INTS(ConvertInstruction):
             DEBUG_PRINT("Out of bounds index")
             exit(ErrorCodes.StringError)
 
-        converted = self.convert_string_to_int(source_var.value[int(index_var.value)])
+        converted = self._convert_string_to_int(source_var.value[int(index_var.value)])
         memory.push_to_data_stack(converted, DataType.TYPE_INT)
 
 

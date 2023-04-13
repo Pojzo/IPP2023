@@ -159,7 +159,7 @@ class Memory(metaclass=Singleton):
         if var is None:
             DEBUG_PRINT(f"Variable {name} not defined in {frame}")
             exit(ErrorCodes.VariableNotDefined)
-        
+
         return var
 
     # move var value from source to dest
@@ -168,9 +168,19 @@ class Memory(metaclass=Singleton):
         dest_var = self.get_var(dest_name, dest_frame)
         dest_var.value = source_var.value
         dest_var.datatype = source_var.datatype
+    
+    def check_var_set(self, name: str, frame: str) -> None:
+        var = self.get_var(name, frame)
+        if var.value is None:
+            DEBUG_PRINT("Uninitialized variable")
+            exit(ErrorCodes.CallStackEmpty)
 
 
     def set_var(self, name: str, frame: str, value: str, datatype: DataType) -> None:
+        if value is None:
+            DEBUG_PRINT("Uninitialized variable")
+            exit(ErrorCodes.CallStackEmpty)
+
         var = self.get_var(name, frame)
         var.datatype = datatype
         var.value = value
@@ -193,7 +203,7 @@ class Memory(metaclass=Singleton):
         if first_operand.datatype == DataType.TYPE_INT:
             result = str(function(int(first_operand.value), int(second_operand.value)))
         else:
-            result = float.hex(function(float.fromhex(first_operand.value), float.fromhex(second_operand.value)))
+            result = str(float.hex(function(float.fromhex(first_operand.value), float.fromhex(second_operand.value))))
 
         if stack_only:
             self.push_to_data_stack(result, first_operand.datatype)
@@ -226,14 +236,31 @@ class Memory(metaclass=Singleton):
         self._check_type(first_operand.datatype, [DataType.TYPE_INT])
         self._check_type(second_operand.datatype, [DataType.TYPE_INT])
 
-        def check_function(first_operand, second_operand):
+        def check_function(x, y):
             try:
-                return str(int(first_operand) // int(second_operand))
+                return int(x) // int(y)
             except ZeroDivisionError:
                 DEBUG_PRINT("IDIV by zero")
                 exit(ErrorCodes.OperandValueBad)
 
         self._operation(check_function, dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
+
+    def div(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None:
+        second_operand = self.pop_from_data_stack()
+        first_operand = self.pop_from_data_stack()
+        self._check_type(first_operand.datatype, [DataType.TYPE_FLOAT])
+        self._check_type(second_operand.datatype, [DataType.TYPE_FLOAT])
+
+        def check_function(x, y):
+            try:
+                return x / y
+            except ZeroDivisionError:
+                DEBUG_PRINT("IDIV by zero")
+                exit(ErrorCodes.OperandValueBad)
+
+        self._operation(check_function, dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
+
+
 
     def _compare_operation(self, compare_function: Callable, dest_name: str, dest_frame: str, first_operand,
                            second_operand, stack_only: bool = False):

@@ -113,7 +113,9 @@ instructions_dic = {
         "INT2FLOAT": [ArgumentType.VAR, ArgumentType.SYMB],
         "FLOAT2INT": [ArgumentType.VAR, ArgumentType.SYMB],
         "INT2FLOATS": [],
-        "FLOAT2INTS": []
+        "FLOAT2INTS": [],
+        "DIV": [ArgumentType.VAR, ArgumentType.SYMB, ArgumentType.SYMB]
+
 }
 
 
