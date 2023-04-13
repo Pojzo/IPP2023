@@ -306,12 +306,12 @@ class Memory(metaclass=Singleton):
         result = True
         source_var = self.get_var(dest_name, dest_frame)
         if first_operand.datatype == DataType.TYPE_INT:
-            self._compare_operation(lambda x, y: True if int(first_operand.value) == int(second_operand.value) else
-                                    False), dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
+            self._compare_operation(lambda x, y: int(first_operand.value) == int(second_operand.value),
+                                    dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
 
         elif first_operand.datatype == DataType.TYPE_FLOAT:
-            self._compare_operation(lambda x, y: True if float(first_operand.value) == float(second_operand.value) else
-                                    False), dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
+            self._compare_operation(lambda x, y: float(first_operand.value) == float(second_operand.value),
+                                    dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
 
         elif first_operand.datatype == DataType.TYPE_BOOL:
             self._compare_operation(lambda x, y: convert_string_to_bool(first_operand.value) ==
