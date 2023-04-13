@@ -4,6 +4,7 @@ from enum import Enum
 from error_codes import ErrorCodes
 from debug import DEBUG_PRINT
 import re
+import sys
 
 
 class ArgumentType(Enum):
@@ -161,19 +162,7 @@ class InstructionVerify:
 
         return len(arg_numbers) == expected_num_args
 
-class Input:
-    rows: list [str]
-    counter: int = 0
-    @staticmethod
-    def get_next_input():
-        if Input.counter == len(Input.rows):
-            DEBUG_PRINT("Too few inputs")
-            exit(InputStructureBad)
-
-        to_return = Input.rows[Input.counter].strip()
-        Input.counter += 1
-        return to_return
-        
+       
 
 class InputHandler:
     def __init__(self):
@@ -241,12 +230,10 @@ class InputHandler:
     # throw appropriate error if a problem is encountered
     def parse_input(self):
         if self.args["input_file_parameter"] is not None:
-            self.input_file = self.load_file(self.args["input_file_parameter"])
+            self.input_file = self.args["input_file_parameter"]
 
         else:
-            self.input_file = input()
-
-        Input.rows = self.input_file.split('\n')
+            self.input_file = "stdin"
 
         if self.args["source_file_parameter"] is not None:
             self.source_file = self.load_file(
@@ -314,5 +301,5 @@ class InputHandler:
         instructions.sort(key=lambda x: x[0])
         
         # return just the opcode and arguments
-        return [x[1:] for x in instructions]
+        return [x[1:] for x in instructions], self.input_file
 

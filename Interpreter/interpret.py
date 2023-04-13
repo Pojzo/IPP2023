@@ -6,6 +6,7 @@ from config import DEBUG
 from debug import DEBUG_PRINT
 from error_codes import ErrorCodes
 
+import sys
 
 
 # the interpreter gets list of lines from input handler
@@ -79,7 +80,14 @@ inpt.convert_source()
 inpt.verify_structure()
 
 memory = Memory()
-interpreter = Interpreter(inpt.get_instructions())
+instructions, input_file = inpt.get_instructions()
+if input_file == "stdin":
+    input_stream = sys.stdin
+else:
+    input_stream = open(input_file, 'r')
+
+InstructionsClass.Instruction.input_stream = input_stream
+interpreter = Interpreter(instructions)
 interpreter.execute_instructions(memory) 
 
 exit(0)

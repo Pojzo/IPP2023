@@ -125,10 +125,13 @@ class Test():
         print("---------------------------------")
 
 def run_program(file_name: str, num_test: int) -> Test:
-    command = f"py interpret.py --source={file_name}.src \
-            --input={file_name}.in"
-
+    command = f"py interpret.py --source={file_name}.src" \
+            #--input={file_name}.in"
+    
+    with open(f'{file_name}.in') as file:
+        inpt = file.read().split('\n')
     program = subprocess.run(command,
+                             input="\n".join([x for x in inpt]),
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              encoding="utf-8",

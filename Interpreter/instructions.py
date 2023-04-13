@@ -1,7 +1,6 @@
 from input_handler import ArgumentType
 from input_handler import Argument
 from input_handler import instructions_dic
-from input_handler import Input
 from debug import DEBUG_PRINT
 from error_codes import ErrorCodes
 from typing import Callable
@@ -53,6 +52,7 @@ class DataType:
 
 class Instruction(abc.ABC):
     instrucion_index_callback: Callable[[], int]
+    input_stream: "Input"
     def __init__(self, opcode: str, args: list[Argument]):
         self.opcode = opcode
         self._args = args
@@ -224,7 +224,11 @@ class READ(Instruction):
         var_frame = self.get_frame_from_arg_value(var_arg.value)
         var = memory.get_var(var_name, var_frame)
 
-        var.value = Input.get_next_input()
+        
+        var.value = Instruction.input_stream.readline().strip('\n')
+        if len(var.value) == 0:
+            DEBUG_PRINT("Missing input")
+            exit(ErrorCodes.InputNotWellFormed)
         var.datatype = DataType.convert_to_enum(type_arg.value)
 
 
@@ -454,7 +458,7 @@ class ConvertInstruction(Instruction):
 
     def _convert_to_int(self, value: str) -> chr:
         try:
-            return str(int(value))
+            return str(ord(value))
         except:
             DEBUG_PRINT("Failed to convert chr to int")
             exit(ErrorCodes.StringError)
@@ -466,19 +470,18 @@ class INT2CHAR(ConvertInstruction):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        source_arg = self._args[0]
-        dest_arg = self._args[1]
+        dest_arg = self._args[0]
+        source_arg = self._args[1]
 
         if source_arg.type_ == ArgumentType.VAR:
-            source_name = self.get_name_from_arg_value(source_arg.value)
-            source_frame = self.get_frame_from_arg_value(source_arg.value)
-            source_var = memory.get_var(source_name, source_frame)
-
-            new_value = self._convert_to_chr(source_var.value)
+            source_name, source_frame = self.get_var_from_arg(source_arg)
+            value = memory.get_var(source_name, source_frame).value
+            new_value = self._convert_to_chr(value)
         else:
             new_value = self._convert_to_chr(source_arg.value)
 
-        dest_name, dest_frame = self.get_var(dest_arg)
+        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
+
         memory.set_var(dest_name, dest_frame, new_value, DataType.TYPE_STRING)
 
 # INT2CHARS
@@ -491,27 +494,43 @@ class INT2CHARS(ConvertInstruction):
         value = self._convert_to_chr(var.value)
         memory.push_data_to_stack(value, DataType.TYPE_STRING)
 
-# INT2CHAR ⟨var⟩ ⟨symb⟩
+# STR2INT ⟨var⟩ ⟨symb⟩
 class STRI2INT(ConvertInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        dest_arg, source_arg = self._args
+        dest_arg, source_arg, index_arg = self._args
         dest_name, dest_frame = self.get_var_from_arg(dest_arg)
         
         if source_arg.type_ == ArgumentType.VAR:
             source_name, source_frame = self.get_var_from_arg(source_arg)
-            var = memory.get_var(source_name, source_frame)
-            if var.datatype != DataType.TYPE_STRING:
+            source_var = memory.get_var(source_name, source_frame)
+            if source_var.datatype != DataType.TYPE_STRING:
                 DEBUG_PRINT("STRI2INT bad source type")
                 exit(ErrorCodes.OperandTypeBad)
 
-            new_value = self._convert_to_int(var.value)
+            source_value = source_var.value
         else:
-            new_value = self._convert_to_int(var.value)
+            source_value = source_arg.value
+
+        if index_arg.type_ == ArgumentType.VAR:
+            index_name, index_frame = self.get_var_from_arg(index_arg)
+            index_var = memory.get_var(index_name, index_frame)
+            if index_var.datatype != DataType.TYPE_INT:
+                DEBUG_PRINT("STRI2INT bad index type")
+                exit(ErrorCodes.OperandTypeBad)
+
+            index_value = int(index_var.value)
+        else:
+            index_value = int(index_arg.value)
         
-        memory.set_var(dest_name, dest_frame, new_value, DataType.TYPE_INT)
+        if index_value < 0 or index_value >= len(source_value):
+            DEBUG_PRINT("Out of bounds index")
+            exit(ErrorCodes.StringError)
+
+        converted = self._convert_to_int(source_value[index_value])
+        memory.set_var(dest_name, dest_frame, converted, DataType.TYPE_INT)
         
 
 # STRI2INTS
