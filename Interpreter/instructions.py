@@ -71,7 +71,7 @@ class Instruction(abc.ABC):
 
             if arg.datatype == "float":
                 try:
-                    int(arg.value)
+                    float.fromhex(arg.value)
                 except Exception as e:
                     DEBUG_PRINT("Bad float on input")
                     exit(ErrorCodes.InputStructureBad)
@@ -194,13 +194,12 @@ class MOVE(Instruction):
 
     def execute(self, memory):
         dest_arg, source_arg  = self._args
-        dest_name = self.get_name_from_arg_value(dest_arg.value)
-        dest_frame = self.get_frame_from_arg_value(dest_arg.value)
+        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
 
         if source_arg.type_ == ArgumentType.VAR:
-            source_name = self.get_name_from_arg_value(dest_arg.value)
-            source_frame = self.get_frame_from_arg_value(dest_arg.value)
-            memory.move_var(source_name, source_frame, dest_name, dest_frame)
+            source_name, source_frame = self.get_var_from_arg(source_arg)
+            var = memory.get_var(source_name, source_frame)
+            memory.set_var(dest_name, dest_frame, var.value, var.datatype)
 
         else:
             source_datatype = source_arg.datatype
@@ -225,11 +224,14 @@ class READ(Instruction):
         var = memory.get_var(var_name, var_frame)
 
         
-        var.value = Instruction.input_stream.readline().strip('\n')
-        if len(var.value) == 0:
-            DEBUG_PRINT("Missing input")
-            exit(ErrorCodes.InputNotWellFormed)
-        var.datatype = DataType.convert_to_enum(type_arg.value)
+        value = Instruction.input_stream.readline().strip('\n')
+        if len(value) == 0:
+            memory.set_var(var_name, var_frame, value, DataType.TYPE_NIL)
+            return
+            # special case nil@nil
+        
+
+        memory.set_var(var_name, var_frame, value, DataType.convert_to_enum(type_arg.value))
 
 
 # WRITE ⟨symb⟩
@@ -259,7 +261,7 @@ class WRITE(Instruction):
             else:
                 print(int(value), end='')
         elif datatype == DataType.TYPE_FLOAT:
-            print(float(value), end='')
+            print(float.hex(float.fromhex(value)), end='')
         else:
             print_value = self._convert_to_ascii(value)
             if len(print_value):
@@ -352,6 +354,7 @@ class EQ(ArithmeticInstruction):
     def execute(self, memory):
         super().execute(memory, "eq")
 
+
 # AND ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
 class AND(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
@@ -419,6 +422,54 @@ class IDIVS(ArithmeticStackInstruction):
     def execute(self, memory):
         super().execute(memory, "idiv")
 
+class LTS(ArithmeticStackInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "lt")
+
+# GT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class GTS(ArithmeticStackInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "gt")
+
+
+# EQ ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
+class EQS(ArithmeticStackInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "eq")
+
+
+class ANDS(ArithmeticStackInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "and_")
+
+class ORS(ArithmeticStackInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "or_")
+
+class NOTS(ArithmeticStackInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        super().execute(memory, "not_")
+
+
+
        
 # TYPE ⟨var⟩ ⟨symb⟩
 class TYPE(Instruction):
@@ -456,12 +507,27 @@ class ConvertInstruction(Instruction):
             DEBUG_PRINT("Failed to convert int to chr")
             exit(ErrorCodes.StringError)
 
-    def _convert_to_int(self, value: str) -> chr:
+    def _convert_string_to_int(self, value: str) -> chr:
         try:
             return str(ord(value))
         except:
             DEBUG_PRINT("Failed to convert chr to int")
             exit(ErrorCodes.StringError)
+
+    def _convert_float_to_int(self, value: str) -> int:
+        try:
+            return int(float.fromhex(value))
+        except:
+            DEBUG_PRINT("Failed to convert float to int")
+            exit(ErrorCodes.OperandTypeBad)
+
+    def _convert_int_to_float(self, value: str) -> int:
+        try:
+            return float.hex(int(value))
+        except:
+            DEBUG_PRINT("Failed to convert int to float")
+            exit(ErrorCodes.OperandTypeBad)
+
 
 
 # INT2CHAR ⟨var⟩ ⟨symb⟩
@@ -475,8 +541,11 @@ class INT2CHAR(ConvertInstruction):
 
         if source_arg.type_ == ArgumentType.VAR:
             source_name, source_frame = self.get_var_from_arg(source_arg)
-            value = memory.get_var(source_name, source_frame).value
-            new_value = self._convert_to_chr(value)
+            source_var = memory.get_var(source_name, source_frame)
+            if source_var.datatype != DataType.TYPE_INT:
+                DEBUG_PRINT("INT2CHAR bad type")
+                exit(ErrorCodes.OperandTypeBad)
+            new_value = self._convert_to_chr(source_var.value)
         else:
             new_value = self._convert_to_chr(source_arg.value)
 
@@ -484,15 +553,69 @@ class INT2CHAR(ConvertInstruction):
 
         memory.set_var(dest_name, dest_frame, new_value, DataType.TYPE_STRING)
 
+# INT2FLOAT ⟨var⟩ ⟨symb⟩
+class INT2FLOAT(ConvertInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        dest_arg = self._args[0]
+        source_arg = self._args[1]
+
+        if source_arg.type_ == ArgumentType.VAR:
+            source_name, source_frame = self.get_var_from_arg(source_arg)
+            source_var = memory.get_var(source_name, source_frame)
+            if source_var.datatype != DataType.TYPE_INT:
+                DEBUG_PRINT("INT2CHAR bad type")
+                exit(ErrorCodes.OperandTypeBad)
+            new_value = self._convert_int_to_float(source_var.value)
+        else:
+            new_value = self._convert_int_to_float(source_arg.value)
+
+        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
+
+        memory.set_var(dest_name, dest_frame, new_value, DataType.TYPE_FLOAT)
+
+
+# INT2FLOAT ⟨var⟩ ⟨symb⟩
+class FLOAT2INT(ConvertInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        dest_arg = self._args[0]
+        source_arg = self._args[1]
+
+        if source_arg.type_ == ArgumentType.VAR:
+            source_name, source_frame = self.get_var_from_arg(source_arg)
+            source_var = memory.get_var(source_name, source_frame)
+            if source_var.datatype != DataType.TYPE_INT:
+                DEBUG_PRINT("INT2CHAR bad type")
+                exit(ErrorCodes.OperandTypeBad)
+
+            new_value = self._convert_float_to_int(source_var.value)
+        else:
+            new_value = self._convert_float_to_int(source_arg.value)
+
+        dest_name, dest_frame = self.get_var_from_arg(dest_arg)
+
+        memory.set_var(dest_name, dest_frame, str(new_value), DataType.TYPE_INT)
+
+
+
 # INT2CHARS
 class INT2CHARS(ConvertInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        var = memory.pop_data_from_stack()
+        var = memory.pop_from_data_stack()
+        if var.datatype != DataType.TYPE_INT:
+            DEBUG_PRINT("INT2CHARS bad type")
+            exit(ErrorCodes.OperandTypeBad)
+
         value = self._convert_to_chr(var.value)
-        memory.push_data_to_stack(value, DataType.TYPE_STRING)
+        memory.push_to_data_stack(value, DataType.TYPE_STRING)
 
 # STR2INT ⟨var⟩ ⟨symb⟩
 class STRI2INT(ConvertInstruction):
@@ -502,7 +625,7 @@ class STRI2INT(ConvertInstruction):
     def execute(self, memory):
         dest_arg, source_arg, index_arg = self._args
         dest_name, dest_frame = self.get_var_from_arg(dest_arg)
-        
+
         if source_arg.type_ == ArgumentType.VAR:
             source_name, source_frame = self.get_var_from_arg(source_arg)
             source_var = memory.get_var(source_name, source_frame)
@@ -524,14 +647,14 @@ class STRI2INT(ConvertInstruction):
             index_value = int(index_var.value)
         else:
             index_value = int(index_arg.value)
-        
+
         if index_value < 0 or index_value >= len(source_value):
             DEBUG_PRINT("Out of bounds index")
             exit(ErrorCodes.StringError)
 
-        converted = self._convert_to_int(source_value[index_value])
+        converted = self.convert_string_to_int(source_value[index_value])
         memory.set_var(dest_name, dest_frame, converted, DataType.TYPE_INT)
-        
+
 
 # STRI2INTS
 class STRI2INTS(ConvertInstruction):
@@ -541,7 +664,7 @@ class STRI2INTS(ConvertInstruction):
     def execute(self, memory):
         index_var = memory.pop_from_data_stack()
         source_var = memory.pop_from_data_stack()
-        
+
         if source_var.datatype != DataType.TYPE_STRING:
             DEBUG_PRINT("STR2INTS bad source type")
             exit(ErrorCodes.OperandTypeBad)
@@ -549,12 +672,12 @@ class STRI2INTS(ConvertInstruction):
         if index_var.datatype != DataType.TYPE_INT:
             DEBUG_PRINT("STR2INTS bad index type")
             exit(ErrorCodes.OperandTypeBad)
-        
+
         if int(index_var.value) <0 or (int(index_var.value) >= len(source_var.value)):
             DEBUG_PRINT("Out of bounds index")
             exit(ErrorCodes.StringError)
-        
-        converted = self._convert_to_int(source_var.value[int(index_var.value)])
+
+        converted = self.convert_string_to_int(source_var.value[int(index_var.value)])
         memory.push_to_data_stack(converted, DataType.TYPE_INT)
 
 
@@ -664,6 +787,36 @@ class JUMPIFNEQ(JumpInstruction):
         if result.value == "false":
             return label_arg.value
 
+class JUMPIFEQS(JumpInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        label_arg = self._args[0]
+        global temp_var_index
+
+        memory.define_var("<temp_result>" + str(temp_var_index), "GF")
+        memory.eq("<temp_result>" + str(temp_var_index), "GF")
+        result = memory.get_var("<temp_result>" + str(temp_var_index), "GF")
+        temp_var_index += 1
+        if result.value == "true":
+            return label_arg.value
+
+class JUMPIFNEQS(JumpInstruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        label_arg = self._args[0]
+        global temp_var_index
+        memory.define_var("<temp_result>" + str(temp_var_index), "GF")
+        memory.eq("<temp_result>" + str(temp_var_index), "GF")
+        result = memory.get_var("<temp_result>" + str(temp_var_index), "GF")
+        temp_var_index += 1
+        if result.value == "false":
+            return label_arg.value
+
+
 
 # LABEL   
 class LABEL(Instruction):
@@ -737,3 +890,9 @@ class EXIT(Instruction):
             DEBUG_PRINT("Exit bad operand 6")
             exit(ErrorCodes.OperandValueBad)
 
+class CLEARS(Instruction):
+    def __init__(self, args: list[Argument]):
+        super().__init__(self.__class__.__name__, args)
+
+    def execute(self, memory):
+        memory.clear_data_stack()

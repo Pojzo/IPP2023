@@ -107,8 +107,13 @@ instructions_dic = {
         "NOTS": [],
         "INT2CHARS": [],
         "STRI2INTS": [],
-        "JUMPIFEQS": [],
-        "JUMPIFNEQS": [],
+        "JUMPIFEQS": [ArgumentType.LABEL],
+        "JUMPIFNEQS": [ArgumentType.LABEL],
+        # another bonus
+        "INT2FLOAT": [ArgumentType.VAR, ArgumentType.SYMB],
+        "FLOAT2INT": [ArgumentType.VAR, ArgumentType.SYMB],
+        "INT2FLOATS": [],
+        "FLOAT2INTS": []
 }
 
 
