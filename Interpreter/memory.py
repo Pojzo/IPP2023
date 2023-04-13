@@ -62,8 +62,8 @@ class Memory(metaclass=Singleton):
         self._frame_stack = []
         self._data_stack = []
         self._call_stack = []
-    
-    
+
+
     # ///--------- DEFINING VARIABLES IN FRAMES -------\\\\\\
 
     # define a local variable
@@ -94,7 +94,7 @@ class Memory(metaclass=Singleton):
          'LF': self._local_define,
          'TF': self._temporary_define}[frame](name)
 
-    
+
     # ///--------- FUNCTIONS WITH FRAME STACK -------\\\\\\
 
     # create a new temporary frame
@@ -107,7 +107,7 @@ class Memory(metaclass=Singleton):
         if self._temporary_frame == None:
             DEBUG_PRINT("Temporary frame doesn't exist")
             exit(ErrorCodes.FrameNotDefined)
-        
+
         self._frame_stack.append(self._temporary_frame)
 
         # reset temporary frame 
@@ -115,19 +115,19 @@ class Memory(metaclass=Singleton):
 
     def temp_frame_exists(self) -> bool:
         return self._temporary_frame is not None
-    
+
     # pop local frame into the temporary frame
     def pop_frame(self) -> None:
         # check if there's a local frame
         if len(self._frame_stack) == 0:
             DEBUG_PRINT("Local frame doesn't exist")
             exit(ErrorCodes.FrameNotDefined)
-        
+
         if self._temporary_frame != None:
             del self._temporary_frame
 
         self._temporary_frame = self._frame_stack.pop(-1)
-    
+
     # return variable in global frame
     def _global_get_var(self, name: str) -> Variable:
         return self._global_frame.get(name)
@@ -137,7 +137,7 @@ class Memory(metaclass=Singleton):
         if len(self._frame_stack) == 0:        
             DEBUG_PRINT(f"Local frame doesn't exist")
             exit(ErrorCodes.FrameNotDefined)
-        
+
         local_frame = self._frame_stack[-1]
         var = local_frame.get(name)
         return var
@@ -155,13 +155,13 @@ class Memory(metaclass=Singleton):
         var =  {'GF': self._global_get_var,
                 'LF': self._local_get_var,
                 'TF': self._temporary_get_var}[frame](name)
-            
+
         if var is None:
             DEBUG_PRINT(f"Variable {name} not defined in {frame}")
             exit(ErrorCodes.VariableNotDefined)
 
         return var
-    
+
     # move var value from source to dest
     def move_var(self, source_name: str, source_frame: str, dest_name: str, dest_frame: str) -> None:
         source_var = self.get_var(source_name, source_frame)
@@ -169,13 +169,13 @@ class Memory(metaclass=Singleton):
         dest_var.value = source_var.value
         dest_var.datatype = source_var.datatype
 
-    
+
     def set_var(self, name: str, frame: str, value: str, datatype: DataType) -> None:
         var = self.get_var(name, frame)
         var.value = value
         var.datatype = datatype
-    
-    
+
+
     def _check_type(self, type_: DataType, allowed_types: list[DataType]) -> None:
         if type_ not in allowed_types:
             DEBUG_PRINT("Instruction wrong datatype")
@@ -198,7 +198,7 @@ class Memory(metaclass=Singleton):
         if stack_only:
             self.push_to_data_stack(result, first_operand.datatype)
             return
-        
+
         self.set_var(dest_name, dest_frame, result, first_operand.datatype)
 
     def add(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None:
@@ -223,7 +223,7 @@ class Memory(metaclass=Singleton):
     def idiv(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None:
         second_operand = self.pop_from_data_stack()
         first_operand = self.pop_from_data_stack()
-        
+
         def check_function(first_operand, second_operand):
             try:
                 return str(int(first_operand) / int(second_operand))
@@ -232,7 +232,7 @@ class Memory(metaclass=Singleton):
                 exit(ErrorCodes.OperandValueBad)
 
         self._operation(check_function, dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
-    
+
     def _compare_operation(self, compare_function: Callable, dest_name: str, dest_frame: str, first_operand,
                            second_operand, stack_only: bool = False):
         result = "true" if compare_function(first_operand, second_operand) else "false"
@@ -250,20 +250,20 @@ class Memory(metaclass=Singleton):
                                                   DataType.TYPE_FLOAT])
 
         if first_operand.datatype == DataType.TYPE_INT:
-            self._compare_operation(lambda x, y: "true" if int(x) > int(y) else "false", dest_name, dest_frame,
+            self._compare_operation(lambda x, y: True if int(x) > int(y) else False, dest_name, dest_frame,
                                     first_operand, second_operand, stack_only = stack_only)
 
         elif first_operand.datatype == DataType.TYPE_FLOAT:
 
-            self._compare_operation(lambda x, y: "true" if float(x) > float(y) else "false", dest_name, dest_frame,
+            self._compare_operation(lambda x, y: True if float(x) > float(y) else False, dest_name, dest_frame,
                                     first_operand, second_operand, stack_only = stack_only)
 
         elif first_operand.datatype == DataType.TYPE_BOOL:
-            self._compare_operation(lambda x, y: "true" if convert_string_to_bool(x) > convert_string_to_bool(y) else
-                                    "false", dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
+            self._compare_operation(lambda x, y: True if convert_string_to_bool(x) > convert_string_to_bool(y) else
+                                    False, dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
 
         elif first_operand.datatype == DataType.TYPE_STRING:
-            self._compare_operation(lambda x, y: "true" if x > y else "false", dest_name, dest_frame, first_operand,
+            self._compare_operation(lambda x, y: True if x > y else False, dest_name, dest_frame, first_operand,
                                     second_operand, stack_only=stack_only)
 
 
@@ -277,70 +277,72 @@ class Memory(metaclass=Singleton):
 
         source_var = self.get_var(dest_name, dest_frame)
         if first_operand.datatype == DataType.TYPE_INT:
-            self._compare_operation(lambda x, y: "true" if int(x) < int(y) else "false", dest_name, dest_frame,
+            self._compare_operation(lambda x, y: True if int(x) < int(y) else False, dest_name, dest_frame,
                                     first_operand, second_operand, stack_only = stack_only)
 
         elif first_operand.datatype == DataType.TYPE_FLOAT:
-            self._compare_operation(lambda x, y: "true" if float(x) < float(y) else "false", dest_name, dest_frame,
+            self._compare_operation(lambda x, y: True if float(x) < float(y) else False, dest_name, dest_frame,
                                     first_operand, second_operand, stack_only = stack_only)
 
         elif first_operand.datatype == DataType.TYPE_BOOL:
-            self._compare_operation(lambda x, y: "true" if convert_string_to_bool(x) < convert_string_to_bool(y) else
-                                    "false", dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
+            self._compare_operation(lambda x, y: True if convert_string_to_bool(x) < convert_string_to_bool(y) else
+                                    False, dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
 
         elif first_operand.datatype == DataType.TYPE_STRING:
-            self._compare_operation(lambda x, y: "true" if x < y else "false", dest_name, dest_frame, first_operand,
+            self._compare_operation(lambda x, y: True if x < y else False, dest_name, dest_frame, first_operand,
                                     second_operand, stack_only=stack_only)
 
 
-        def eq(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None:
-            first_operand = self.pop_from_data_stack()
-            second_operand = self.pop_from_data_stack()
+    def eq(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None:
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
 
-            # TODO neviem co tu spravit
-            # if first_operand.datatype == DataType.TYPE_NIL:
-            # if second_operand.datatype == DataType.TYPE_NIL
+        # TODO neviem co tu spravit
+        # if first_operand.datatype == DataType.TYPE_NIL:
+        # if second_operand.datatype == DataType.TYPE_NIL
 
-            self._check_matching_operands(first_operand.datatype, second_operand.datatype)
+        self._check_matching_operands(first_operand.datatype, second_operand.datatype)
 
-            result = "true"
-            source_var = self.get_var(dest_name, dest_frame)
-            if first_operand.datatype == DataType.TYPE_INT:
-                result = "true" if int(first_operand.value) == int(second_operand.value) else "false"
+        result = True
+        source_var = self.get_var(dest_name, dest_frame)
+        if first_operand.datatype == DataType.TYPE_INT:
+            self._compare_operation(lambda x, y: True if int(first_operand.value) == int(second_operand.value) else
+                                    False), dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
 
-            if first_operand.datatype == DataType.TYPE_FLOAT:
-                result = "true" if float(first_operand.value) == float(second_operand.value) else "false"
+        elif first_operand.datatype == DataType.TYPE_FLOAT:
+            self._compare_operation(lambda x, y: True if float(first_operand.value) == float(second_operand.value) else
+                                    False), dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
 
-            if first_operand.datatype == DataType.TYPE_BOOL:
-                result = "true" if convert_string_to_bool(first_operand.value) == convert_string_to_bool(second_operand.value) else "false"
+        elif first_operand.datatype == DataType.TYPE_BOOL:
+            self._compare_operation(lambda x, y: convert_string_to_bool(first_operand.value) ==
+                                    convert_string_to_bool(second_operand.value),
+                                    dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
 
-            if first_operand.datatype == DataType.TYPE_STRING:
-                result = "true" if first_operand.value == second_operand.value else "false"
+        elif first_operand.datatype in [DataType.TYPE_STRING, DataType.TYPE_NIL]:
+            self._compare_operation(lambda x, y: first_operand.value == second_operand.value,
+                                    dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
 
-            if first_operand.datatype == DataType.TYPE_NIL:
-                result = "true" if first_operand.value == second_operand.value else "false"
 
-            self.set_var(dest_name, dest_frame, result, DataType.TYPE_BOOL)
 
-        def and_(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None: 
-            first_operand = self.pop_from_data_stack()
-            second_operand = self.pop_from_data_stack()
+    def and_(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None: 
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
 
-            self._check_type(first_operand.datatype, [DataType.TYPE_BOOL])
-            self._check_matching_operands(first_operand.datatype, second_operand.datataype)
+        self._check_type(first_operand.datatype, [DataType.TYPE_BOOL])
+        self._check_matching_operands(first_operand.datatype, second_operand.datataype)
 
-            new_value = convert_string_to_bool(first_operand.value) and convert_string_to_bool(second_operand.value)
-            self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_BOOL)
+        new_value = convert_string_to_bool(first_operand.value) and convert_string_to_bool(second_operand.value)
+        self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_BOOL)
 
-            def or_(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None: 
-                first_operand = self.pop_from_data_stack()
-            second_operand = self.pop_from_data_stack()
+    def or_(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None: 
+        first_operand = self.pop_from_data_stack()
+        second_operand = self.pop_from_data_stack()
 
-            self._check_type(first_operand.datatype, [DataType.TYPE_BOOL])
-            self._check_matching_operands(first_operand.datatype, second_operand.datataype)
+        self._check_type(first_operand.datatype, [DataType.TYPE_BOOL])
+        self._check_matching_operands(first_operand.datatype, second_operand.datataype)
 
-            new_value = str(convert_string_to_bool(first_operand.value) or convert_string_to_bool(second_operand.value))
-            self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_BOOL)
+        new_value = str(convert_string_to_bool(first_operand.value) or convert_string_to_bool(second_operand.value))
+        self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_BOOL)
 
     def not_(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None:
         operand = self.pop_from_data_stack()

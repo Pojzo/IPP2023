@@ -539,13 +539,23 @@ class STRI2INTS(ConvertInstruction):
         super().__init__(self.__class__.__name__, args)
 
     def execute(self, memory):
-        var = memory.pop_from_data_stack()
-        if var.datatype != DataType.TYPE_STRING:
+        index_var = memory.pop_from_data_stack()
+        source_var = memory.pop_from_data_stack()
+        
+        if source_var.datatype != DataType.TYPE_STRING:
             DEBUG_PRINT("STR2INTS bad source type")
             exit(ErrorCodes.OperandTypeBad)
 
-        value = self._convert_to_int(var.value)
-        memory.push_to_data_stack(value, DataType.TYPE_INT)
+        if index_var.datatype != DataType.TYPE_INT:
+            DEBUG_PRINT("STR2INTS bad index type")
+            exit(ErrorCodes.OperandTypeBad)
+        
+        if int(index_var.value) <0 or (int(index_var.value) >= len(source_var.value)):
+            DEBUG_PRINT("Out of bounds index")
+            exit(ErrorCodes.StringError)
+        
+        converted = self._convert_to_int(source_var.value[int(index_var.value)])
+        memory.push_to_data_stack(converted, DataType.TYPE_INT)
 
 
 # CONCAT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
