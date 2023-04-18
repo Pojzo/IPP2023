@@ -16,7 +16,7 @@ memory = Memory()
 
 
 class Instruction(abc.ABC):
-    instrucion_index_callback: Callable[[], int]
+    instruction_index_callback: Callable[[], int]
     input_stream: "Input"
     def __init__(self, opcode: str, args: list[Argument]):
         self.opcode = opcode
