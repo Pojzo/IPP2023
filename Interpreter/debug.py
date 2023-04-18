@@ -1,4 +1,4 @@
-from config import DEBUG
+DEBUG=False
 
 def DEBUG_PRINT(debug_msg: str) -> None:
     if not DEBUG:

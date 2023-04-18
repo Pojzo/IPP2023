@@ -4,50 +4,15 @@ from input_handler import instructions_dic
 from debug import DEBUG_PRINT
 from error_codes import ErrorCodes
 from typing import Callable
+from memory import Memory
+
+from memory import DataType
+from memory import Variable
 
 import re
-
-
 import abc
 
-class Variable:
-    def __init__(self, name_: str):
-        self.name = name_
-        self.value = None
-        self.datatype: DataType = None
- 
-class DataType:
-    TYPE_INT = 1
-    TYPE_STRING = 2
-    TYPE_BOOL = 3
-    TYPE_NIL = 4
-    TYPE_FLOAT = 5
-
-    @staticmethod
-    def convert_to_enum(datatype: str) -> "DataType":
-        if datatype == "int":
-            return DataType.TYPE_INT
-        elif datatype == "string":
-            return DataType.TYPE_STRING
-        elif datatype == "bool":
-            return DataType.TYPE_BOOL
-        elif datatype == "nil":
-            return DataType.TYPE_NIL
-        elif datatype == "float":
-            return DataType.TYPE_FLOAT
-
-    @staticmethod
-    def convert_to_string(datatype: "DataType") -> str:
-        if datatype == DataType.TYPE_INT:
-            return "int"
-        elif datatype == DataType.TYPE_STRING:
-            return "string"
-        elif datatype == DataType.TYPE_BOOL:
-            return "bool"
-        elif datatype == DataType.TYPE_NIL:
-            return "nil"
-        elif datatype == DataType.TYPE_FLOAT:
-            return "float"
+memory = Memory()
 
 
 class Instruction(abc.ABC):
@@ -90,7 +55,7 @@ class Instruction(abc.ABC):
                 exit(ErrorCodes.InputStructureBad)
 
     @abc.abstractmethod
-    def execute(self, memory) -> None:
+    def execute(self) -> None:
         """ Each instruction must implement
             its own execute function
             """
@@ -124,7 +89,7 @@ class DEFVAR(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         frame = self.get_frame_from_arg_value(self._args[0].value)
         name = self.get_name_from_arg_value(self._args[0].value)
         memory.define_var(name, frame)
@@ -135,21 +100,21 @@ class CREATEFRAME(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         memory.create_frame()
 
 class PUSHFRAME(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         memory.push_frame()
 
 class POPFRAME(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         memory.pop_frame()
 
 #////---------- INSTRUCTIONS RELATED TO THE DATA STACK ----------////
@@ -157,7 +122,7 @@ class PUSHS(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         arg = self._args[0]
         value = arg.value
 
@@ -179,7 +144,7 @@ class POPS(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         arg = self._args[0]
         name = self.get_name_from_arg_value(arg.value)
         frame = self.get_frame_from_arg_value(arg.value)
@@ -192,7 +157,7 @@ class MOVE(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         dest_arg, source_arg  = self._args
         dest_name, dest_frame = self.get_var_from_arg(dest_arg)
 
@@ -212,7 +177,7 @@ class READ(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         var_arg = self._args[0]
         type_arg = self._args[1]
         if type_arg.value not in ["string", "int", "bool", "float"]:
@@ -267,7 +232,7 @@ class WRITE(Instruction):
             if len(print_value):
                 print(print_value, end='')
 
-    def execute(self, memory):
+    def execute(self):
         arg = self._args[0]
         if arg.type_ == ArgumentType.VAR:
             name = self.get_name_from_arg_value(arg.value)
@@ -284,7 +249,7 @@ class ArithmeticInstruction(Instruction):
     def __init__(self, opcode: str, args: list[Argument]):
         super().__init__(opcode, args)
 
-    def execute(self, memory, function_name):
+    def execute(self, function_name):
         source_arg, operand1_arg, operand2_arg = self._args
         self.push_var_to_stack(operand1_arg, memory)
         self.push_var_to_stack(operand2_arg, memory)
@@ -302,8 +267,8 @@ class ADD(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "add")
+    def execute(self):
+        super().execute("add")
 
 
  # SUB ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
@@ -311,32 +276,32 @@ class SUB(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "sub")
+    def execute(self):
+        super().execute("sub")
 
 # MUL ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
 class MUL(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "mul")
+    def execute(self):
+        super().execute("mul")
 
 # IDIV ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
 class IDIV(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "idiv")
+    def execute(self):
+        super().execute("idiv")
 
 # DIV ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
 class DIV(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "div")
+    def execute(self):
+        super().execute("div")
 
 
 
@@ -345,16 +310,16 @@ class LT(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "lt")
+    def execute(self):
+        super().execute("lt")
 
 # GT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
 class GT(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "gt")
+    def execute(self):
+        super().execute("gt")
 
 
 # EQ ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
@@ -362,8 +327,8 @@ class EQ(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "eq")
+    def execute(self):
+        super().execute("eq")
 
 
 # AND ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
@@ -371,23 +336,23 @@ class AND(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "and_")
+    def execute(self):
+        super().execute("and_")
 
 # OR ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
 class OR(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "or_")
+    def execute(self):
+        super().execute("or_")
 
 # NOT ⟨var⟩ ⟨symb1⟩
 class NOT(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         source_arg, operand1_arg= self._args
         source_name = self.get_name_from_arg_value(source_arg.value)
         source_frame = self.get_frame_from_arg_value(source_arg.value)
@@ -400,7 +365,7 @@ class ArithmeticStackInstruction(Instruction):
     def __init__(self, opcode: str, args: list[Argument]):
         super().__init__(opcode, args)
 
-    def execute(self, memory, function_name):
+    def execute(self, function_name):
         callback = getattr(memory, function_name)
         # we don't need to pass any variable to store the result to
         callback("", "", stack_only=True)
@@ -409,44 +374,44 @@ class ADDS(ArithmeticStackInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "add")
+    def execute(self):
+        super().execute("add")
 
 class SUBS(ArithmeticStackInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "sub")
+    def execute(self):
+        super().execute("sub")
 
 class MULS(ArithmeticStackInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "mul")
+    def execute(self):
+        super().execute("mul")
 
 class IDIVS(ArithmeticStackInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "idiv")
+    def execute(self):
+        super().execute("idiv")
 
 class LTS(ArithmeticStackInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "lt")
+    def execute(self):
+        super().execute("lt")
 
 # GT ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
 class GTS(ArithmeticStackInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "gt")
+    def execute(self):
+        super().execute("gt")
 
 
 # EQ ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
@@ -454,30 +419,30 @@ class EQS(ArithmeticStackInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "eq")
+    def execute(self):
+        super().execute("eq")
 
 
 class ANDS(ArithmeticStackInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "and_")
+    def execute(self):
+        super().execute("and_")
 
 class ORS(ArithmeticStackInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "or_")
+    def execute(self):
+        super().execute("or_")
 
 class NOTS(ArithmeticStackInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "not_")
+    def execute(self):
+        super().execute("not_")
 
 
 
@@ -487,7 +452,7 @@ class TYPE(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         var_arg = self._args[0]
         symb_arg = self._args[1]
 
@@ -557,7 +522,7 @@ class INT2CHAR(ConvertInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         self.check_vars_exist(memory)
         dest_arg = self._args[0]
         source_arg = self._args[1]
@@ -581,7 +546,7 @@ class INT2FLOAT(ConvertInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         self.check_vars_exist(memory)
 
         dest_arg = self._args[0]
@@ -609,7 +574,7 @@ class FLOAT2INT(ConvertInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         self.check_vars_exist(memory)
 
         dest_arg = self._args[0]
@@ -636,7 +601,7 @@ class INT2CHARS(ConvertInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         var = memory.pop_from_data_stack()
         if var.datatype != DataType.TYPE_INT:
             DEBUG_PRINT("INT2CHARS bad type")
@@ -650,7 +615,7 @@ class STRI2INT(ConvertInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         dest_arg, source_arg, index_arg = self._args
         dest_name, dest_frame = self.get_var_from_arg(dest_arg)
 
@@ -690,7 +655,7 @@ class STRI2INTS(ConvertInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         index_var = memory.pop_from_data_stack()
         source_var = memory.pop_from_data_stack()
 
@@ -715,45 +680,45 @@ class CONCAT(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "concat")
+    def execute(self):
+        super().execute("concat")
 
 # STRLEN ⟨var⟩ ⟨symb⟩
 class STRLEN(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "strlen")
+    def execute(self):
+        super().execute("strlen")
 
 # GETCHAR ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
 class GETCHAR(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "getchar")
+    def execute(self):
+        super().execute("getchar")
 
 # SETCHAR ⟨var⟩ ⟨symb1⟩ ⟨symb2⟩
 class SETCHAR(ArithmeticInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
-        super().execute(memory, "setchar")
+    def execute(self):
+        super().execute("setchar")
 
 class DPRINT(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         pass
 
 class BREAK(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         pass
 
 # JUMP
@@ -761,7 +726,7 @@ class JUMP(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         arg = self._args[0]
         return arg.value
 
@@ -787,7 +752,7 @@ class JUMPIFEQ(JumpInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         global temp_var_index
         label_arg = self._args[0]
         self._push_var(memory)     
@@ -804,7 +769,7 @@ class JUMPIFNEQ(JumpInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         label_arg = self._args[0]
         global temp_var_index
         self._push_var(memory)
@@ -820,7 +785,7 @@ class JUMPIFEQS(JumpInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         label_arg = self._args[0]
         global temp_var_index
 
@@ -835,7 +800,7 @@ class JUMPIFNEQS(JumpInstruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         label_arg = self._args[0]
         global temp_var_index
         memory.define_var("<temp_result>" + str(temp_var_index), "GF")
@@ -852,7 +817,7 @@ class LABEL(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         pass
 
 # CALL <label>
@@ -860,7 +825,7 @@ class CALL(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         label_arg = self._args[0]
         cur_index = Instruction.instruction_index_callback()
         memory.push_to_call_stack(cur_index + 1)
@@ -871,7 +836,7 @@ class RETURN(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         index = memory.pop_from_call_stack()
         return index
 
@@ -880,7 +845,7 @@ class EXIT(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         arg = self._args[0]
         if arg.type_ == ArgumentType.VAR:
             name = self.get_name_from_arg_value(arg.value)
@@ -923,5 +888,5 @@ class CLEARS(Instruction):
     def __init__(self, args: list[Argument]):
         super().__init__(self.__class__.__name__, args)
 
-    def execute(self, memory):
+    def execute(self):
         memory.clear_data_stack()

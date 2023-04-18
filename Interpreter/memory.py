@@ -1,12 +1,47 @@
 from input_handler import ArgumentType
-
 from error_codes import ErrorCodes
 from debug import DEBUG_PRINT
-from config import DEBUG
-from instructions import DataType
-from instructions import Variable
 
 from typing import Callable
+class Variable:
+    def __init__(self, name_: str):
+        self.name = name_
+        self.value = None
+        self.datatype: DataType = None
+ 
+class DataType:
+    TYPE_INT = 1
+    TYPE_STRING = 2
+    TYPE_BOOL = 3
+    TYPE_NIL = 4
+    TYPE_FLOAT = 5
+
+    @staticmethod
+    def convert_to_enum(datatype: str) -> "DataType":
+        if datatype == "int":
+            return DataType.TYPE_INT
+        elif datatype == "string":
+            return DataType.TYPE_STRING
+        elif datatype == "bool":
+            return DataType.TYPE_BOOL
+        elif datatype == "nil":
+            return DataType.TYPE_NIL
+        elif datatype == "float":
+            return DataType.TYPE_FLOAT
+
+    @staticmethod
+    def convert_to_string(datatype: "DataType") -> str:
+        if datatype == DataType.TYPE_INT:
+            return "int"
+        elif datatype == DataType.TYPE_STRING:
+            return "string"
+        elif datatype == DataType.TYPE_BOOL:
+            return "bool"
+        elif datatype == DataType.TYPE_NIL:
+            return "nil"
+        elif datatype == DataType.TYPE_FLOAT:
+            return "float"
+
 
 
 def convert_string_to_bool(string: str) -> bool:
@@ -283,7 +318,7 @@ class Memory(metaclass=Singleton):
                                     first_operand, second_operand, stack_only = stack_only)
 
         elif first_operand.datatype == DataType.TYPE_FLOAT:
-            self._compare_operation(lambda x, y: True if float(x) < float(y) else False, dest_name, dest_frame,
+            self._compare_operation(lambda x, y: True if float.fromhex(x) < float.fromhex(y) else False, dest_name, dest_frame,
                                     first_operand, second_operand, stack_only = stack_only)
 
         elif first_operand.datatype == DataType.TYPE_BOOL:
@@ -308,7 +343,7 @@ class Memory(metaclass=Singleton):
 
         elif first_operand.datatype == DataType.TYPE_FLOAT:
 
-            self._compare_operation(lambda x, y: True if float(x) > float(y) else False, dest_name, dest_frame,
+            self._compare_operation(lambda x, y: True if float.fromhex(x) > float.fromhex(y) else False, dest_name, dest_frame,
                                     first_operand, second_operand, stack_only = stack_only)
 
         elif first_operand.datatype == DataType.TYPE_BOOL:
@@ -343,7 +378,7 @@ class Memory(metaclass=Singleton):
                                     dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
 
         elif first_operand.datatype == DataType.TYPE_FLOAT:
-            self._compare_operation(lambda x, y: float(first_operand.value) == float(second_operand.value),
+            self._compare_operation(lambda x, y: float.fromhex(first_operand.value) == float.fromhex(second_operand.value),
                                     dest_name, dest_frame, first_operand, second_operand, stack_only=stack_only)
 
         elif first_operand.datatype == DataType.TYPE_BOOL:

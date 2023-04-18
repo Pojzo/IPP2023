@@ -2,7 +2,6 @@ from input_handler import InputHandler
 from input_handler import Argument
 from memory import Memory
 import instructions as InstructionsClass
-from config import DEBUG
 from debug import DEBUG_PRINT
 from error_codes import ErrorCodes
 
@@ -45,10 +44,10 @@ class Interpreter:
             instruction_obj = getattr(InstructionsClass, opcode)(args)
             self._instructions.append(instruction_obj)
 
-    def execute_instructions(self, memory: Memory) -> None:
+    def execute_instructions(self) -> None:
         self._instruction_index = 0
         while self._instruction_index < len(self._instructions):
-            label = self._instructions[self._instruction_index].execute(memory)
+            label = self._instructions[self._instruction_index].execute()
             if label is None:
                 self._instruction_index += 1
                 continue
@@ -88,6 +87,6 @@ else:
 
 InstructionsClass.Instruction.input_stream = input_stream
 interpreter = Interpreter(instructions)
-interpreter.execute_instructions(memory) 
+interpreter.execute_instructions() 
 
 exit(0)
