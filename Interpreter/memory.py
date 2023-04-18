@@ -1,15 +1,17 @@
 from input_handler import ArgumentType
 from error_codes import ErrorCodes
 from debug import DEBUG_PRINT
+from enum import Enum
 
 from typing import Callable
+
 class Variable:
     def __init__(self, name_: str):
         self.name = name_
         self.value = None
         self.datatype: DataType = None
  
-class DataType:
+class DataType(Enum):
     TYPE_INT = 1
     TYPE_STRING = 2
     TYPE_BOOL = 3
@@ -186,7 +188,7 @@ class Memory(metaclass=Singleton):
         return var
 
 
-    def get_var(self, name: str, frame: str) -> str:
+    def get_var(self, name: str, frame: str) -> Variable:
         var =  {'GF': self._global_get_var,
                 'LF': self._local_get_var,
                 'TF': self._temporary_get_var}[frame](name)
@@ -306,6 +308,7 @@ class Memory(metaclass=Singleton):
 
         self.set_var(dest_name, dest_frame, result, DataType.TYPE_BOOL)
 
+    # comparison between two variables
     def lt(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None:
         second_operand = self.pop_from_data_stack()
         first_operand = self.pop_from_data_stack()
@@ -330,6 +333,7 @@ class Memory(metaclass=Singleton):
                                     second_operand, stack_only=stack_only)
 
 
+    # comparison between two variables
     def gt(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None:
         second_operand = self.pop_from_data_stack()
         first_operand = self.pop_from_data_stack()
@@ -355,6 +359,7 @@ class Memory(metaclass=Singleton):
                                     second_operand, stack_only=stack_only)
 
 
+    # comparison between two variables
     def eq(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None:
         first_operand = self.pop_from_data_stack()
         second_operand = self.pop_from_data_stack()
@@ -392,6 +397,7 @@ class Memory(metaclass=Singleton):
 
 
 
+    # bitwise and operation
     def and_(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None: 
         first_operand = self.pop_from_data_stack()
         second_operand = self.pop_from_data_stack()
@@ -406,6 +412,7 @@ class Memory(metaclass=Singleton):
 
         self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_BOOL)
 
+    # bitwise or operation
     def or_(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None: 
         first_operand = self.pop_from_data_stack()
         second_operand = self.pop_from_data_stack()
@@ -420,6 +427,7 @@ class Memory(metaclass=Singleton):
             return
         self.set_var(dest_name, dest_frame, new_value, DataType.TYPE_BOOL)
 
+    # bitwise not operation
     def not_(self, dest_name: str, dest_frame: str, stack_only: bool = False) -> None:
         operand = self.pop_from_data_stack()
         self._check_type(operand.datatype, [DataType.TYPE_BOOL])

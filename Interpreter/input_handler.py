@@ -246,7 +246,9 @@ class InputHandler:
             self.source_file = self.load_file(
                     self.args["source_file_parameter"])
         else:
-            self.source_file = input()
+            lines = sys.stdin.readlines()
+            lines = "\n".join(lines)
+            self.source_file = lines
 
     # convert source file to xml
     def convert_source(self):

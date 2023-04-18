@@ -128,7 +128,7 @@ class PUSHS(Instruction):
 
         # if it's a variable
         if arg.type_ == ArgumentType.VAR:
-            name = get_name_from_arg_value(arg.value)
+            name = self.get_name_from_arg_value(arg.value)
             frame = self.get_frame_from_arg_value(arg.value)
             var = memory.get_var(name, frame)
             memory.push_to_data_stack(var.value, var.datatype)

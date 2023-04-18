@@ -1,4 +1,4 @@
-class ErrorCodes:
+class ErrorCodes():
     InputNotWellFormed = 31
     InputStructureBad = 32
 
